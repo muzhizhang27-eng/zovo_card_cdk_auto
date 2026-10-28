@@ -338,6 +338,7 @@ function loadProgress(): boolean {
         checked: !!p.account.checked,
         email: String(p.account.email || ''),
         currentPlan: String(p.account.currentPlan || ''),
+        xSubscriptionType: String(p.account.xSubscriptionType || ''),
         subscriptionHasActive:
           typeof p.account.subscriptionHasActive === 'boolean' ? p.account.subscriptionHasActive : null,
         subscriptionActiveUntil: String(p.account.subscriptionActiveUntil || ''),
@@ -566,6 +567,7 @@ function clearAccount() {
     checked: false,
     email: '',
     currentPlan: '',
+    xSubscriptionType: '',
     subscriptionHasActive: null,
     subscriptionActiveUntil: '',
     canPurchaseAt: '',
