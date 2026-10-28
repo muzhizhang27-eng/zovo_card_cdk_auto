@@ -31,7 +31,7 @@ export function isCardAttachPlan(plan: string, planFlow?: string): boolean {
 export function planLabel(value: string): string {
   const n = String(value || 'free').trim().toLowerCase()
   // X 先判：裸 premium_monthly 归 X；Grok 码由调用方按 product 补成 grok_ 前缀（见 RechargeView targetPlan）。
-  if (isXPremiumPlan(n)) return 'X ' + n.replace(/^x_/, '').replace('premium_plus', 'Premium+').replace('premium', 'Premium').replace('basic', 'Basic').replace('_monthly', ' / month').replace('_yearly', ' / year')
+  if (isXPremiumPlan(n)) return 'X ' + n.replace(/^x_/, '').replace('premium', 'Premium').replace('plus', 'Plus').replace('super', 'Super').replace('ultra', 'Ultra').replace('_monthly', ' / month').replace('_yearly', ' / year')
   if (isGrokPlan(n)) return grokPlanLabel(n)
   if (n === 'pro_5x_renew') return 'Pro 5x 续费'
   if (n === 'pro_20x_renew' || n.includes('renew')) return 'Pro 20x 续费'

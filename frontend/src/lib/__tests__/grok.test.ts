@@ -13,7 +13,10 @@ describe('Grok plans', () => {
     for (const p of ['plus', 'pro_20x', 'pro_20x_renew', 'credit250', 'go', 'premium_monthly', 'basic_yearly', 'premium_plus_monthly']) {
       expect(isGrokPlan(p)).toBe(false)
     }
-    expect(isXPremiumPlan('plus_monthly')).toBe(false)
+    // 2026-10-24:X 并入 XPASS 后与 Grok 同用 plus/premium/super/ultra 四档,裸 tier_月年 两者都认,
+    // 靠显式 product 区分(issueProduct);但 GPT 的裸 'plus'(无 _月年)不属于 X。
+    expect(isXPremiumPlan('plus')).toBe(false)
+    expect(isXPremiumPlan('pro_20x')).toBe(false)
   })
   it('labels Grok plans with xAI tier names and compares them exactly (tiers are parallel product lines)', () => {
     expect(grokPlanLabel('premium_monthly')).toBe('Grok Premium / 月')

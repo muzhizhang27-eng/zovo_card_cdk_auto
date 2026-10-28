@@ -72,6 +72,10 @@
               <dt>当前套餐</dt>
               <dd>{{ planLabel(isGrok && account.currentPlan ? 'grok_' + String(account.currentPlan).replace(/^grok_/i, '') : account.currentPlan) }}</dd>
             </div>
+            <div v-if="isGrok && account.xSubscriptionType">
+              <dt>X 订阅等级</dt>
+              <dd>{{ account.xSubscriptionType }}</dd>
+            </div>
             <div>
               <dt>订阅状态</dt>
               <dd>{{ subscriptionStatusText }}</dd>
@@ -254,6 +258,7 @@ const account = ref({
   checked: false,
   email: '',
   currentPlan: '',
+  xSubscriptionType: '', // Grok：X 订阅等级(Premium/…)，首月半价资格来源
   subscriptionHasActive: null as boolean | null,
   subscriptionActiveUntil: '',
   canPurchaseAt: '',
@@ -540,6 +545,7 @@ function applyAccountFromPreflight(data: any) {
     checked: true,
     email: String(body.email || body.account_email || ''),
     currentPlan: String(body.currentPlan || body.current_plan || body.plan || ''),
+    xSubscriptionType: String(body.x_subscription_type || ''),
     subscriptionHasActive:
       typeof body.subscription_has_active === 'boolean' ? body.subscription_has_active : null,
     subscriptionActiveUntil: String(body.subscription_active_until || ''),

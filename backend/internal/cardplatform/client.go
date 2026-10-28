@@ -227,7 +227,7 @@ type PlansResponse struct {
 // 卡台返回 PaymentConfig：version + plans[key].serviceFeeUsdMinor
 func (c *Client) GetPlans(ctx context.Context, products ...string) (*PlansResponse, error) {
 	product := "gpt"
-	if len(products) > 0 && (products[0] == "x" || products[0] == "grok") {
+	if len(products) > 0 && (products[0] == "x" || products[0] == "grok" || products[0] == "claude") {
 		product = products[0]
 	}
 	path := "/gpt-direct/plans"
@@ -336,6 +336,23 @@ func (c *Client) GetPlans(ctx context.Context, products ...string) (*PlansRespon
 		}
 		out.Registry = registry
 		// Grok 美元固定价：卡台兑换时一律按 US/USD 收单，别的地区选了也不生效。
+		out.PaymentRegions = []PaymentRegion{{Country: "US", Currency: "USD"}}
+	}
+	if product == "claude" {
+		// 与 Grok 同构：定价表键是 claude_max_20x，注册表键是裸 max_20x。本站统一用裸键。
+		// Claude 三档裸键唯一（pro / max_5x / max_20x），不与 X/Grok/GPT 冲突，但仍按前缀取定价。
+		all := out.Plans
+		out.Plans = map[string]PlanInfo{}
+		registry := []PlanRegistryItem{}
+		for _, entry := range out.Registry {
+			if info, ok := all["claude_"+entry.Key]; ok {
+				info.Key = entry.Key
+				out.Plans[entry.Key] = info
+				registry = append(registry, entry)
+			}
+		}
+		out.Registry = registry
+		// Claude 恒价 USD：卡台兑换时一律按 US/USD 收单（claudeProduct.UsesFlatFundingPrice）。
 		out.PaymentRegions = []PaymentRegion{{Country: "US", Currency: "USD"}}
 	}
 	return out, nil

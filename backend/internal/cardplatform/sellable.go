@@ -22,13 +22,18 @@ import (
 //	闸二 ACC 定价开关：兑换时 ACC 的 createJobHandler 会查 config.plans[plan].enabled，
 //	     这里不查的话，代理能发出一张「兑换时必然被 ACC 挡下」的码。
 //
-// 两个闸缺一不可：卡台开了 ACC 没开 → 码发得出兑不掉；ACC 开了卡台没开（Claude
-// 正是这种）→ 卖了一个我们压根没有兑换流程的东西。
+// 两个闸缺一不可：卡台开了 ACC 没开 → 码发得出兑不掉；ACC 开了卡台没开 → 卖了一个
+// 我们压根没有兑换流程的东西。
 
 // nonCDKPlanPrefixes 老版本卡台（不下发注册表）时的兜底黑名单。
 //
 // ★这是过渡期补丁，不是长久判据★：卡台一旦下发 registry，闸一就是产品线过滤，
-// 这份前缀名单不再参与判断。留着是为了「卡台还没升级时代理也不该看到 Claude」。
+// 这份前缀名单不再参与判断。
+//
+// ★claude_ 为何仍留在黑名单（即便 2026-10-24 已开通 Claude CDK）★：Claude CDK 走的是
+// registry 路径（product=claude 的产品线过滤 + client.go 的 claude 归并），根本不过这条
+// 兜底。黑名单只在「卡台不下发 registry」的 legacy 场景生效，作用是防止列 GPT 时 ACC 原始
+// 定价 dump 里的 claude_* 键串进 GPT 列表（2026-08-22 线上根因）——这层产品隔离仍要保留。
 var nonCDKPlanPrefixes = []string{"claude_"}
 
 // SellablePlan 一个「代理真的能发码、用户真的能兑换」的档位。

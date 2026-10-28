@@ -12,7 +12,9 @@ import (
 // ★裸 premium_monthly 同时是 X Premium 的键★：没有产品信息时 X 优先（issueProduct 先判 X），
 // Grok 发码一律带 grok_ 前缀（GrokIssuePlan）。旧键 lite/heavy/monthly/yearly 仍认，按新键处理。
 // 带 grok_ 前缀时认全部四档；裸键不认 premium_*（归 X）。
-var grokPlanRe = regexp.MustCompile(`^(?:grok_(?:(?:plus|premium|super|ultra|lite|heavy)_)?|(?:(?:plus|super|ultra|lite|heavy)_)?)(?:monthly|yearly)$`)
+// ★2026-10-24 Grok 专属半价档★：grok_<tier>_monthly_half(严格半价档,发码给顾客用)。
+// 只在带 grok_ 前缀时认 _half 后缀;裸键不认(半价一律带前缀发码)。
+var grokPlanRe = regexp.MustCompile(`^(?:grok_(?:(?:plus|premium|super|ultra|lite|heavy)_)?(?:monthly|yearly)(?:_half)?|(?:(?:plus|super|ultra|lite|heavy)_)?(?:monthly|yearly))$`)
 
 func IsGrokPlan(plan string) bool {
 	return grokPlanRe.MatchString(strings.ToLower(strings.TrimSpace(plan)))

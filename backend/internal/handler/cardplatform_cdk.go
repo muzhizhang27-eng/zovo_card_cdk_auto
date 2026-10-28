@@ -95,10 +95,10 @@ func CardPlatformBalance(c *gin.Context) {
 	c.JSON(http.StatusOK, bal)
 }
 
-// issueProduct 发码产品线：显式传入优先（只认 gpt / x / grok），否则按档位键推断。
+// issueProduct 发码产品线：显式传入优先（只认 gpt / x / grok / claude），否则按档位键推断。
 func issueProduct(explicit, plan string) string {
 	switch p := strings.ToLower(strings.TrimSpace(explicit)); p {
-	case "gpt", "x", "grok":
+	case "gpt", "x", "grok", "claude":
 		return p
 	}
 	if cardplatform.IsXPremiumPlan(plan) {
@@ -106,6 +106,9 @@ func issueProduct(explicit, plan string) string {
 	}
 	if cardplatform.IsGrokPlan(plan) {
 		return "grok"
+	}
+	if cardplatform.IsClaudePlan(plan) {
+		return "claude"
 	}
 	return "gpt"
 }
@@ -145,6 +148,9 @@ func CardPlatformIssueCDKs(c *gin.Context) {
 	product := issueProduct(req.Product, plan)
 	if product == "grok" {
 		plan = cardplatform.GrokBarePlan(plan)
+	}
+	if product == "claude" {
+		plan = cardplatform.ClaudeBarePlan(plan)
 	}
 	if cli := cardplatform.NewFromSettings(); cli != nil {
 		if plans, err := cli.GetPlans(c.Request.Context(), product); err == nil && plans != nil && len(plans.Plans) > 0 {
@@ -192,6 +198,9 @@ func CardPlatformIssueCDKs(c *gin.Context) {
 	if product == "grok" {
 		payCountry = "US"
 	}
+	if product == "claude" {
+		payCountry = "US"
+	}
 	if product == "x" {
 		var regionErr error
 		payCountry, regionErr = cardplatform.XPaymentCountry(payCountry)
@@ -213,6 +222,9 @@ func CardPlatformIssueCDKs(c *gin.Context) {
 	wirePlan := plan
 	if product == "grok" {
 		wirePlan = cardplatform.GrokIssuePlan(plan)
+	}
+	if product == "claude" {
+		wirePlan = cardplatform.ClaudeIssuePlan(plan)
 	}
 	if len(issuePrefs) > 0 {
 		res, err = cli.IssueCDKs(c.Request.Context(), wirePlan, req.Count, idem, issuePrefs[0])

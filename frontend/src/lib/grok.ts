@@ -9,7 +9,8 @@
 // credential（卡台按码上的产品分流，GPT / X 码仍必须带 preflight_token）。
 
 // 带 grok_ 前缀时认全部四档；裸键不认 premium_*（归 X）。
-const GROK_PLAN = /^(?:grok_(?:(?:plus|premium|super|ultra|lite|heavy)_)?|(?:(?:plus|super|ultra|lite|heavy)_)?)(?:monthly|yearly)$/
+// ★2026-10-24 Grok 专属半价档★：grok_<tier>_monthly_half（严格半价,发码给顾客用),只在带前缀时认 _half。
+const GROK_PLAN = /^(?:grok_(?:(?:plus|premium|super|ultra|lite|heavy)_)?(?:monthly|yearly)(?:_half)?|(?:(?:plus|super|ultra|lite|heavy)_)?(?:monthly|yearly))$/
 
 export function isGrokPlan(value: string): boolean {
   return GROK_PLAN.test(String(value || '').trim().toLowerCase())
@@ -31,9 +32,9 @@ export function grokBarePlan(value: string): string {
 const TIER_LABEL: Record<string, string> = { plus: 'Plus', premium: 'Premium', super: 'Super', ultra: 'Ultra' }
 
 export function grokPlanLabel(value: string): string {
-  const m = grokBarePlan(value).match(/^(plus|premium|super|ultra)_(monthly|yearly)$/)
+  const m = grokBarePlan(value).match(/^(plus|premium|super|ultra)_(monthly|yearly)(_half)?$/)
   if (!m) return value
-  return `Grok ${TIER_LABEL[m[1]]} / ${m[2] === 'yearly' ? '年' : '月'}`
+  return `Grok ${TIER_LABEL[m[1]]} / ${m[2] === 'yearly' ? '年' : '月'}${m[3] ? ' 半价' : ''}`
 }
 
 const SSO_COOKIE = /(?:^|;\s*)sso(?:-rw)?=[^;\s]+/
