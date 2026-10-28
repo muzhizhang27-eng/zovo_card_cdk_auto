@@ -1,0 +1,30 @@
+[Unit]
+Description=Read-only CDK status lookup over Unix socket
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=cdk-admin
+Group=cdk-recharge
+Environment=SERVER_MODE=release
+Environment=CDK_LOOKUP_DB=/var/lib/cdk-admin/cdk_recharge.db
+Environment=CDK_LOOKUP_SOCKET=/run/cdk-lookup/lookup.sock
+ExecStart=/opt/cdk-lookup/current/cdk-lookup
+RuntimeDirectory=cdk-lookup
+RuntimeDirectoryMode=0750
+UMask=0007
+Restart=on-failure
+RestartSec=3
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectHome=true
+ProtectSystem=strict
+ReadOnlyPaths=/var/lib/cdk-admin
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+
+[Install]
+WantedBy=multi-user.target

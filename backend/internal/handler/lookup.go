@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
 	"sync"
@@ -14,6 +15,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/tuzi/cdk-recharge-system/internal/cardplatform"
+	"github.com/tuzi/cdk-recharge-system/internal/cdklookup"
 	"github.com/tuzi/cdk-recharge-system/internal/db"
 )
 
@@ -21,17 +23,7 @@ import (
 const lookupBatchMax = 100
 const lookupBatchWorkers = 4
 
-type cdkLookupResult struct {
-	CDKCode      string  `json:"cdk_code"`
-	Status       string  `json:"status"` // unused | used | failed | disabled | expired | processing | unknown
-	Used         bool    `json:"used"`
-	CanResubmit  bool    `json:"can_resubmit"`
-	AccountEmail string  `json:"account_email,omitempty"`
-	Plan         string  `json:"plan,omitempty"`
-	UsedAt       *string `json:"used_at,omitempty"`
-	Notes        string  `json:"notes,omitempty"`
-	Message      string  `json:"message"`
-}
+type cdkLookupResult = cdklookup.Result
 
 // LookupCDKStatus GET /api/v1/lookup/cdk?code=  或兼容 ?cdk_code=
 func LookupCDKStatus(c *gin.Context) {
@@ -46,6 +38,10 @@ func LookupCDKStatus(c *gin.Context) {
 	}
 
 	resp := lookupOneCDK(c.Request.Context(), code, deviceFrom(c))
+	if resp.Status == "unavailable" {
+		c.JSON(http.StatusServiceUnavailable, gin.H{"error": resp.Message, "status": resp.Status})
+		return
+	}
 	if resp.Status == "unknown" {
 		c.JSON(http.StatusNotFound, gin.H{
 			"error":    "未找到该卡密记录",
@@ -151,6 +147,13 @@ func applyLookupFailure(resp *cdkLookupResult, notes string, reusable bool) {
 }
 
 func lookupOneCDK(ctx context.Context, code, deviceID string) cdkLookupResult {
+	if socket := strings.TrimSpace(os.Getenv("CDK_LOOKUP_SOCKET")); socket != "" {
+		resp, err := cdklookup.Query(ctx, socket, code)
+		if err != nil {
+			return cdkLookupResult{CDKCode: code, Status: "unavailable", Message: cdklookup.ErrUnavailable.Error()}
+		}
+		return resp
+	}
 	resp := cdkLookupResult{CDKCode: code, Status: "unknown", Message: "未找到该卡密记录"}
 	redeemOK := false
 	reusable := false
@@ -282,6 +285,9 @@ func lookupOneCDK(ctx context.Context, code, deviceID string) cdkLookupResult {
 			if rerr == nil && st >= 200 && st < 300 && len(raw) > 0 {
 				var payload map[string]any
 				if json.Unmarshal(raw, &payload) == nil && payload != nil {
+					if data, ok := payload["data"].(map[string]any); ok {
+						payload = data
+					}
 					orderStatus := strAny(payload["status"])
 					if orderStatus == "" {
 						if order, ok := payload["order"].(map[string]any); ok {
@@ -319,10 +325,6 @@ func lookupOneCDK(ctx context.Context, code, deviceID string) cdkLookupResult {
 		}
 	}
 
-	if resp.AccountEmail != "" && resp.Status == "unused" && !resp.CanResubmit {
-		resp.Status, resp.Used = "used", true
-		resp.Message = "卡密使用成功"
-	}
 	if resp.Status == "used" {
 		resp.Used = true
 		resp.CanResubmit = false

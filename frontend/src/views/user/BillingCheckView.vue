@@ -43,7 +43,7 @@
             <a class="app-link underline" href="https://chatgpt.com/api/auth/session" target="_blank" rel="noopener">
               chatgpt.com/api/auth/session
             </a>
-            ，复制<strong>完整 JSON</strong>（须含 sessionToken）。已禁用纯 Access Token。
+            ，复制<strong>完整 JSON</strong>（须含 accessToken；若有 sessionToken，可用于尝试刷新）。
           </div>
           <div class="form-group">
             <label>完整 Session JSON</label>
@@ -56,6 +56,9 @@
         </template>
 
         <div v-if="error" class="alert alert-error">{{ error }}</div>
+        <button v-if="error && mode === 'cdk'" type="button" class="app-link underline text-sm" @click="mode = 'session'">
+          改用最新 Session 查询
+        </button>
         <button
           class="btn-primary w-full"
           :disabled="loading || !canSubmit"
@@ -95,8 +98,9 @@
       </div>
 
       <div v-if="invoices" class="card space-y-3">
+        <div v-for="warning in warnings" :key="warning" class="alert alert-info">{{ warning }}</div>
         <h2 class="text-xl font-semibold text-ink">付款账单（{{ invoices.length }}）</h2>
-        <p v-if="!invoices.length" class="text-sm text-muted">无付款账单记录。</p>
+        <p v-if="!invoices.length && !warnings.length" class="text-sm text-muted">无付款账单记录。</p>
         <div v-for="inv in invoices" :key="inv.id || inv.number" class="rounded-xl bg-soft p-4 text-sm space-y-2">
           <div class="flex flex-wrap items-center justify-between gap-2">
             <b class="mono">{{ formatAmount(inv.total, inv.currency) }}</b>
@@ -131,6 +135,7 @@ const error = ref('')
 const summary = ref<any>(null)
 const invoices = ref<any[] | null>(null)
 const authSource = ref('')
+const warnings = ref<string[]>([])
 
 const canSubmit = computed(() =>
   mode.value === 'cdk' ? !!cdkCode.value.trim() : !!tokenInput.value.trim(),
@@ -173,6 +178,7 @@ async function query() {
   summary.value = null
   invoices.value = null
   authSource.value = ''
+  warnings.value = []
   loading.value = true
   try {
     const body =
@@ -192,6 +198,7 @@ async function query() {
     summary.value = d.summary || {}
     invoices.value = d.invoices || []
     authSource.value = d.auth_source || ''
+    warnings.value = Array.isArray(d.warnings) ? d.warnings : []
   } catch (e: any) {
     error.value = e?.message || '网络错误'
   } finally {

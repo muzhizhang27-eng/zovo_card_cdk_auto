@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"net/url"
 	"os"
@@ -20,7 +19,7 @@ func accounthubBaseURL() string {
 	if u := strings.TrimSpace(os.Getenv("ACCOUNTHUB_BASE_URL")); u != "" {
 		return strings.TrimRight(u, "/")
 	}
-	return "http://localhost:8788"
+	return ""
 }
 
 // extractEmailFromSession 从 session JSON 提取 user.email。
@@ -63,7 +62,9 @@ func queryAccounthubInvoices(email string) (*acchubInvoiceResp, error) {
 	defer resp.Body.Close()
 	body, _ := io.ReadAll(io.LimitReader(resp.Body, 1<<20))
 	if resp.StatusCode != 200 {
-		var errResp struct{ Error string `json:"error"` }
+		var errResp struct {
+			Error string `json:"error"`
+		}
 		json.Unmarshal(body, &errResp)
 		return nil, fmt.Errorf("accounthub %d: %s", resp.StatusCode, errResp.Error)
 	}
@@ -122,7 +123,7 @@ func SessionBillingCheck(c *gin.Context) {
 	}
 
 	// CDK 模式优先走 accounthub：用内部刷新过的 session 查账单
-	if source == "cdk" {
+	if source == "cdk" && accounthubBaseURL() != "" {
 		email := extractEmailFromSession(raw)
 		if email != "" {
 			if inv, err := queryAccounthubInvoices(email); err == nil {
@@ -145,8 +146,6 @@ func SessionBillingCheck(c *gin.Context) {
 					"auth_source": "accounthub",
 				})
 				return
-			} else {
-				log.Printf("[billing] accounthub fallback for %s: %v", email, err)
 			}
 		}
 	}
@@ -154,12 +153,18 @@ func SessionBillingCheck(c *gin.Context) {
 	// 回退：直接用 session/accessToken 查
 	res, err := gptcheck.Check(raw)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		status := http.StatusBadRequest
+		code := gptcheck.ErrorCode(err)
+		if code == "upstream_unavailable" {
+			status = http.StatusBadGateway
+		}
+		c.JSON(status, gin.H{"error": err.Error(), "error_code": code, "can_retry_with_session": true})
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{
 		"summary":     res.Summary,
 		"invoices":    res.Invoices,
 		"auth_source": source,
+		"warnings":    res.Warnings,
 	})
 }

@@ -4,6 +4,7 @@ package gptcheck
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -196,9 +197,14 @@ func trustedURL(raw string) string {
 	if err != nil || u.Scheme != "https" {
 		return ""
 	}
-	host := strings.ToLower(u.Host)
-	if strings.Contains(host, "stripe.com") || strings.Contains(host, "openai.com") || strings.Contains(host, "chatgpt.com") {
-		return raw
+	if u.User != nil {
+		return ""
+	}
+	host := strings.ToLower(u.Hostname())
+	for _, domain := range []string{"stripe.com", "openai.com", "chatgpt.com"} {
+		if host == domain || strings.HasSuffix(host, "."+domain) {
+			return raw
+		}
 	}
 	return ""
 }
@@ -207,14 +213,45 @@ func trustedURL(raw string) string {
 type Result struct {
 	Summary  map[string]interface{}   `json:"summary"`
 	Invoices []map[string]interface{} `json:"invoices"`
+	Warnings []string                 `json:"warnings,omitempty"`
+}
+
+type QueryError struct {
+	Code    string
+	Message string
+}
+
+func (e *QueryError) Error() string { return e.Message }
+
+func queryError(code, message string) error { return &QueryError{Code: code, Message: message} }
+
+func ErrorCode(err error) string {
+	var query *QueryError
+	if errors.As(err, &query) {
+		return query.Code
+	}
+	return "invalid_session"
 }
 
 // Check 对齐小助手 gptCheck：订阅 + invoices（含 hosted_invoice_url / invoice_pdf）。
 // 若 accessToken 已过期（403/401），自动用 sessionToken 刷新后重试一次。
 func Check(tokenInput string) (*Result, error) {
+	return check(tokenInput, request, refreshAccessToken)
+}
+
+type requestFunc func(string, string, map[string]string) (int, []byte, error)
+
+func check(tokenInput string, send requestFunc, refresh func(string) (string, error)) (*Result, error) {
 	accessToken, err := ParseAccessToken(tokenInput)
+	sessionToken := parseSessionToken(tokenInput)
 	if err != nil {
-		return nil, err
+		if sessionToken == "" {
+			return nil, err
+		}
+		accessToken, err = refresh(sessionToken)
+		if err != nil {
+			return nil, queryError("session_refresh_failed", "Session 刷新失败，请重新登录 ChatGPT 并粘贴最新 Session。"+err.Error())
+		}
 	}
 
 	checkHeaders := map[string]string{
@@ -223,34 +260,55 @@ func Check(tokenInput string) (*Result, error) {
 		"User-Agent":    ua,
 		"Referer":       "https://chatgpt.com/",
 	}
-	st, body, err := request(http.MethodGet, checkV4URL, checkHeaders)
+	st, body, err := send(http.MethodGet, checkV4URL, checkHeaders)
 	if err != nil {
-		return nil, fmt.Errorf("请求 ChatGPT 失败: %v", err)
+		return nil, queryError("upstream_unavailable", "暂时无法连接 ChatGPT，请稍后重试")
 	}
 
 	// accessToken 过期/无效：尝试用 sessionToken 刷新
 	if st == 401 || st == 403 {
-		sessionToken := parseSessionToken(tokenInput)
 		if sessionToken != "" {
-			if fresh, rerr := refreshAccessToken(sessionToken); rerr == nil && fresh != "" {
+			if fresh, rerr := refresh(sessionToken); rerr == nil && fresh != "" {
 				accessToken = fresh
 				checkHeaders["Authorization"] = "Bearer " + accessToken
-				st, body, err = request(http.MethodGet, checkV4URL, checkHeaders)
+				st, body, err = send(http.MethodGet, checkV4URL, checkHeaders)
 				if err != nil {
-					return nil, fmt.Errorf("请求 ChatGPT 失败: %v", err)
+					return nil, queryError("upstream_unavailable", "暂时无法连接 ChatGPT，请稍后重试")
 				}
+			} else {
+				// Preserve the refresh failure instead of disguising it as an
+				// expired access token. No session contents appear in this error.
+				message := "Session 刷新失败，请重新登录 ChatGPT 并粘贴最新 Session。"
+				if rerr != nil {
+					message += rerr.Error()
+				}
+				return nil, queryError("session_refresh_failed", message)
 			}
 		}
 	}
 
+	if st != http.StatusOK {
+		if st == http.StatusUnauthorized {
+			var rejected struct {
+				Error struct {
+					Code string `json:"code"`
+				} `json:"error"`
+			}
+			if json.Unmarshal(body, &rejected) == nil && rejected.Error.Code == "token_revoked" {
+				return nil, queryError("credential_revoked", "账号凭证已被 ChatGPT 撤销，请重新登录 ChatGPT 并粘贴最新 Session")
+			}
+			return nil, queryError("credential_expired", "Session 已失效，请重新登录 ChatGPT 并粘贴最新 Session")
+		}
+		return nil, queryError("upstream_unavailable", fmt.Sprintf("ChatGPT 暂时拒绝查询（HTTP %d），请稍后重试", st))
+	}
 	var data map[string]interface{}
 	if err := json.Unmarshal(body, &data); err != nil {
-		return nil, fmt.Errorf("check 返回非 JSON")
-	}
-	if st != http.StatusOK {
-		return nil, fmt.Errorf("查询失败(token 可能已失效) HTTP %d", st)
+		return nil, queryError("upstream_unavailable", "ChatGPT 返回了无法解析的响应，请稍后重试")
 	}
 	account := defaultAccount(data)
+	if len(account) == 0 {
+		return nil, queryError("upstream_unavailable", "ChatGPT 未返回账号订阅信息，请稍后重试")
+	}
 	accountInfo := asMap(account["account"])
 	entitlement := asMap(account["entitlement"])
 	lastActive := asMap(account["last_active_subscription"])
@@ -273,25 +331,30 @@ func Check(tokenInput string) (*Result, error) {
 	}
 
 	invoices := []map[string]interface{}{}
+	warnings := []string{}
 	if accountID != "" {
-		invoices = fetchInvoices(accessToken, accountID)
+		var invoiceErr error
+		invoices, invoiceErr = fetchInvoicesWith(send, accessToken, accountID)
+		if invoiceErr != nil {
+			warnings = append(warnings, "订阅信息已获取，但账单明细暂时获取失败，请稍后重试")
+		}
 	}
-	return &Result{Summary: summary, Invoices: invoices}, nil
+	return &Result{Summary: summary, Invoices: invoices, Warnings: warnings}, nil
 }
 
-func fetchInvoices(accessToken, accountID string) []map[string]interface{} {
-	st, body, err := request(http.MethodGet, invoicesURL+url.QueryEscape(accountID), map[string]string{
+func fetchInvoicesWith(send requestFunc, accessToken, accountID string) ([]map[string]interface{}, error) {
+	st, body, err := send(http.MethodGet, invoicesURL+url.QueryEscape(accountID), map[string]string{
 		"Authorization": "Bearer " + accessToken,
 		"Accept":        "application/json",
 		"User-Agent":    ua,
 		"Referer":       "https://chatgpt.com/",
 	})
 	if err != nil || st != http.StatusOK {
-		return nil
+		return []map[string]interface{}{}, fmt.Errorf("invoice request failed")
 	}
 	var data map[string]interface{}
 	if json.Unmarshal(body, &data) != nil {
-		return nil
+		return []map[string]interface{}{}, fmt.Errorf("invalid invoice response")
 	}
 	rawList, _ := data["data"].([]interface{})
 	out := make([]map[string]interface{}, 0, len(rawList))
@@ -318,5 +381,5 @@ func fetchInvoices(accessToken, accountID string) []map[string]interface{} {
 			"invoice_pdf":        trustedURL(firstString(inv["invoice_pdf"])),
 		})
 	}
-	return out
+	return out, nil
 }
