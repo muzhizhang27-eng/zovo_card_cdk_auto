@@ -1,0 +1,37 @@
+[Unit]
+Description=CDK administration service
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=cdk-admin
+Group=cdk-admin
+WorkingDirectory=/var/lib/cdk-admin
+EnvironmentFile=/etc/cdk-admin/app.env
+ExecStart=/opt/cdk-admin/current/cdk-admin
+Restart=on-failure
+RestartSec=3
+UMask=0077
+StateDirectory=cdk-admin
+StateDirectoryMode=0700
+NoNewPrivileges=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectHome=true
+ProtectSystem=strict
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+RestrictRealtime=true
+LockPersonality=true
+CapabilityBoundingSet=
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+ReadWritePaths=/var/lib/cdk-admin
+MemoryMax=512M
+TasksMax=64
+LimitNOFILE=4096
+
+[Install]
+WantedBy=multi-user.target

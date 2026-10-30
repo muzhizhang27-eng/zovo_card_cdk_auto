@@ -56,8 +56,9 @@ func (c Config) PublicCDKBase() string {
 }
 
 type Client struct {
-	cfg    Config
-	client *http.Client
+	cfg     Config
+	client  *http.Client
+	limiter *publicLimiter
 }
 
 const (
@@ -71,7 +72,8 @@ func New(cfg Config) *Client {
 	return &Client{
 		cfg: cfg,
 		client: &http.Client{
-			Timeout: defaultHTTPTimeout,
+			Timeout:       defaultHTTPTimeout,
+			CheckRedirect: rejectRedirect,
 		},
 	}
 }
@@ -109,6 +111,9 @@ func (c *Client) doOpenAPI(ctx context.Context, method, path string, body any, i
 }
 
 func (c *Client) doOpenAPIWithClient(ctx context.Context, httpc *http.Client, method, path string, body any, idempotencyKey string) (json.RawMessage, error) {
+	if err := ValidateBase(c.cfg.SiteBase); err != nil {
+		return nil, err
+	}
 	if c.cfg.APIKey == "" {
 		return nil, &APIError{HTTPStatus: 401, Msg: "card_api_key not configured"}
 	}
@@ -128,6 +133,11 @@ func (c *Client) doOpenAPIWithClient(ctx context.Context, httpc *http.Client, me
 	if err != nil {
 		return nil, err
 	}
+	if body != nil && method != http.MethodGet && method != http.MethodHead {
+		// Idempotency-Key makes net/http consider a request replayable. Keep the
+		// upstream key, but never implicitly resend a purchase after connection loss.
+		req.GetBody = nil
+	}
 	req.Header.Set("X-API-Key", c.cfg.APIKey)
 	req.Header.Set("Accept", "application/json")
 	if body != nil {
@@ -141,6 +151,9 @@ func (c *Client) doOpenAPIWithClient(ctx context.Context, httpc *http.Client, me
 		return nil, err
 	}
 	defer resp.Body.Close()
+	if resp.StatusCode >= 300 && resp.StatusCode < 400 {
+		return nil, fmt.Errorf("card platform redirect refused")
+	}
 	raw, _ := io.ReadAll(io.LimitReader(resp.Body, 4<<20))
 	var env envelope
 	if err := json.Unmarshal(raw, &env); err != nil {
@@ -545,7 +558,7 @@ func (c *Client) IssueCDKs(ctx context.Context, plan string, count int, idem str
 			body.PreferredSegmentType = "product"
 		}
 	}
-	issueClient := &http.Client{Timeout: issueHTTPTimeout, Transport: c.client.Transport}
+	issueClient := &http.Client{Timeout: issueHTTPTimeout, Transport: c.client.Transport, CheckRedirect: rejectRedirect}
 	data, err := c.doOpenAPIWithClient(ctx, issueClient, http.MethodPost, "/gpt-direct/cdks", body, idem)
 	if err != nil {
 		return nil, err
@@ -866,34 +879,60 @@ func (c *Client) FreezeCard(ctx context.Context, cardID int64, freeze bool) erro
 // ---- 公开兑换（无需 API Key）----
 
 func (c *Client) doPublicCDK(ctx context.Context, method, path string, body any, device string) (int, json.RawMessage, error) {
-	var rdr io.Reader
+	if err := ValidateBase(c.cfg.SiteBase); err != nil {
+		return 0, nil, err
+	}
+	var payload []byte
 	if body != nil {
-		b, err := json.Marshal(body)
+		var err error
+		payload, err = json.Marshal(body)
 		if err != nil {
 			return 0, nil, err
 		}
-		rdr = bytes.NewReader(b)
 	}
-	u := c.cfg.PublicCDKBase() + path
-	req, err := http.NewRequestWithContext(ctx, method, u, rdr)
-	if err != nil {
-		return 0, nil, err
+	limiter := c.limiter
+	if limiter == nil {
+		limiter = sharedPublicLimiter
 	}
-	req.Header.Set("Accept", "application/json")
-	if body != nil {
-		req.Header.Set("Content-Type", "application/json")
+	base := c.cfg.PublicCDKBase()
+	for attempt := 0; ; attempt++ {
+		if err := limiter.wait(ctx, base, path); err != nil {
+			return 0, nil, err
+		}
+		req, err := http.NewRequestWithContext(ctx, method, base+path, bytes.NewReader(payload))
+		if err != nil {
+			return 0, nil, err
+		}
+		req.Header.Set("Accept", "application/json")
+		if body != nil {
+			req.Header.Set("Content-Type", "application/json")
+		}
+		if device != "" {
+			req.Header.Set("X-Redemption-Device", device)
+		}
+		resp, err := c.client.Do(req)
+		if err != nil {
+			// A lost response may already have created an order. Never retry it here.
+			return 0, nil, err
+		}
+		raw, readErr := io.ReadAll(io.LimitReader(resp.Body, 2<<20))
+		_ = resp.Body.Close()
+		if resp.StatusCode >= 300 && resp.StatusCode < 400 {
+			return 0, nil, fmt.Errorf("card platform redirect refused")
+		}
+		if readErr != nil {
+			return 0, nil, readErr
+		}
+		// Retry only explicit rate-limit rejections with the exact same body and ID.
+		// Subscription cancellation is excluded from automatic retries.
+		if resp.StatusCode == http.StatusTooManyRequests && publicInterval(path) > 0 {
+			limiter.cooldown(base, path, retryAfter(resp.Header.Get("Retry-After"), attempt))
+			if attempt < 2 {
+				continue
+			}
+		}
+		return resp.StatusCode, json.RawMessage(raw), nil
 	}
-	if device != "" {
-		req.Header.Set("X-Redemption-Device", device)
-	}
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return 0, nil, err
-	}
-	defer resp.Body.Close()
-	raw, _ := io.ReadAll(io.LimitReader(resp.Body, 2<<20))
-	// 公开接口可能直接返回 JSON 对象，不一定是 code/msg envelope
-	return resp.StatusCode, json.RawMessage(raw), nil
 }
 
 func (c *Client) Preview(ctx context.Context, code, device string) (int, json.RawMessage, error) {
@@ -907,7 +946,7 @@ func (c *Client) Preflight(ctx context.Context, body any, device string) (int, j
 func (c *Client) RecoverSubscription(ctx context.Context, body any, device string) (int, json.RawMessage, error) {
 	copyClient := *c.client
 	copyClient.Timeout = 180 * time.Second
-	recoveryClient := &Client{cfg: c.cfg, client: &copyClient}
+	recoveryClient := &Client{cfg: c.cfg, client: &copyClient, limiter: c.limiter}
 	return recoveryClient.doPublicCDK(ctx, http.MethodPost, "/recover-subscription", body, device)
 }
 

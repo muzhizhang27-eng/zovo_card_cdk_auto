@@ -232,21 +232,21 @@ func CardPlatformIssueCDKs(c *gin.Context) {
 		res, err = cli.IssueCDKs(c.Request.Context(), wirePlan, req.Count, idem)
 	}
 	if err != nil {
-		// 超时/断线时卡台可能已经出码。立刻从卡台列表把完整码捞回本站。
-		if recovered, recErr := cli.SyncUpstreamFullCodes(c.Request.Context(), "unused", plan, 10); recErr == nil && recovered != nil && recovered.Imported > 0 {
-			c.JSON(http.StatusOK, gin.H{
-				"requested":     req.Count,
-				"issued":        recovered.Codes,
-				"count":         len(recovered.Codes),
-				"stored_count":  recovered.Imported,
-				"store_failed":  0,
-				"server_stored": true,
-				"recovered":     true,
-				"msg":           fmt.Sprintf("发码请求未完成，已从卡台找回 %d 张完整码", recovered.Imported),
-			})
+		// A 4xx rejection is definite. A lost response or 5xx may follow a
+		// charge. Inventory sync cannot attribute existing codes to this purchase.
+		if apiErr, ok := err.(*cardplatform.APIError); ok && apiErr.HTTPStatus >= 400 && apiErr.HTTPStatus < 500 {
+			writeCardErr(c, err)
 			return
 		}
-		writeCardErr(c, err)
+		imported := 0
+		if recovered, recErr := cli.SyncUpstreamFullCodes(c.Request.Context(), "unused", plan, 10); recErr == nil && recovered != nil {
+			imported = recovered.Imported
+		}
+		c.JSON(http.StatusBadGateway, gin.H{
+			"error":                  "发码结果尚未确认，请检查库存和订单，勿重复购买。",
+			"error_code":             "issue_outcome_unknown",
+			"inventory_synced_count": imported,
+		})
 		return
 	}
 	u, _ := c.Get("username")
@@ -1044,10 +1044,10 @@ func PublicCDKPreflight(c *gin.Context) {
 	sess := extractCredentialSession(body["credential"])
 	if sess != "" && !cardplatform.IsXPremiumCredential(sess) && !cardplatform.IsGrokCredential(sess) && (code != "" || tok != "") {
 		if err := db.BindCDKSession(code, tok, sess); err != nil {
-			log.Printf("[cdk-preflight] bind session failed code=%s tok=%s: %v", code, shortTok(tok), err)
+			log.Printf("[cdk-preflight] bind session failed has_code=%t has_token=%t error_type=%T", code != "", tok != "", err)
 		}
 	} else if st >= 200 && st < 300 {
-		log.Printf("[cdk-preflight] no session to bind (mode may be mailbox) tok=%s", shortTok(tok))
+		log.Printf("[cdk-preflight] no session to bind (mode may be mailbox) has_token=%t", tok != "")
 	}
 	proxyPublicJSON(c, st, raw)
 }
@@ -1173,14 +1173,6 @@ func PublicCDKResultByCode(c *gin.Context) {
 	}
 
 	c.JSON(st, payload)
-}
-
-func shortTok(tok string) string {
-	tok = strings.TrimSpace(tok)
-	if len(tok) <= 12 {
-		return tok
-	}
-	return tok[:8] + "…"
 }
 
 // PublicCDKPlans GET /api/v1/public/cdk/plans

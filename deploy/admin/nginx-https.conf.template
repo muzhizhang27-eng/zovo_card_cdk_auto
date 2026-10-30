@@ -1,0 +1,82 @@
+limit_req_zone $binary_remote_addr zone=cdk_admin_login:10m rate=5r/m;
+limit_req_zone $binary_remote_addr zone=cdk_admin_api:10m rate=10r/s;
+limit_conn_zone $binary_remote_addr zone=cdk_admin_conn:10m;
+log_format cdk_admin_json escape=json
+    '{"time":"$time_iso8601","remote_addr":"$remote_addr",'
+    '"method":"$request_method","path":"$uri","status":$status,"seconds":$request_time}';
+
+server {
+    listen 80;
+    listen [::]:80;
+    server_name cdk-admin.lanting.live;
+    server_tokens off;
+    access_log off;
+    error_log /dev/null crit;
+    location ^~ /.well-known/acme-challenge/ {
+        root /var/www/letsencrypt;
+        default_type text/plain;
+        try_files $uri =404;
+    }
+    location / { return 308 https://cdk-admin.lanting.live$request_uri; }
+}
+
+server {
+    listen 443 ssl;
+    listen [::]:443 ssl;
+    server_name cdk-admin.lanting.live;
+    ssl_certificate /etc/letsencrypt/live/cdk-admin.lanting.live/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/cdk-admin.lanting.live/privkey.pem;
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_session_cache shared:CDKAdminTLS:10m;
+    ssl_session_timeout 1d;
+    ssl_session_tickets off;
+    server_tokens off;
+    root /opt/cdk-admin/current/web;
+    access_log /var/log/nginx/cdk-admin-access.log cdk_admin_json;
+    error_log /dev/null crit;
+    client_max_body_size 1m;
+    client_body_buffer_size 1m;
+    client_header_timeout 10s;
+    client_body_timeout 30s;
+    keepalive_timeout 15s;
+    send_timeout 30s;
+    limit_conn cdk_admin_conn 20;
+    limit_req_status 429;
+    add_header Cache-Control "no-store" always;
+    add_header X-Content-Type-Options nosniff always;
+    add_header X-Frame-Options DENY always;
+    add_header Referrer-Policy no-referrer always;
+    add_header Strict-Transport-Security "max-age=31536000" always;
+    add_header Cross-Origin-Opener-Policy same-origin always;
+    add_header Permissions-Policy "geolocation=(), microphone=(), camera=()" always;
+    add_header Content-Security-Policy "default-src 'self'; script-src 'self' __SCRIPT_HASHES__; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob:; connect-src 'self'; frame-ancestors 'none'; object-src 'none'; base-uri 'none'; form-action 'self'" always;
+
+    location = / { return 302 /ops/cdkeys; }
+    location = /favicon.ico { return 204; }
+    location ~ ^/ops(?:/(login|cdkeys|orders|appearance|integration|audit|webhooks|card-selection))?/?$ {
+        if ($request_method !~ ^(GET|HEAD)$) { return 405; }
+        try_files /index.html =404;
+    }
+    location ~ ^/assets/[A-Za-z0-9_.-]+\.(js|css|woff2?|svg|png)$ {
+        if ($request_method !~ ^(GET|HEAD)$) { return 405; }
+        try_files $uri =404;
+        access_log off;
+    }
+    location = /api/v1/auth/admin/login {
+        if ($request_method != POST) { return 405; }
+        client_max_body_size 16k;
+        limit_req zone=cdk_admin_login burst=5 nodelay;
+        include /etc/nginx/snippets/cdk-admin-proxy.conf;
+    }
+    location = /api/v1/admin/system/update { return 404; }
+    location ~ ^/api/v1/(admin/|auth/admin/(me|logout|change-password)$|stats/system$) {
+        limit_req zone=cdk_admin_api burst=30 nodelay;
+        include /etc/nginx/snippets/cdk-admin-proxy.conf;
+    }
+    location ~ ^/api/v1/(setup/status|public/site)$ {
+        if ($request_method != GET) { return 405; }
+        limit_req zone=cdk_admin_api burst=10 nodelay;
+        include /etc/nginx/snippets/cdk-admin-proxy.conf;
+    }
+    location / { return 404; }
+}

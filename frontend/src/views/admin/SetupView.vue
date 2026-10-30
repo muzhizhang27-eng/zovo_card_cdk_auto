@@ -180,12 +180,8 @@ async function bootstrap(m: 'generate' | 'manual') {
         username: d.username,
         name: d.name || d.username,
         expiresAt: d.expires_at,
-        token: d.token,
       })
     }
-    // 暂存到 session，登录页也可预填（兜底）
-    sessionStorage.setItem('post_setup_user', d.username || '')
-    sessionStorage.setItem('post_setup_pass', d.password || '')
   } catch (e: any) {
     error.value = e?.message || '网络错误'
   } finally {

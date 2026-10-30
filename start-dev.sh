@@ -1,74 +1,99 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -euo pipefail
 
-echo "================================================"
-echo "CDK 充值系统 - 本地开发启动"
-echo "================================================"
-echo ""
+APP_ROOT="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+cd "$APP_ROOT"
+if [[ ! -f .env.local ]]; then
+  echo '缺少 .env.local。请复制 .env.local.example，设置 JWT_SECRET 和可用的本地代理。'
+  exit 1
+fi
+set -a
+source .env.local
+set +a
 
-# 检查环境变量文件
-if [ ! -f .env.local ]; then
-    echo "✗ 未找到 .env.local 文件"
+JWT_SECRET="${JWT_SECRET:-}"
+if [[ ${#JWT_SECRET} -lt 16 ]]; then
+  echo 'JWT_SECRET 未设置或过短。请将 openssl rand -hex 32 的结果保存到 .env.local。'
+  exit 1
+fi
+for cmd in go node curl; do
+  if ! command -v "$cmd" >/dev/null 2>&1; then
+    echo "缺少运行依赖：$cmd"
     exit 1
+  fi
+done
+if [[ ! -d frontend/node_modules ]]; then
+  echo '缺少前端依赖，请先执行：cd frontend && npm ci'
+  exit 1
 fi
 
-echo "✓ 环境文件已找到"
-echo ""
+export SERVER_HOST="${SERVER_HOST:-127.0.0.1}"
+export SERVER_PORT="${SERVER_PORT:-8080}"
+export SERVER_MODE="${SERVER_MODE:-debug}"
+export DB_PATH="${DB_PATH:-$APP_ROOT/data/cdk_recharge.db}"
+export INSTALL_MODE="${INSTALL_MODE:-wizard}"
+export NO_PROXY="${NO_PROXY:-localhost,127.0.0.1,::1}"
+export VITE_API_TARGET="http://127.0.0.1:$SERVER_PORT"
+FRONTEND_PORT="${FRONTEND_PORT:-5173}"
+mkdir -p "$(dirname -- "$DB_PATH")" "$APP_ROOT/tmp"
 
-# 检查数据库连接
-echo "检查数据库连接..."
-psql -U postgres -h localhost -d cdk_recharge -c "SELECT NOW();" >/dev/null 2>&1
-if [ $? -ne 0 ]; then
-    echo "✗ PostgreSQL 连接失败"
-    echo "  请确保 PostgreSQL 已启动，或运行:"
-    echo "  createdb cdk_recharge"
-    exit 1
-fi
-echo "✓ PostgreSQL 连接成功"
+BACKEND_PID=''
+FRONTEND_PID=''
+cleanup() {
+  for pid in "$BACKEND_PID" "$FRONTEND_PID"; do
+    if [[ -n "$pid" ]]; then kill "$pid" 2>/dev/null || true; fi
+  done
+  for pid in "$BACKEND_PID" "$FRONTEND_PID"; do
+    if [[ -n "$pid" ]]; then wait "$pid" 2>/dev/null || true; fi
+  done
+}
+trap cleanup EXIT
+trap 'exit 130' INT
+trap 'exit 143' TERM
 
-# 检查 Redis
-redis-cli ping >/dev/null 2>&1
-if [ $? -ne 0 ]; then
-    echo "✗ Redis 连接失败 (可选，不影响基本功能)"
-else
-    echo "✓ Redis 连接成功"
-fi
-
-echo ""
-echo "启动服务..."
-echo ""
-
-# 启动后端
-cd backend
-export $(cat ../.env.local | xargs)
-echo "启动后端服务 (端口 8080)..."
-go run ./cmd/server/main.go &
+(cd "$APP_ROOT/backend" && go build -o "$APP_ROOT/tmp/cdk-dev" ./cmd/server)
+"$APP_ROOT/tmp/cdk-dev" &
 BACKEND_PID=$!
-echo "  后端 PID: $BACKEND_PID"
+READY=0
+for ((i=0; i<60; i++)); do
+  if ! kill -0 "$BACKEND_PID" 2>/dev/null; then
+    echo '后端启动失败，请查看上方日志。'
+    exit 1
+  fi
+  if curl --noproxy '*' --silent --fail "$VITE_API_TARGET/health" >/dev/null; then
+    READY=1
+    break
+  fi
+  sleep 0.5
+done
+if [[ "$READY" != 1 ]]; then
+  echo '后端未在预期时间内就绪。'
+  exit 1
+fi
 
-sleep 2
-
-# 启动前端
-cd ../frontend
-echo "启动前端服务 (端口 5173)..."
-npm run dev &
+(cd "$APP_ROOT/frontend" && exec node node_modules/vite/bin/vite.js --host 127.0.0.1 --port "$FRONTEND_PORT" --strictPort) &
 FRONTEND_PID=$!
-echo "  前端 PID: $FRONTEND_PID"
-
-echo ""
-echo "================================================"
-echo "✓ 服务已启动！"
-echo "================================================"
-echo ""
-echo "前端:    http://localhost:5173"
-echo "后端:    http://localhost:8080"
-echo "API:     http://localhost:8080/api/v1"
-echo "健康检查: curl http://localhost:8080/health"
-echo ""
-echo "按 Ctrl+C 停止所有服务..."
-echo ""
-
-# 等待中断信号
-trap "kill $BACKEND_PID $FRONTEND_PID; exit" SIGINT SIGTERM
-
-# 保持脚本运行
-wait
+FRONTEND_READY=0
+for ((i=0; i<60; i++)); do
+  if ! kill -0 "$FRONTEND_PID" 2>/dev/null; then
+    echo '前端启动失败，请查看上方日志。'
+    exit 1
+  fi
+  if curl --noproxy '*' --silent --fail "http://127.0.0.1:$FRONTEND_PORT/" >/dev/null; then
+    FRONTEND_READY=1
+    break
+  fi
+  sleep 0.5
+done
+if [[ "$FRONTEND_READY" != 1 ]]; then
+  echo '前端未在预期时间内就绪。'
+  exit 1
+fi
+echo "前端：http://127.0.0.1:$FRONTEND_PORT/recharge"
+echo "后端：${VITE_API_TARGET}（SQLite）"
+echo '按 Ctrl+C 停止服务。'
+while kill -0 "$BACKEND_PID" 2>/dev/null && kill -0 "$FRONTEND_PID" 2>/dev/null; do
+  sleep 1
+done
+echo '服务已退出，正在停止另一进程。'
+exit 1

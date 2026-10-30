@@ -2,13 +2,15 @@ package server
 
 import (
 	"crypto/subtle"
+	"database/sql"
 	"net/http"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/golang-jwt/jwt/v5"
 	"github.com/tuzi/cdk-recharge-system/internal/auth"
+	"github.com/tuzi/cdk-recharge-system/internal/db"
 )
 
 // allowedOrigins 来自环境变量 CORS_ALLOWED_ORIGINS（逗号分隔），默认仅本地开发端口。
@@ -68,7 +70,7 @@ func CORSMiddleware() gin.HandlerFunc {
 			}
 		}
 
-		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
+		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, X-Redemption-Device, Authorization, accept, origin, Cache-Control, X-Requested-With")
 		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT, DELETE, PATCH")
 
 		if c.Request.Method == "OPTIONS" {
@@ -90,9 +92,19 @@ func isUnsafeMethod(method string) bool {
 
 func JWTAuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		c.Header("Cache-Control", "no-store")
+		if !auth.RequireSecureTransport(c.Request) {
+			c.AbortWithStatusJSON(http.StatusUpgradeRequired, gin.H{"error": "管理员会话必须使用 HTTPS"})
+			return
+		}
+		if isUnsafeMethod(c.Request.Method) && !auth.WriteOriginAllowed(c.Request) {
+			c.AbortWithStatusJSON(http.StatusForbidden, gin.H{"error": "请求来源不允许"})
+			return
+		}
 		// 优先 Authorization: Bearer（非浏览器/兼容旧前端）；否则读 HttpOnly cookie
 		var tokenStr string
 		fromCookie := false
+		authCookieName, csrfCookieName := auth.CookieNames(c.Request)
 		if authHeader := c.GetHeader("Authorization"); authHeader != "" {
 			parts := strings.Split(authHeader, " ")
 			if len(parts) != 2 || parts[0] != "Bearer" {
@@ -101,7 +113,7 @@ func JWTAuthMiddleware() gin.HandlerFunc {
 				return
 			}
 			tokenStr = parts[1]
-		} else if ck, err := c.Cookie("auth_token"); err == nil && ck != "" {
+		} else if ck, err := c.Cookie(authCookieName); err == nil && ck != "" {
 			tokenStr = ck
 			fromCookie = true
 		} else {
@@ -110,25 +122,30 @@ func JWTAuthMiddleware() gin.HandlerFunc {
 			return
 		}
 
-		claims := &auth.CustomClaims{}
-		token, err := jwt.ParseWithClaims(tokenStr, claims, func(token *jwt.Token) (interface{}, error) {
-			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-				return nil, jwt.ErrSignatureInvalid
-			}
-			return []byte(auth.JWTSecret()), nil
-		})
-		if err != nil || !token.Valid {
+		claims, err := auth.ParseAdminToken(tokenStr)
+		if err != nil {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid or expired token"})
 			c.Abort()
+			return
+		}
+		sessionHash := auth.SecretDigest(claims.ID)
+		csrfHash, err := db.ValidateAdminSession(sessionHash, claims.UserID, claims.Username)
+		if err != nil {
+			if err == sql.ErrNoRows {
+				c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Invalid or expired token"})
+			} else {
+				c.AbortWithStatusJSON(http.StatusServiceUnavailable, gin.H{"error": "会话验证暂不可用"})
+			}
 			return
 		}
 
 		// 基于 cookie 认证的写操作必须通过 CSRF 双提交校验（Bearer 头不受 CSRF 影响，跳过）
 		if fromCookie && isUnsafeMethod(c.Request.Method) {
 			csrfHeader := c.GetHeader("X-CSRF-Token")
-			csrfCookie, _ := c.Cookie("csrf_token")
+			csrfCookie, _ := c.Cookie(csrfCookieName)
 			if csrfHeader == "" || csrfCookie == "" ||
-				subtle.ConstantTimeCompare([]byte(csrfHeader), []byte(csrfCookie)) != 1 {
+				subtle.ConstantTimeCompare([]byte(csrfHeader), []byte(csrfCookie)) != 1 ||
+				subtle.ConstantTimeCompare([]byte(auth.SecretDigest(csrfHeader)), []byte(csrfHash)) != 1 {
 				c.JSON(http.StatusForbidden, gin.H{"error": "CSRF 校验失败"})
 				c.Abort()
 				return
@@ -138,6 +155,8 @@ func JWTAuthMiddleware() gin.HandlerFunc {
 		c.Set("user_id", claims.UserID)
 		c.Set("is_admin", claims.IsAdmin)
 		c.Set("username", claims.Username)
+		c.Set("admin_session_hash", sessionHash)
+		c.Set("admin_session_expires_at", claims.ExpiresAt.Time.Format(time.RFC3339))
 		c.Next()
 	}
 }

@@ -1,20 +1,15 @@
 import { useAuthStore } from '../stores/auth'
+import { sameOriginApiUrl } from './url-safety'
 
 const UNSAFE_METHODS = ['POST', 'PUT', 'PATCH', 'DELETE']
 
 function getCookie(name: string): string {
   const match = document.cookie.match(new RegExp('(?:^|; )' + name.replace(/([.$?*|{}()[\]\\/+^])/g, '\\$1') + '=([^;]*)'))
-  return match ? decodeURIComponent(match[1]) : ''
+  try { return match ? decodeURIComponent(match[1]) : '' } catch { return '' }
 }
 
-function requestUrl(input: RequestInfo | URL): string {
-  if (typeof input === 'string') return input
-  if (input instanceof URL) return input.href
-  try {
-    return String((input as Request).url || '')
-  } catch {
-    return ''
-  }
+function csrfToken(): string {
+  return getCookie('__Host-cdk_admin_csrf') || getCookie('csrf_token')
 }
 
 /**
@@ -23,10 +18,6 @@ function requestUrl(input: RequestInfo | URL): string {
  */
 function isLocalSessionAuthFailure(url: string, status: number, body: any): boolean {
   if (status !== 401 && status !== 403) return false
-
-  // 上游卡台 / 网络探测：业务失败，不是 CDK 登录失效
-  if (/\/api\/v1\/admin\/cardplatform\//i.test(url)) return false
-  if (/\/api\/v1\/admin\/network\//i.test(url)) return false
 
   const err = String(body?.error || body?.msg || body?.message || '').toLowerCase()
   const code = String(body?.error_code || body?.code || '').toLowerCase()
@@ -48,11 +39,16 @@ function isLocalSessionAuthFailure(url: string, status: number, body: any): bool
     err.includes('missing authorization')
     || err.includes('invalid or expired token')
     || err.includes('invalid authorization')
+    || err.includes('session expired')
+    || err.includes('session revoked')
+    || err.includes('invalid session')
     || err.includes('csrf')
     || code === 'unauthorized'
   ) {
     return true
   }
+
+  if (/\/api\/v1\/admin\/(cardplatform|network)\//i.test(url)) return false
 
   // 默认：仅对「非卡台」的 401/403 踢登录；403 CSRF 也算会话保护
   return true
@@ -60,18 +56,16 @@ function isLocalSessionAuthFailure(url: string, status: number, body: any): bool
 
 export const authFetch = async (input: RequestInfo | URL, init: RequestInit = {}) => {
   const authStore = useAuthStore()
-  const headers = new Headers(init.headers || {})
-  const url = requestUrl(input)
-
-  // 兼容旧会话：localStorage 里若还有 token 就带 Bearer 头；新会话走 HttpOnly cookie
-  if (authStore.token) {
-    headers.set('Authorization', `Bearer ${authStore.token}`)
-  }
+  const url = sameOriginApiUrl(input).href
+  const request = input instanceof Request ? input : null
+  const headers = new Headers(init.headers || request?.headers || {})
+  headers.delete('Authorization')
+  headers.delete('X-CSRF-Token')
 
   // 基于 cookie 的写操作需要 CSRF 双提交：把可读的 csrf_token cookie 放进请求头
-  const method = (init.method || 'GET').toUpperCase()
+  const method = (init.method || request?.method || 'GET').toUpperCase()
   if (UNSAFE_METHODS.includes(method)) {
-    const csrf = getCookie('csrf_token')
+    const csrf = csrfToken()
     if (csrf) headers.set('X-CSRF-Token', csrf)
   }
 
@@ -82,7 +76,9 @@ export const authFetch = async (input: RequestInfo | URL, init: RequestInit = {}
   const response = await fetch(input, {
     ...init,
     headers,
-    credentials: 'include',
+    credentials: 'same-origin',
+    redirect: 'error',
+    cache: 'no-store',
   })
 
   if (response.status === 401 || response.status === 403) {
@@ -106,12 +102,13 @@ export const authFetch = async (input: RequestInfo | URL, init: RequestInit = {}
 // 主动登出：先请求后端清除 HttpOnly cookie，再清本地状态
 export const serverLogout = async () => {
   try {
-    const csrf = getCookie('csrf_token')
+    const csrf = csrfToken()
     const headers = new Headers()
     if (csrf) headers.set('X-CSRF-Token', csrf)
-    await fetch('/api/v1/auth/admin/logout', { method: 'POST', headers, credentials: 'include' })
+    const response = await fetch('/api/v1/auth/admin/logout', { method: 'POST', headers, credentials: 'same-origin', redirect: 'error' })
+    if (!response.ok && response.status !== 401) throw new Error('退出失败，请重试')
   } catch (error) {
-    // 忽略网络错误，本地状态照常清除
+    throw new Error('未能注销服务器会话，请检查网络后重试')
   }
   useAuthStore().logout()
 }

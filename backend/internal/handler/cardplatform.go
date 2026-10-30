@@ -16,12 +16,18 @@ import (
 func CardPlatformPing(c *gin.Context) {
 	cfg := cardplatform.LoadConfig()
 	base := cfg.SiteBase
+	if err := cardplatform.ValidateBase(base); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"ok": false, "error": err.Error()})
+		return
+	}
 	if strings.TrimSpace(base) == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"ok": false, "error": "card_api_base not configured"})
 		return
 	}
 
-	client := &http.Client{Timeout: 8 * time.Second}
+	client := &http.Client{Timeout: 8 * time.Second, CheckRedirect: func(_ *http.Request, _ []*http.Request) error {
+		return http.ErrUseLastResponse
+	}}
 	candidates := []string{
 		cfg.OpenAPIBase() + "/balance", // 若无 key 可能 401，仍说明可达
 		base + "/health",

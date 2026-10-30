@@ -86,7 +86,7 @@
           <div class="flex flex-wrap items-center gap-2 w-full">
             <el-input :model-value="agentSwapUrl" readonly size="large" class="!flex-1 mono" />
             <el-button type="primary" size="large" @click="copyText(agentSwapUrl)">复制链接</el-button>
-            <el-button size="large" @click="window.open(agentSwapUrl, '_blank')">打开</el-button>
+            <el-button size="large" @click="openAgentSwap">打开</el-button>
           </div>
           <p class="text-xs text-subtle mt-1">
             路径固定 <code class="mono">/partner/swap</code>（短链 <code class="mono">/a/swap</code>）。导航栏不展示，把完整链接 + 密码发给代理即可。
@@ -208,6 +208,7 @@
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref } from 'vue'
 import { authFetch } from '../../lib/api'
+import { publicSiteUrl } from '../../lib/url-safety'
 import { dialog } from '../../lib/dialog'
 
 const PRESETS: Record<string, string> = {
@@ -243,10 +244,10 @@ const keyHint = computed(() =>
 const swapPwHint = computed(() =>
   hints.agent_swap_password_configured ? '已设置（留空保存不修改）' : '设置代理换码密码（至少 6 位）',
 )
-const agentSwapUrl = computed(() => {
-  if (typeof window === 'undefined') return '/partner/swap'
-  return `${window.location.origin}/partner/swap`
-})
+const agentSwapUrl = computed(() => publicSiteUrl('/partner/swap'))
+function openAgentSwap() {
+  window.open(agentSwapUrl.value, '_blank', 'noopener,noreferrer')
+}
 
 const siteRoot = computed(() => {
   let b = (form.card_api_base || '').trim().replace(/\/+$/, '')

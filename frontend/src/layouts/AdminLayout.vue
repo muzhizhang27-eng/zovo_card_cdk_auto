@@ -3,7 +3,7 @@
     <!-- 侧栏 / 细轨（cyber、slate 等） -->
     <aside v-if="layout === 'sidebar' || layout === 'rail'" class="sidenav">
       <div class="side-brand" @click="router.push('/ops')">
-        <span class="brand-icon">{{ layout === 'cyber' || skin === 'cyber' ? '◈' : '🚀' }}</span>
+        <span class="brand-icon">{{ skin === 'cyber' ? '◈' : '🚀' }}</span>
         <span v-if="layout !== 'rail'" class="brand-text">{{ brand.name || '运营控制台' }}</span>
       </div>
       <nav class="side-pills">
@@ -85,6 +85,7 @@ import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import { serverLogout } from '../lib/api'
+import { dialog } from '../lib/dialog'
 import { siteBrand, currentSkinMeta, siteSkin } from '../theme'
 import SkinPicker from '../components/SkinPicker.vue'
 
@@ -117,8 +118,12 @@ function isActive(p: string) {
   return p === '/ops' ? route.path === '/ops' : route.path.startsWith(p)
 }
 async function doLogout() {
-  await serverLogout()
-  router.push('/ops/login')
+  try {
+    await serverLogout()
+    await router.push('/ops/login')
+  } catch (error) {
+    dialog.toast(error instanceof Error ? error.message : '退出失败，请重试', 'err')
+  }
 }
 </script>
 

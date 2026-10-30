@@ -12,6 +12,7 @@
         <code>gpt_direct.completed</code> / 卡交易等事件（OpenAPI §7）。
       </p>
       <el-form label-width="140px" class="max-w-2xl">
+        <el-alert v-if="!webhookEnabled" type="info" :closable="false" class="mb-4" title="当前部署未启用回调入口，兑换结果通过轮询查询。保存 Secret 不会自动启用回调。" />
         <el-form-item label="回调 URL">
           <el-input :model-value="webhookUrl" readonly>
             <template #append>
@@ -81,9 +82,11 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import { authFetch } from '../../lib/api'
+import { publicSiteUrl } from '../../lib/url-safety'
 import { dialog } from '../../lib/dialog'
 
-const webhookUrl = ref('https://gptcdk.ai/api/v1/webhooks/cardplatform')
+const webhookUrl = publicSiteUrl('/api/v1/webhooks/cardplatform')
+const webhookEnabled = import.meta.env.VITE_WEBHOOK_ENABLED === 'true'
 const secretSet = ref(false)
 const secretHint = ref('未配置')
 const secretInput = ref('')
@@ -116,7 +119,6 @@ async function load() {
       error.value = d.error || '加载失败'
       return
     }
-    if (d.webhook_url) webhookUrl.value = d.webhook_url
     secretSet.value = !!d.webhook_secret_set
     secretHint.value = d.webhook_secret_set ? `已配置 ${d.webhook_secret_hint || ''}` : '未配置'
     events.value = d.events || []

@@ -246,7 +246,6 @@ function systemPrefersDark(): boolean {
 }
 
 export function isDark(): boolean {
-  const meta = currentSkinMeta.value
   // preferDark 皮肤在 light 模式下仍用皮肤自身暗色 token；.dark 类只在用户选 dark/auto-dark 时加
   if (themeMode.value === 'auto') return systemPrefersDark()
   return themeMode.value === 'dark'

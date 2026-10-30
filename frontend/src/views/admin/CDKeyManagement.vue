@@ -101,6 +101,11 @@
         <p v-if="!configured" class="text-xs" style="color: var(--err)">请先在「卡台配置」填写 Base 与 sk_</p>
         <p v-else-if="!form.funding_confirmed" class="text-xs text-muted">勾选「确认承担兑换资金」后再购买。实付由本账户承担，服务费从卡台余额扣除。</p>
         <div v-if="issueError" class="alert alert-error">{{ issueError }}</div>
+        <div v-if="pendingIssue" class="alert alert-warning space-y-2">
+          <p>有一笔 {{ pendingIssue.body.count }} 张 {{ pendingIssue.body.plan }} 的发码请求待核对。刷新不会重新购买，请先同步库存并核对余额。</p>
+          <el-button size="small" :disabled="issuing" :loading="syncingUpstream" @click="syncFromCardplatform">同步库存</el-button>
+          <el-button size="small" :disabled="issuing" @click="resolvePendingIssue">已核对结果，结束本次记录</el-button>
+        </div>
         <div v-if="issueOk" class="alert alert-success">{{ issueOk }}</div>
         <div v-if="recentCodes.length" class="rounded-xl bg-soft p-3 space-y-2 border" style="border-color: var(--good)">
           <div class="flex flex-wrap items-center justify-between gap-2">
@@ -330,6 +335,8 @@ import { useI18n } from 'vue-i18n'
 const { t } = useI18n()
 import { computed, onMounted, reactive, ref, watch } from 'vue'
 import { authFetch } from '../../lib/api'
+import { publicSiteUrl } from '../../lib/url-safety'
+import { beginIssue, finishIssue, loadPendingIssue, withIssueLock, type PendingIssue } from '../../lib/cdk-issuance'
 import { dialog } from '../../lib/dialog'
 import { copyToClipboard } from '../../lib/clipboard'
 import { isCardAttachPlan } from '../../lib/plan'
@@ -341,8 +348,7 @@ const CODE_CACHE_KEY = 'cdk_full_code_cache_v1'
 const FULL_CODE_MIN_LEN = 20
 const ISSUE_MAX = 200
 /** 代理换码隐藏页（完整 URL，便于复制发给代理） */
-const agentSwapUrl =
-  typeof window !== 'undefined' ? `${window.location.origin}/partner/swap` : '/partner/swap'
+const agentSwapUrl = publicSiteUrl('/partner/swap')
 
 type CodeCacheEntry = { code: string; plan?: string; prefix?: string; at?: number; id?: number }
 /** id -> entry；prefix -> entry（仅作兜底 / 回填服务器） */
@@ -398,6 +404,10 @@ function cdkRegionLabel(country: unknown): string {
 const issuing = ref(false)
 const issueError = ref('')
 const issueOk = ref('')
+const pendingIssue = ref<PendingIssue | null>(null)
+try { pendingIssue.value = loadPendingIssue(localStorage) }
+catch { issueError.value = '发码记录无法读取，请先核对库存；当前已停止购买。' }
+const journalError = ref(!!issueError.value)
 const recentCodes = ref<string[]>([])
 // region 一并记下来：整批码是复制出去卖的，事后只能从这条横幅确认
 // 「刚买的这 200 张到底是哪个区的」——码文本身看不出地区。
@@ -452,7 +462,7 @@ const planCards = computed(() =>
 const isRenewPlan = computed(() => isCardAttachPlan(form.plan, planMeta(form.plan)?.flow))
 
 const canIssue = computed(() =>
-  configured.value && form.funding_confirmed && form.count >= 1 && form.count <= ISSUE_MAX && !issuing.value &&
+  configured.value && form.funding_confirmed && Number.isInteger(form.count) && form.count >= 1 && form.count <= ISSUE_MAX && !issuing.value && !pendingIssue.value && !journalError.value &&
   // 选中的档位必须在可卖清单里：默认值 plus 也可能被卡台/ACC 关掉，
   // 不判的话按钮是亮的、点下去被后端 400 挡回来。
   planKeys.value.includes(form.plan),
@@ -483,7 +493,6 @@ const pageFullCodes = computed(() =>
 const selectedFullCodes = computed(() =>
   selectedRows.value.map((r) => String(r.fullCode || lookupFullCode(r) || '').trim()).filter((c) => isFullCode(c)),
 )
-const fullSelectableCount = computed(() => displayRows.value.filter((r) => !!r.fullCode).length)
 
 /** 可禁用：有 id 且状态为 unused */
 function canDisableRow(row: any) {
@@ -563,6 +572,7 @@ function onRowCommand(cmd: string, row: any) {
   if (cmd === 'note') return editNoteOne(row)
   if (cmd === 'disable') return disableOne(row)
   if (cmd === 'enable') return enableOne(row)
+  return undefined
 }
 
 function downloadText(filename: string, text: string) {
@@ -907,9 +917,6 @@ async function batchClearNoteSelected() {
 // ★服务费只认卡台下发的值，猜不到就显示「—」★
 // 原实现对任何未知档位一律返回 10：Codex 点数实际是 $0.10，
 // 会被显示成 $10（差 100 倍），代理按这个数字定价就直接亏钱。
-function feeDefault(_k: string): number | null {
-  return null
-}
 function feeOf(k: string) {
   const p = plans.value[k]
   if (p?.service_fee_usd != null) return Number(p.service_fee_usd).toFixed(2)
@@ -987,14 +994,6 @@ function loadCodeCache() {
   }
 }
 
-function saveCodeCache() {
-  try {
-    localStorage.setItem(CODE_CACHE_KEY, JSON.stringify(codeCache.value))
-  } catch {
-    /* ignore quota */
-  }
-}
-
 function rememberIssued(items: any[], plan: string) {
   const next = { ...codeCache.value }
   for (const it of items) {
@@ -1014,7 +1013,6 @@ function rememberIssued(items: any[], plan: string) {
     next[`code:${code}`] = entry
   }
   codeCache.value = next
-  saveCodeCache()
 }
 
 function lookupFullCode(row: any): string {
@@ -1068,6 +1066,7 @@ async function syncLocalCacheToServer(opts?: { quiet?: boolean }) {
       return
     }
     const saved = Number(d.saved) || 0
+    if (!Number(d.failed)) localStorage.removeItem(CODE_CACHE_KEY)
     if (!quiet || saved > 0) {
       dialog.toast(`已同步到服务器：成功 ${saved}，跳过 ${d.skipped ?? 0}，失败 ${d.failed ?? 0}`, 'ok')
     }
@@ -1106,15 +1105,12 @@ async function syncFromCardplatform(opts?: { quiet?: boolean; plan?: string; sta
 }
 
 function persistRecent(codes: string[], plan: string, region = '') {
-  const payload = { codes, plan, at: Date.now(), region }
-  try {
-    sessionStorage.setItem(RECENT_KEY, JSON.stringify(payload))
-  } catch {
-    /* ignore quota */
-  }
+  // Full codes are held only in component memory; authenticated server inventory
+  // is the durable copy. Do not leave bearer-value CDKs in browser storage.
+  recentCodes.value = codes
   recentMeta.value = {
     plan,
-    atLabel: new Date(payload.at).toLocaleString(),
+    atLabel: new Date().toLocaleString(),
     region,
   }
 }
@@ -1132,6 +1128,7 @@ function loadPersistedRecent() {
       atLabel: o.at ? new Date(o.at).toLocaleString() : '—',
       region: String(o.region || ''),
     }
+    sessionStorage.removeItem(RECENT_KEY)
   } catch {
     /* ignore */
   }
@@ -1149,7 +1146,7 @@ function clearRecent() {
 }
 
 function openAgentSwap() {
-  window.open(agentSwapUrl, '_blank')
+  window.open(agentSwapUrl, '_blank', 'noopener,noreferrer')
 }
 
 async function copyText(t: string) {
@@ -1240,78 +1237,66 @@ async function loadMeta() {
   }
 }
 
+async function resolvePendingIssue() {
+  const pending = pendingIssue.value
+  if (!pending || issuing.value) return
+  if (!await dialog.confirm('请确认已核对卡台库存与余额，并确认上次发码结果。结束记录后才能购买新的批次；这不会取消已提交的发码请求。', { title: '确认发码结果', okText: '已核对，结束记录' })) return
+  finishIssue(localStorage, pending.key)
+  pendingIssue.value = null
+  form.funding_confirmed = false
+  issueError.value = ''
+}
+
 async function issue() {
+  if (!canIssue.value) return
   issueError.value = ''
   issueOk.value = ''
-  if (!canIssue.value) return
   issuing.value = true
   try {
-    const r = await authFetch('/api/v1/admin/cardplatform/cdks', {
-      method: 'POST',
-      body: JSON.stringify({
-        plan: form.plan,
-        product: directProduct.value,
-        count: form.count,
-        funding_confirmed: true,
-        // 只传国家，币种由卡台按它的唯一真相源补。本站猜币种猜错的话，
-        // 卡台会回「付款地区与币种不匹配」——一句完全指不到真因的话。
-        payment_country: form.payment_country || '',
-      }),
-    })
-    const d = await r.json().catch(() => ({}))
-    if (!r.ok) {
-      const recovered = await syncFromCardplatform({ quiet: true, plan: form.plan, status: 'unused' })
-      const recCodes = Array.isArray(recovered?.codes) ? recovered.codes.map(extractFullCode).filter(Boolean) : []
-      if (recCodes.length) {
-        recentCodes.value = recCodes
-        // ★这里不传地区★：找回是按「plan + unused」从卡台捞最近的码，
-        // 捞到的不一定全是这一批，标上地区等于给出一个可能是错的承诺。
-        persistRecent(recCodes, form.plan)
-        issueOk.value = `发码请求未完成，已从卡台找回 ${recCodes.length} 张完整码。不要再点购买。`
-        dialog.toast(issueOk.value, 'warn')
-        await loadList()
-        await loadMeta()
+    await withIssueLock(async () => {
+      // Persist before POST and freeze the request across edits and reloads.
+      const pending = beginIssue(localStorage, {
+        plan: form.plan, product: directProduct.value, count: form.count,
+        funding_confirmed: true, payment_country: form.payment_country || '',
+      })
+      pendingIssue.value = pending
+      const r = await authFetch('/api/v1/admin/cardplatform/cdks', {
+        method: 'POST', headers: { 'Idempotency-Key': pending.key }, body: JSON.stringify(pending.body),
+      })
+      const d = await r.json().catch(() => ({}))
+      if (!r.ok || d.recovered) {
+        // Timeouts, conflicts, rate limits, server errors and old broad-inventory
+        // recovery are uncertain; never enable another purchase automatically.
+        if (!d.recovered && [400, 401, 403, 404, 405, 413, 422].includes(r.status)) {
+          finishIssue(localStorage, pending.key)
+          pendingIssue.value = null
+        }
+        issueError.value = d.error || d.msg || '发码结果未确认，请同步库存核对，勿再次购买。'
         return
       }
-      const msg = d.error || d.msg || '发码失败'
-      issueError.value = msg
-      if (String(msg).includes('403') || d.code === 403) {
-        issueError.value += ' — 可能是 IP 未进白名单，请复制上方出口 IP 到卡台'
+      const issued: unknown[] = Array.isArray(d.issued) ? d.issued : (Array.isArray(d.data?.issued) ? d.data.issued : [])
+      const codes = issued.map(extractFullCode).filter(Boolean)
+      if (codes.length !== pending.body.count) {
+        issueError.value = `发码响应包含 ${codes.length} 张完整码，与请求不一致，请核对库存。`
+        if (codes.length) { rememberIssued(issued, pending.body.plan); persistRecent(codes, pending.body.plan, pending.body.payment_country) }
+        return
       }
-      return
-    }
-    const issued = Array.isArray(d.issued) ? d.issued : (Array.isArray(d.data?.issued) ? d.data.issued : [])
-    const codes = issued.map(extractFullCode).filter(Boolean)
-    if (!codes.length) {
-      issueError.value = '卡台返回成功但未包含完整码字段 code。原始响应请查网络面板。'
-      recentCodes.value = []
-      return
-    }
-    // 浏览器兜底 + 列表以服务器为准
-    rememberIssued(issued, form.plan)
-    recentCodes.value = codes
-    persistRecent(codes, form.plan, form.payment_country)
-    issueOpen.value = true
-    const shortOnes = codes.filter((c) => !isFullCode(c))
-    const storedN = Number(d.stored_count)
-    const storeFail = Number(d.store_failed) || 0
-    let okMsg = shortOnes.length
-      ? `成功 ${codes.length} 张，但有 ${shortOnes.length} 张长度异常，请核对`
-      : `成功 ${codes.length} 张完整码（每条约 ${codes[0]?.length || '—'} 字符）`
-    if (Number.isFinite(storedN)) {
-      okMsg += ` · 服务器已存 ${storedN}`
-      if (storeFail > 0) okMsg += `（${storeFail} 条落库失败）`
-    }
-    if (d.recovered) {
-      okMsg = d.msg || `已从卡台找回 ${codes.length} 张完整码`
-    }
-    issueOk.value = okMsg
-    dialog.toast(issueOk.value, shortOnes.length || storeFail || d.recovered ? 'warn' : 'ok')
-    // 发码成功后自动尝试复制全部，减少漏拷
-    await copyAll(false)
-    form.funding_confirmed = false
-    await loadList()
-    await loadMeta()
+      rememberIssued(issued, pending.body.plan)
+      persistRecent(codes, pending.body.plan, pending.body.payment_country)
+      issueOpen.value = true
+      const storeFail = Number(d.store_failed) || 0
+      issueOk.value = `成功 ${codes.length} 张完整码` + (Number.isFinite(Number(d.stored_count)) ? ` · 服务器已存 ${Number(d.stored_count)}` : '')
+      if (storeFail) issueOk.value += `（${storeFail} 条落库失败，请导出保存）`
+      finishIssue(localStorage, pending.key)
+      pendingIssue.value = null
+      dialog.toast(issueOk.value, storeFail ? 'warn' : 'ok')
+      form.funding_confirmed = false
+      await loadList()
+      await loadMeta()
+    })
+  } catch (error) {
+    issueError.value = error instanceof Error ? error.message : '发码结果未确认，请核对库存'
+    try { pendingIssue.value = loadPendingIssue(localStorage) } catch { journalError.value = true }
   } finally {
     issuing.value = false
   }
@@ -1404,11 +1389,11 @@ async function refreshAll() {
 onMounted(async () => {
   loadCodeCache()
   loadPersistedRecent()
-  if (recentCodes.value.length) issueOpen.value = true
+  if (recentCodes.value.length || pendingIssue.value) issueOpen.value = true
   await refreshAll()
   // 若本机有历史完整码而服务器库为空，自动静默回填一次
   const localN = Object.values(codeCache.value).filter((v) => isFullCode(v?.code || '')).length
-  if (localN > 0 && storeStats.fullInStore === 0) {
+  if (localN > 0) {
     try {
       await syncLocalCacheToServer({ quiet: true })
     } catch {

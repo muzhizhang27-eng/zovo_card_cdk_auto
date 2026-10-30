@@ -1,13 +1,13 @@
 # ===== Stage 1: build frontend =====
-FROM node:20-alpine AS frontend
+FROM node:24-alpine AS frontend
 WORKDIR /src/frontend
-COPY frontend/package.json frontend/package-lock.json ./
+COPY frontend/package.json frontend/package-lock.json frontend/.npmrc ./
 RUN npm ci --no-audit --no-fund
 COPY frontend/ ./
 RUN npm run build
 
 # ===== Stage 2: build backend (CGO for sqlite3) =====
-FROM golang:1.24-bookworm AS backend
+FROM golang:1.27.3-bookworm AS backend
 WORKDIR /src/backend
 COPY backend/go.mod backend/go.sum ./
 RUN go mod download

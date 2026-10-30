@@ -55,7 +55,7 @@
 
 ### 前置要求
 - Docker 和 Docker Compose
-- Node.js 18+ (本地开发前端)
+- Node.js 24 LTS（版本见 `.nvmrc`）及 npm 11/12（本地开发前端）
 - Go 1.26+ (本地开发后端)
 
 ### 使用 Docker Compose 运行
@@ -82,10 +82,14 @@ go run ./cmd/server/main.go
 
 **前端**
 ```bash
+nvm install
+nvm use
 cd frontend
-npm install
+npm ci
 npm run dev
 ```
+
+`nvm` 命令在仓库根目录读取 `.nvmrc`；使用其他版本管理器时请选择同一 Node.js 版本。发布工作流和 Docker 前端构建也使用 Node.js 24。
 
 ## 项目结构
 
@@ -223,8 +227,10 @@ go test ./...
 ### 前端测试
 ```bash
 cd frontend
-npm run test
+npm run check
 ```
+
+`npm run check` 依次执行整个 Vue/TypeScript 项目及 Vite 配置的严格类型检查、生产构建、Vitest、宽限期恢复和 CDK 兑换流程回归。单独检查类型可运行 `npm run typecheck`；`npm run build` 也会先检查类型，失败时阻止构建。
 
 ## 部署
 

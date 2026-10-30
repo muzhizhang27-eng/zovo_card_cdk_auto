@@ -4,6 +4,7 @@
     <div class="u-main max-w-3xl">
 
       <RedeemModeTabs />
+      <p v-if="restoredProgress" class="hint-line text-sm text-muted mb-3">已恢复批次进度，已提交订单会继续查单；待提交账号请重新导入凭证。</p>
       <p class="hint-line text-sm text-muted mb-3">{{ t('xPremium.batchHint') }}</p>
       <p class="hint-line text-sm text-muted mb-3">{{ t('grok.batchHint') }}</p>
 
@@ -157,6 +158,7 @@
             <p class="text-xs text-muted">{{ t('batch.mailboxRecognized', { n: parsedMailboxes.length }) }}</p>
           </div>
 
+          <button v-if="!verifying && items.some(it => it.status === 'pending_verify')" type="button" class="btn-secondary w-full" @click="resumeVerification">继续校验待处理卡密</button>
           <div v-if="verifying" class="text-sm text-muted text-center py-4">
             {{ t('batch.verifyingKeys') }}
           </div>
@@ -320,7 +322,7 @@
           >
             {{ t('batch.exportOk', { n: stats.ok }) }}
           </button>
-          <button type="button" class="btn-secondary w-full" @click="resetAll">
+          <button type="button" class="btn-secondary w-full" :disabled="verifying || submitting || autoSubmitting || stats.run > 0" @click="resetAll">
             {{ t('batch.reset') }}
           </button>
         </template>
@@ -330,12 +332,14 @@
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, onUnmounted, ref, watch } from 'vue'
+import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import UserPageHeader from '../../components/UserPageHeader.vue'
 import RedeemModeTabs from '../../components/RedeemModeTabs.vue'
 import ExcelImportBlock from '../../components/ExcelImportBlock.vue'
 import { isGrokCredential } from '../../lib/grok'
+import { cdkRequest, isDefiniteRejection, newRedemptionRequestId } from '../../lib/cdk-request'
+import { loadBatchProgress, saveBatchProgress, type BatchItem, type ItemStatus } from '../../lib/batch-progress'
 import {
   AUTO_SUBMIT_CONCURRENCY,
   BATCH_MAX_KEYS,
@@ -357,32 +361,6 @@ import {
 } from '../../lib/batch-session'
 
 const { t } = useI18n({ useScope: 'global' })
-
-type ItemStatus =
-  | 'pending_verify'
-  | 'verify_ok'
-  | 'verify_fail'
-  | 'waiting_session'
-  | 'submitting'
-  | 'processing'
-  | 'success'
-  | 'failed'
-
-interface BatchItem {
-  id: string
-  cardKey: string
-  planLabel: string
-  status: ItemStatus
-  verifyMsg: string
-  redemptionToken: string
-  progressMsg: string
-  email: string
-  cardLastFour: string
-  accessToken: string
-  gptPassword: string
-  emailPassword: string
-  error: string
-}
 
 function extractCardLastFour(order: any): string {
   const last = String(order?.card_last_four || '').trim()
@@ -418,10 +396,24 @@ const importing = ref(false)
 const sessionBoxRef = ref<HTMLTextAreaElement | null>(null)
 const mailboxFileRef = ref<HTMLInputElement | null>(null)
 const lastFilledItemId = ref<string | null>(null)
+const restoredProgress = ref(false)
+const pageRequests = new AbortController()
+const inFlightItems = new Set<string>()
+let restoringProgress = false
 
 const pollTargets = ref<Record<string, { token: string; terminal: boolean }>>({})
-let pollTimer: ReturnType<typeof setInterval> | null = null
+let pollTimer: ReturnType<typeof setTimeout> | null = null
 let pollInFlight = false
+let pollGeneration = 0
+let pollCursor = 0
+
+function persistProgress() {
+  return saveBatchProgress(sessionStorage, credMode.value, items.value)
+}
+
+watch([items, credMode], () => {
+  if (!restoringProgress) persistProgress()
+}, { deep: true, flush: 'sync' })
 
 const parsedCdks = computed(() => parseCdks(cdkText.value))
 const parsedMailboxes = computed(() => parseMailboxLines(mailboxText.value))
@@ -488,24 +480,7 @@ function updateItem(id: string, patch: Partial<BatchItem>) {
 }
 
 async function api(path: string, init: RequestInit = {}) {
-  const headers = new Headers(init.headers || {})
-  headers.set('X-Redemption-Device', deviceId)
-  if (init.body && !headers.has('Content-Type')) headers.set('Content-Type', 'application/json')
-  const r = await fetch(path, { ...init, headers, credentials: 'include' })
-  const text = await r.text()
-  let data: any = null
-  try {
-    data = text ? JSON.parse(text) : null
-  } catch {
-    data = { raw: text }
-  }
-  return { r, data }
-}
-
-const TERMINAL = new Set(['completed', 'declined', 'failed_precharge', 'cancelled', 'failed'])
-
-function isTerminal(st: string) {
-  return TERMINAL.has(String(st || '').toLowerCase())
+  return cdkRequest(path, deviceId, { ...init, signal: pageRequests.signal })
 }
 
 function isSuccessStatus(st: string) {
@@ -522,18 +497,24 @@ function planLabelOf(data: any): string {
 }
 
 function stopAllPolls() {
-  if (pollTimer) clearInterval(pollTimer)
+  pollGeneration++
+  if (pollTimer) clearTimeout(pollTimer)
   pollTimer = null
   pollInFlight = false
   pollTargets.value = {}
+  pollCursor = 0
 }
 
 async function pollBatch() {
-  if (pollInFlight) return
-  const entries = Object.entries(pollTargets.value).filter(([, v]) => !v.terminal)
+  if (pollInFlight || pageRequests.signal.aborted) return
+  const all = Object.entries(pollTargets.value).filter(([, v]) => !v.terminal)
+  // Keep a bounded, round-robin set of requests in flight; the backend shares the quota.
+  const entries = Array.from({ length: Math.min(6, all.length) }, (_, i) => all[(pollCursor + i) % all.length])
+  pollCursor = all.length ? (pollCursor + entries.length) % all.length : 0
+  const generation = pollGeneration
   if (!entries.length) {
     if (pollTimer) {
-      clearInterval(pollTimer)
+      clearTimeout(pollTimer)
       pollTimer = null
     }
     return
@@ -543,10 +524,16 @@ async function pollBatch() {
     await Promise.all(
       entries.map(async ([id, target]) => {
         try {
-          const { r, data } = await api(
-            '/api/v1/public/cdk/result?token=' + encodeURIComponent(target.token),
-          )
-          if (!r.ok) return
+          const item = items.value.find(it => it.id === id)
+          if (!item) return
+          const { r, data } = await api(target.token
+            ? '/api/v1/public/cdk/result?token=' + encodeURIComponent(target.token)
+            : '/api/v1/public/cdk/result-by-code?code=' + encodeURIComponent(item.cardKey))
+          if (generation !== pollGeneration) return
+          if (!r.ok || (typeof data?.code === 'number' && data.code !== 0)) {
+            updateItem(id, { progressMsg: '查询暂未确认订单结果，将继续核对，请勿重复兑换' })
+            return
+          }
           const order = data?.order || data?.data?.order || data?.data || data || {}
           const st = String(order.status || data?.status || data?.data?.status || '')
           const message = String(
@@ -582,20 +569,24 @@ async function pollBatch() {
             })
           }
         } catch {
-          /* transient */
+          if (generation === pollGeneration) updateItem(id, { progressMsg: '网络暂不可用，恢复后将继续查单，请勿重复兑换' })
         }
       }),
     )
   } finally {
     pollInFlight = false
+    if (generation === pollGeneration && !pageRequests.signal.aborted
+      && Object.values(pollTargets.value).some(v => !v.terminal)) {
+      if (pollTimer) clearTimeout(pollTimer)
+      pollTimer = setTimeout(() => { pollTimer = null; void pollBatch() }, BATCH_POLL_INTERVAL_MS)
+    }
   }
 }
 
 function startPoll(id: string, token: string) {
   pollTargets.value = { ...pollTargets.value, [id]: { token, terminal: false } }
-  if (!pollTimer) {
+  if (!pollTimer && !pollInFlight) {
     void pollBatch()
-    pollTimer = setInterval(() => void pollBatch(), BATCH_POLL_INTERVAL_MS)
   }
 }
 
@@ -716,88 +707,64 @@ function clearSessionPool() {
   sessionInput.value = ''
 }
 
+async function verifyOne(item: BatchItem) {
+  if (pageRequests.signal.aborted) return
+  try {
+    const { r, data } = await api('/api/v1/public/cdk/preview', {
+      method: 'POST', body: JSON.stringify({ code: item.cardKey }),
+    })
+    if (!r.ok || (typeof data?.code === 'number' && data.code !== 0)) {
+      const temporary = r.status === 429 || r.status === 408 || r.status >= 500
+      const msg = temporary ? '服务暂时繁忙，可稍后继续校验'
+        : String(data?.error || data?.msg || data?.message || 'CDK 无效或不可用')
+      updateItem(item.id, { status: temporary ? 'pending_verify' : 'verify_fail', verifyMsg: msg, error: temporary ? '' : msg })
+      return
+    }
+    const body = data?.data || data || {}
+    const token = String(body.redemption_token || data?.redemption_token || data?.token || '')
+    if (!token) {
+      updateItem(item.id, { status: 'verify_fail', verifyMsg: '未返回 redemption_token', error: '未返回 redemption_token' })
+      return
+    }
+    updateItem(item.id, {
+      status: 'waiting_session', verifyMsg: '有效', error: '', planLabel: planLabelOf(body),
+      redemptionToken: token, previewExpiresAt: Date.parse(body.expires_at || '') || Date.now() + 15 * 60_000,
+    })
+  } catch {
+    if (!pageRequests.signal.aborted) updateItem(item.id, { status: 'pending_verify', verifyMsg: '网络暂不可用，可稍后继续校验', error: '' })
+  }
+}
+
+async function resumeVerification() {
+  if (verifying.value || pageRequests.signal.aborted) return
+  const pending = items.value.filter(it => it.status === 'pending_verify' && !it.submittedAt)
+  if (!pending.length) return
+  verifying.value = true
+  try { await mapPool(pending, VERIFY_CONCURRENCY, verifyOne) }
+  finally { verifying.value = false }
+}
+
 async function handleVerifyBatch() {
+  if (verifying.value || submitting.value || autoSubmitting.value) return
   const keys = parseCdks(cdkText.value)
   if (!keys.length) return
   if (keys.length > BATCH_MAX_KEYS) {
     sessionError.value = `单次最多 ${BATCH_MAX_KEYS} 个卡密`
     return
   }
-  verifying.value = true
   sessionError.value = ''
   stopAllPolls()
+  restoredProgress.value = false
   lastFilledItemId.value = null
-  if (credMode.value === 'mailbox') {
-    mailboxPool.value = parsedMailboxes.value
-  }
-  const list: BatchItem[] = keys.map((k, i) => ({
-    id: `${i}-${k}`,
-    cardKey: k,
-    planLabel: '',
-    status: 'pending_verify',
-    verifyMsg: '验证中…',
-    redemptionToken: '',
-    progressMsg: '',
-    email: '',
-    cardLastFour: '',
-    accessToken: '',
-    gptPassword: '',
-    emailPassword: '',
-    error: '',
+  if (credMode.value === 'mailbox') mailboxPool.value = parsedMailboxes.value
+  items.value = keys.map((k, i) => ({
+    id: `${i}-${k}`, cardKey: k, planLabel: '', status: 'pending_verify', verifyMsg: '验证中…',
+    redemptionToken: '', previewExpiresAt: 0, clientRequestId: '', submittedAt: 0,
+    progressMsg: '', email: '', cardLastFour: '', accessToken: '', gptPassword: '', emailPassword: '', error: '',
   }))
-  items.value = list
   phase.value = 'run'
   sessionInput.value = ''
-
-  try {
-    const results = await mapPool(list, VERIFY_CONCURRENCY, async (item) => {
-      try {
-        const { r, data } = await api('/api/v1/public/cdk/preview', {
-          method: 'POST',
-          body: JSON.stringify({ code: item.cardKey }),
-        })
-        if (!r.ok) {
-          const msg = String(data?.error || data?.msg || data?.message || 'CDK 无效或不可用')
-          return {
-            ...item,
-            status: 'verify_fail' as const,
-            verifyMsg: msg,
-            error: msg,
-          }
-        }
-        const token = String(
-          data?.redemption_token || data?.data?.redemption_token || data?.token || '',
-        )
-        if (!token) {
-          return {
-            ...item,
-            status: 'verify_fail' as const,
-            verifyMsg: '未返回 redemption_token',
-            error: '未返回 redemption_token',
-          }
-        }
-        const body = data?.data || data || {}
-        return {
-          ...item,
-          status: 'waiting_session' as const,
-          verifyMsg: '有效',
-          planLabel: planLabelOf(body),
-          redemptionToken: token,
-        }
-      } catch {
-        return {
-          ...item,
-          status: 'verify_fail' as const,
-          verifyMsg: '验证请求失败',
-          error: '验证请求失败',
-        }
-      }
-    })
-    items.value = results
-  } finally {
-    verifying.value = false
-    lastFilledItemId.value = null
-  }
+  await resumeVerification()
 }
 
 async function submitOne(
@@ -806,48 +773,39 @@ async function submitOne(
     | { mode: 'session'; session: string; imported?: ImportedSession }
     | { mode: 'mailbox'; email: string; password: string },
 ): Promise<'ok' | 'fail'> {
-  if (credential.mode === 'session') {
-    const check = checkSessionForCdk(credential.session)
-    if (!check.ok) {
+  const current = items.value.find(it => it.id === item.id)
+  if (!current || pageRequests.signal.aborted) return 'fail'
+  if (current.submittedAt) {
+    if (current.status === 'processing' || current.status === 'submitting') startPoll(current.id, current.redemptionToken)
+    return 'ok'
+  }
+  if (inFlightItems.has(item.id)) return 'ok'
+  inFlightItems.add(item.id)
+  try {
+    if (credential.mode === 'session') {
+      const check = checkSessionForCdk(credential.session)
+      if (!check.ok) {
+        updateItem(item.id, { status: 'waiting_session', progressMsg: check.error, error: check.error })
+        return 'fail'
+      }
+      const session = extractCdkSession(credential.session)
+      const imported = credential.imported
       updateItem(item.id, {
-        status: 'failed',
-        progressMsg: check.error,
-        error: check.error,
+        status: 'submitting', email: check.email || imported?.email || '',
+        accessToken: imported?.accessToken || accessTokenFromSession(credential.session),
+        gptPassword: imported?.gptPassword || '', emailPassword: imported?.emailPassword || '',
+        progressMsg: '账号预检…', error: '',
       })
+      return await runPreflightRedeem(current, { mode: 'session', session }, check.email || imported?.email || '')
+    }
+    const email = credential.email.trim(), password = credential.password
+    if (!email.includes('@') || !password) {
+      updateItem(item.id, { status: 'waiting_session', progressMsg: '邮箱或密码无效', error: '邮箱或密码无效' })
       return 'fail'
     }
-    const session = extractCdkSession(credential.session)
-    const imported = credential.imported
-    updateItem(item.id, {
-      status: 'submitting',
-      email: check.email || imported?.email || '',
-      accessToken: imported?.accessToken || accessTokenFromSession(credential.session),
-      gptPassword: imported?.gptPassword || '',
-      emailPassword: imported?.emailPassword || '',
-      progressMsg: '账号预检…',
-      error: '',
-    })
-    return runPreflightRedeem(item, { mode: 'session', session }, check.email || imported?.email || '')
-  }
-
-  const email = credential.email.trim()
-  const password = credential.password
-  if (!email.includes('@') || !password) {
-    updateItem(item.id, {
-      status: 'failed',
-      progressMsg: '邮箱或密码无效',
-      error: '邮箱或密码无效',
-    })
-    return 'fail'
-  }
-  updateItem(item.id, {
-    status: 'submitting',
-    email,
-    emailPassword: password,
-    progressMsg: '账号预检…',
-    error: '',
-  })
-  return runPreflightRedeem(item, { mode: 'mailbox', email, password }, email)
+    updateItem(item.id, { status: 'submitting', email, emailPassword: password, progressMsg: '账号预检…', error: '' })
+    return await runPreflightRedeem(current, { mode: 'mailbox', email, password }, email)
+  } finally { inFlightItems.delete(item.id) }
 }
 
 async function runPreflightRedeem(
@@ -858,125 +816,84 @@ async function runPreflightRedeem(
   fallbackEmail: string,
 ): Promise<'ok' | 'fail'> {
   let redemptionToken = item.redemptionToken
+  let submitted = false
   try {
-    if (!redemptionToken) {
+    // A large batch can outlive the 15-minute preview session before credentials are entered.
+    if (!redemptionToken || item.previewExpiresAt < Date.now() + 30_000) {
       const preview = await api('/api/v1/public/cdk/preview', {
-        method: 'POST',
-        body: JSON.stringify({ code: item.cardKey }),
+        method: 'POST', body: JSON.stringify({ code: item.cardKey }),
       })
-      if (!preview.r.ok) {
-        const msg = String(preview.data?.error || preview.data?.msg || 'CDK 预览失败')
-        updateItem(item.id, { status: 'failed', progressMsg: msg, error: msg })
+      if (!preview.r.ok || (typeof preview.data?.code === 'number' && preview.data.code !== 0)) {
+        const msg = String(preview.data?.error || preview.data?.msg || 'CDK 预览失败，请稍后重试')
+        updateItem(item.id, { status: 'waiting_session', progressMsg: msg, error: msg })
         return 'fail'
       }
-      redemptionToken = String(
-        preview.data?.redemption_token || preview.data?.data?.redemption_token || '',
-      )
+      const body = preview.data?.data || preview.data || {}
+      redemptionToken = String(body.redemption_token || preview.data?.redemption_token || '')
       if (!redemptionToken) {
-        updateItem(item.id, {
-          status: 'failed',
-          progressMsg: '未返回 redemption_token',
-          error: '未返回 redemption_token',
-        })
+        updateItem(item.id, { status: 'waiting_session', progressMsg: '未返回 redemption_token', error: '未返回 redemption_token' })
         return 'fail'
       }
-      updateItem(item.id, { redemptionToken })
+      updateItem(item.id, { redemptionToken, previewExpiresAt: Date.parse(body.expires_at || '') || Date.now() + 15 * 60_000 })
     }
-
     const { r, data } = await api('/api/v1/public/cdk/preflight', {
-      method: 'POST',
-      body: JSON.stringify({
-        code: item.cardKey,
-        redemption_token: redemptionToken,
-        credential,
-      }),
+      method: 'POST', body: JSON.stringify({ code: item.cardKey, redemption_token: redemptionToken, credential }),
     })
-    if (!r.ok || (data && typeof data.code === 'number' && data.code !== 0)) {
+    if (!r.ok || (typeof data?.code === 'number' && data.code !== 0)) {
       const msg = String(data?.error || data?.msg || data?.message || '预检失败')
-      updateItem(item.id, { status: 'failed', progressMsg: msg, error: msg })
+      updateItem(item.id, { status: 'waiting_session', progressMsg: msg, error: msg })
       return 'fail'
     }
     const body = data?.data && typeof data.data === 'object' ? data.data : data || {}
     const preflightToken = String(body.preflight_token || data?.preflight_token || '')
-    // Grok 码：预检不产票，兑换直接带登录态；卡台给出的拦截原因（登录态失效/已有订阅）直接判失败。
     const grok = credential.mode === 'session' && isGrokCredential(credential.session)
     const blocking = grok ? String(body.blocking_reason || '') : ''
-    if (blocking) {
-      updateItem(item.id, { status: 'failed', progressMsg: blocking, error: blocking })
-      return 'fail'
-    }
-    if (!preflightToken && !grok) {
-      updateItem(item.id, {
-        status: 'failed',
-        progressMsg: '未返回 preflight_token',
-        error: '未返回 preflight_token',
-      })
+    if (blocking || (!preflightToken && !grok)) {
+      const msg = blocking || '未返回 preflight_token'
+      updateItem(item.id, { status: 'waiting_session', progressMsg: msg, error: msg })
       return 'fail'
     }
     const email = String(body.email || body.account_email || fallbackEmail || '')
-    updateItem(item.id, { email, progressMsg: '预检通过，提交兑换…' })
-
-    const client_request_id = `batch-${deviceId.slice(0, 8)}-${Date.now()}-${item.id}`
+    const client_request_id = item.clientRequestId || newRedemptionRequestId('batch')
+    updateItem(item.id, { email, progressMsg: '正在提交兑换…', clientRequestId: client_request_id, submittedAt: Date.now() })
+    if (!persistProgress()) {
+      updateItem(item.id, { status: 'waiting_session', submittedAt: 0, progressMsg: '无法保存批次，请释放浏览器存储空间后重试', error: '无法保存批次' })
+      return 'fail'
+    }
+    submitted = true
     const redeem = await api('/api/v1/public/cdk/redeem', {
-      method: 'POST',
-      body: JSON.stringify(grok
+      method: 'POST', body: JSON.stringify(grok
         ? { redemption_token: redemptionToken, credential, client_request_id }
         : { redemption_token: redemptionToken, preflight_token: preflightToken, client_request_id }),
     })
-    const order =
-      redeem.data?.order || redeem.data?.data?.order || redeem.data?.data || redeem.data || {}
+    const order = redeem.data?.order || redeem.data?.data?.order || redeem.data?.data || redeem.data || {}
     const st = String(order.status || redeem.data?.status || '')
-    const message = String(
-      order.message || order.user_message || redeem.data?.message || redeem.data?.msg || '',
-    )
+    const message = String(order.message || order.user_message || redeem.data?.message || redeem.data?.msg || '')
     const cardLastFour = extractCardLastFour(order)
     const orderEmail = String(order.account_email || order.email || email).trim()
-
-    if (!redeem.r.ok && redeem.r.status !== 202) {
-      updateItem(item.id, {
-        status: 'failed',
-        email: orderEmail || email,
-        cardLastFour: cardLastFour || item.cardLastFour,
-        progressMsg: message || redeem.data?.error || '兑换被拒绝',
-        error: message || redeem.data?.error || '兑换被拒绝',
-      })
+    if (!redeem.r.ok && isDefiniteRejection(redeem.r, redeem.data)) {
+      const msg = message || redeem.data?.error || '兑换未被受理'
+      updateItem(item.id, { status: 'failed', email: orderEmail, cardLastFour, progressMsg: msg, error: msg })
       return 'fail'
     }
-
     if (isSuccessStatus(st)) {
-      updateItem(item.id, {
-        status: 'success',
-        email: orderEmail || email,
-        cardLastFour,
-        progressMsg: message || '开通完成',
-        error: '',
-      })
+      updateItem(item.id, { status: 'success', email: orderEmail, cardLastFour, progressMsg: message || '开通完成', error: '' })
     } else if (isFailStatus(st)) {
-      updateItem(item.id, {
-        status: 'failed',
-        email: orderEmail || email,
-        cardLastFour,
-        progressMsg: message || '兑换失败',
-        error: message || '失败',
-      })
+      updateItem(item.id, { status: 'failed', email: orderEmail, cardLastFour, progressMsg: message || '兑换失败', error: message || '失败' })
       return 'fail'
     } else {
-      updateItem(item.id, {
-        status: 'processing',
-        email: orderEmail || email,
-        cardLastFour,
-        progressMsg: message || '处理中…',
-        error: '',
-      })
+      updateItem(item.id, { status: 'processing', email: orderEmail, cardLastFour,
+        progressMsg: redeem.r.ok ? '已提交，正在查询结果…' : '提交结果暂未确认，正在查单，请勿重复兑换', error: '' })
       startPoll(item.id, redemptionToken)
     }
     return 'ok'
   } catch {
-    updateItem(item.id, {
-      status: 'failed',
-      progressMsg: '网络异常，请稍后重试或联系客服确认是否已受理',
-      error: '网络异常',
-    })
+    if (submitted) {
+      updateItem(item.id, { status: 'processing', progressMsg: '网络中断，提交结果暂未确认，正在查单，请勿重复兑换', error: '' })
+      startPoll(item.id, redemptionToken)
+      return 'ok'
+    }
+    updateItem(item.id, { status: 'waiting_session', progressMsg: '网络中断，预检暂未完成，请重试', error: '预检暂未完成' })
     return 'fail'
   }
 }
@@ -1052,7 +969,7 @@ async function handleAutoSubmitAll() {
     const workers = Array.from(
       { length: Math.min(AUTO_SUBMIT_CONCURRENCY, pendingSnap.length) },
       async () => {
-        while (true) {
+        while (!pageRequests.signal.aborted) {
           const itemIndex = cursor++
           if (itemIndex >= pendingSnap.length) return
           const item = pendingSnap[itemIndex]
@@ -1088,7 +1005,7 @@ async function handleAutoSubmitAll() {
   const workers = Array.from(
     { length: Math.min(AUTO_SUBMIT_CONCURRENCY, pendingSnap.length) },
     async () => {
-      while (true) {
+      while (!pageRequests.signal.aborted) {
         const itemIndex = cursor++
         if (itemIndex >= pendingSnap.length) return
         const item = pendingSnap[itemIndex]
@@ -1129,6 +1046,7 @@ async function exportBatchSuccess() {
 }
 
 function resetAll() {
+  if (verifying.value || submitting.value || autoSubmitting.value || stats.value.run > 0) return
   stopAllPolls()
   phase.value = 'input'
   items.value = []
@@ -1141,9 +1059,27 @@ function resetAll() {
   sessionError.value = ''
   autoSubmitting.value = false
   lastFilledItemId.value = null
+  restoredProgress.value = false
 }
 
-onUnmounted(() => stopAllPolls())
+function restoreProgress() {
+  const saved = loadBatchProgress(sessionStorage)
+  if (!saved) return
+  restoringProgress = true
+  try {
+    credMode.value = saved.credMode
+    items.value = saved.items
+    phase.value = 'run'
+    restoredProgress.value = true
+  } finally { restoringProgress = false }
+  for (const item of items.value) {
+    if (item.submittedAt && ['submitting', 'processing'].includes(item.status)) startPoll(item.id, item.redemptionToken)
+  }
+  void resumeVerification()
+}
+
+onMounted(restoreProgress)
+onUnmounted(() => { pageRequests.abort(); stopAllPolls() })
 </script>
 
 <style scoped>

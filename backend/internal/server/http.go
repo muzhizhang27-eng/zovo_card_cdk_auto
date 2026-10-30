@@ -4,10 +4,12 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"net/http"
 	"os"
 	"path"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/tuzi/cdk-recharge-system/internal/config"
@@ -22,6 +24,9 @@ type Server struct {
 }
 
 func New(ctx context.Context, cfg *config.Config) (*Server, error) {
+	if role := os.Getenv("APP_ROLE"); role != "" && role != "all" && role != "admin" {
+		return nil, fmt.Errorf("invalid APP_ROLE")
+	}
 	// 生产模式下强制要求安全的 JWT secret，避免 token 被伪造
 	if err := enforceJWTSecret(cfg.Server.Mode); err != nil {
 		return nil, err
@@ -31,8 +36,16 @@ func New(ctx context.Context, cfg *config.Config) (*Server, error) {
 	if err := db.Init(&cfg.Database); err != nil {
 		return nil, err
 	}
+	if os.Getenv("APP_ROLE") == "admin" {
+		var active int
+		if err := db.DB.QueryRow("SELECT COUNT(*) FROM admin_users WHERE is_active=1").Scan(&active); err != nil || active == 0 {
+			return nil, fmt.Errorf("management service requires a migrated active administrator")
+		}
+	}
 
-	engine := gin.Default()
+	engine := gin.New()
+	engine.Use(requestLogger(gin.DefaultWriter), requestRecovery(gin.DefaultErrorWriter))
+	engine.Use(adminSurface())
 
 	// 不信任任意代理头（X-Forwarded-For 等），保证限流拿到的是真实来源 IP。
 	// 若部署在已知反代后，用 TRUSTED_PROXIES（逗号分隔）显式声明。
@@ -121,7 +134,7 @@ func setupRoutes(r *gin.Engine) {
 		auth := api.Group("/auth")
 		{
 			auth.POST("/admin/login", handler.AdminLogin)
-			auth.POST("/admin/logout", handler.AdminLogout)
+			auth.POST("/admin/logout", JWTAuthMiddleware(), AdminAuthMiddleware(), handler.AdminLogout)
 			auth.GET("/admin/me", JWTAuthMiddleware(), handler.AdminMe)
 			auth.POST("/admin/change-password", JWTAuthMiddleware(), AdminAuthMiddleware(), handler.AdminChangePassword)
 		}
@@ -262,5 +275,12 @@ func setupRoutes(r *gin.Engine) {
 }
 
 func (s *Server) Run(addr string) error {
-	return s.engine.Run(addr)
+	return (&http.Server{
+		Addr: addr, Handler: s.engine,
+		ReadHeaderTimeout: 10 * time.Second,
+		ReadTimeout:       30 * time.Second,
+		WriteTimeout:      300 * time.Second,
+		IdleTimeout:       60 * time.Second,
+		MaxHeaderBytes:    1 << 20,
+	}).ListenAndServe()
 }

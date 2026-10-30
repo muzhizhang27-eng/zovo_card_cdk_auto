@@ -216,7 +216,7 @@
           兑换未成功。若状态为 review/pending 请勿重复提交；可联系发码方或稍后用同一设备再查结果。
         </div>
         <div v-if="resultStatus === 'completed'" class="alert alert-success">开通完成，请到 ChatGPT 账号确认套餐。</div>
-        <button class="btn-secondary" @click="resetAll">再兑一张</button>
+        <button class="btn-secondary" :disabled="busy || (submissionStarted && !isTerminal(resultStatus))" @click="resetAll">再兑一张</button>
       </div>
     </div>
   </div>
@@ -232,6 +232,7 @@ import UserPageHeader from '../../components/UserPageHeader.vue'
 import RedeemModeTabs from '../../components/RedeemModeTabs.vue'
 import { dialog } from '../../lib/dialog'
 import { planLabel, planSatisfied as isSatisfied } from '../../lib/plan'
+import { cdkRequest, isDefiniteRejection, newRedemptionRequestId } from '../../lib/cdk-request'
 
 const { t } = useI18n({ useScope: 'global' })
 const route = useRoute()
@@ -246,6 +247,9 @@ const code = ref('')
 const previewInfo = ref<any>(null)
 const redemptionToken = ref('')
 const preflightToken = ref('')
+const clientRequestId = ref('')
+const submissionStarted = ref(false)
+const pageRequests = new AbortController()
 // Grok 码不产预检票：预检通过后兑换直接带这份登录态（卡台按码上的产品分流）。
 const grokSession = ref('')
 const grokBlockingReason = ref('')
@@ -277,6 +281,7 @@ const resultBody = ref<any>(null)
 const timeline = ref<any[]>([])
 const polling = ref(false)
 let pollTimer: any = null
+let pollSequence = 0
 const displayResultEmail = computed(() => resultEmail.value || account.value.email || '')
 
 const PROGRESS_KEY = 'cdk_redeem_progress_v1'
@@ -300,6 +305,8 @@ function saveProgress() {
       code: code.value,
       redemptionToken: redemptionToken.value,
       preflightToken: preflightToken.value,
+      clientRequestId: clientRequestId.value,
+      submissionStarted: submissionStarted.value,
       previewInfo: previewInfo.value,
       account: account.value,
       resultStatus: resultStatus.value,
@@ -313,8 +320,9 @@ function saveProgress() {
       savedAt: Date.now(),
     }
     sessionStorage.setItem(PROGRESS_KEY, JSON.stringify(payload))
+    return true
   } catch {
-    /* ignore quota */
+    return false
   }
 }
 
@@ -332,6 +340,8 @@ function loadProgress(): boolean {
     if (p.code) code.value = String(p.code)
     if (p.redemptionToken) redemptionToken.value = String(p.redemptionToken)
     if (p.preflightToken) preflightToken.value = String(p.preflightToken)
+    clientRequestId.value = String(p.clientRequestId || '')
+    submissionStarted.value = p.submissionStarted === true || Number(p.step) >= 4
     if (p.previewInfo) previewInfo.value = p.previewInfo
     if (p.account && typeof p.account === 'object') {
       account.value = {
@@ -389,7 +399,7 @@ function clearProgress() {
 }
 
 watch(
-  [step, code, redemptionToken, preflightToken, previewInfo, account, recoveryPending, resultStatus, resultStage, resultMessage, resultBody, timeline],
+  [step, code, redemptionToken, preflightToken, clientRequestId, submissionStarted, previewInfo, account, recoveryPending, resultStatus, resultStage, resultMessage, resultBody, timeline],
   () => saveProgress(),
   { deep: true },
 )
@@ -579,7 +589,7 @@ function clearAccount() {
   }
 }
 
-const TERMINAL = new Set(['completed', 'declined', 'failed_precharge', 'cancelled', 'failed'])
+const TERMINAL = new Set(['completed', 'declined', 'failed_precharge', 'cancelled', 'failed', 'rejected'])
 
 function isTerminal(st: string) {
   return TERMINAL.has(String(st || '').toLowerCase())
@@ -588,7 +598,7 @@ function isTerminal(st: string) {
 function statusTagType(st: string) {
   const s = String(st || '').toLowerCase()
   if (s === 'completed') return 'success'
-  if (['declined', 'failed_precharge', 'cancelled', 'failed'].includes(s)) return 'danger'
+  if (['declined', 'failed_precharge', 'cancelled', 'failed', 'rejected'].includes(s)) return 'danger'
   if (['review', 'pending', 'card_open_review', 'card_recharge_review'].includes(s)) return 'warning'
   return 'info'
 }
@@ -702,18 +712,13 @@ function applyResultPayload(data: any) {
 }
 
 async function api(path: string, init: RequestInit = {}) {
-  const headers = new Headers(init.headers || {})
-  headers.set('X-Redemption-Device', deviceId)
-  if (init.body && !headers.has('Content-Type')) headers.set('Content-Type', 'application/json')
-  const r = await fetch(path, { ...init, headers, credentials: 'include' })
-  const text = await r.text()
-  let data: any = null
-  try { data = text ? JSON.parse(text) : null } catch { data = { raw: text } }
-  return { r, data }
+  return cdkRequest(path, deviceId, { ...init, signal: pageRequests.signal })
 }
 
 onUnmounted(() => {
-  if (pollTimer) clearInterval(pollTimer)
+  pageRequests.abort()
+  pollSequence++
+  if (pollTimer) clearTimeout(pollTimer)
   if (nowTimer) clearInterval(nowTimer)
 })
 
@@ -746,6 +751,7 @@ async function tryResumeByCode(cdk: string): Promise<boolean> {
   if (!r.ok) return false
   const tok = data?.redemption_token || data?.data?.redemption_token || ''
   if (tok) redemptionToken.value = tok
+  submissionStarted.value = true
   applyResultPayload(data)
   if (!resultStatus.value) resultStatus.value = data?.status || data?.order?.status || 'pending'
   step.value = 4
@@ -754,7 +760,7 @@ async function tryResumeByCode(cdk: string): Promise<boolean> {
 }
 
 async function doPreview() {
-  if (busy.value || recoveringSubscription.value) return
+  if (busy.value || recoveringSubscription.value || (submissionStarted.value && !isTerminal(resultStatus.value))) return
   invalidatePreflight()
   error.value = ''
   previewInfo.value = null
@@ -792,6 +798,10 @@ async function doPreview() {
       return
     }
     step.value = 2
+    clientRequestId.value = ''
+    submissionStarted.value = false
+  } catch {
+    error.value = '卡密校验暂未完成，请检查网络后重试'
   } finally {
     busy.value = false
   }
@@ -851,6 +861,8 @@ async function doPreflight() {
     }
     applyAccountFromPreflight(data)
     step.value = 3
+  } catch {
+    error.value = '账号预检暂未完成，请检查网络后重试'
   } finally {
     busy.value = false
   }
@@ -886,11 +898,24 @@ async function recoverGraceSubscription() {
 }
 
 async function doRedeem() {
-  if (busy.value || recoveringSubscription.value || recoveryPending.value || needsSubscriptionRecovery.value || alreadySatisfied.value || !canRedeem.value) return
+  if (busy.value || submissionStarted.value || recoveringSubscription.value || recoveryPending.value || needsSubscriptionRecovery.value || alreadySatisfied.value || !canRedeem.value) return
   error.value = ''
   busy.value = true
+  clientRequestId.value ||= newRedemptionRequestId('web')
+  submissionStarted.value = true
+  resultStatus.value = 'pending'
+  resultMessage.value = '正在提交兑换，请等待结果'
+  step.value = 4
+  // Persist before sending: refresh or a lost response must never create a new submission.
+  if (!saveProgress()) {
+    submissionStarted.value = false
+    step.value = 3
+    error.value = '无法保存兑换进度，请释放浏览器存储空间后重试'
+    busy.value = false
+    return
+  }
   try {
-    const client_request_id = 'web-' + deviceId.slice(0, 8) + '-' + Date.now()
+    const client_request_id = clientRequestId.value
     const { r, data } = await api('/api/v1/public/cdk/redeem', {
       method: 'POST',
       body: JSON.stringify(isGrok.value
@@ -898,21 +923,29 @@ async function doRedeem() {
         : { redemption_token: redemptionToken.value, preflight_token: preflightToken.value, client_request_id }),
     })
     applyResultPayload(data)
-    if (!r.ok && r.status !== 202) {
-      error.value = data?.error || data?.msg || data?.message || '兑换被拒绝'
+    if (!r.ok && isDefiniteRejection(r, data)) {
+      resultStatus.value = 'rejected'
+      resultMessage.value = data?.error || data?.msg || data?.message || '兑换未被受理'
+    } else if (!r.ok || (typeof data?.code === 'number' && data.code !== 0)) {
+      resultMessage.value = '提交结果暂未确认，正在查单，请勿重复兑换'
     }
-    if (!resultStatus.value) {
-      resultStatus.value = r.ok || r.status === 202 ? 'queued' : 'error'
-    }
-    step.value = 4
-    startPoll()
+    if (!resultStatus.value) resultStatus.value = 'pending'
+  } catch {
+    resultStatus.value = 'pending'
+    resultMessage.value = '网络中断，提交结果暂未确认，正在查单，请勿重复兑换'
   } finally {
     busy.value = false
+    if (!pageRequests.signal.aborted) {
+      saveProgress()
+      if (!isTerminal(resultStatus.value)) startPoll()
+    }
   }
 }
 
 function startPoll() {
-  if (pollTimer) clearInterval(pollTimer)
+  if (pageRequests.signal.aborted) return
+  if (pollTimer) clearTimeout(pollTimer)
+  const sequence = ++pollSequence
   if (!redemptionToken.value && !code.value.trim()) {
     polling.value = false
     return
@@ -934,20 +967,25 @@ function startPoll() {
           redemptionToken.value = data.redemption_token
         }
       }
-      if (r.ok) {
+      if (sequence !== pollSequence) return
+      if (r.ok && !(typeof data?.code === 'number' && data.code !== 0)) {
         applyResultPayload(data)
         saveProgress()
         if (isTerminal(resultStatus.value)) {
           polling.value = false
-          if (pollTimer) clearInterval(pollTimer)
         }
+      } else {
+        resultMessage.value = '查询暂未确认订单结果，将继续核对，请勿重复兑换'
       }
     } catch {
-      /* ignore transient network */
+      if (sequence === pollSequence) resultMessage.value = '网络暂不可用，恢复后将继续查单，请勿重复兑换'
+    } finally {
+      if (sequence === pollSequence && polling.value && !pageRequests.signal.aborted) {
+        pollTimer = setTimeout(tick, 3000)
+      }
     }
   }
-  tick()
-  pollTimer = setInterval(tick, 3000)
+  void tick()
 }
 
 onMounted(() => {
@@ -956,11 +994,13 @@ onMounted(() => {
   }, 30000)
   const q = String(route.query.cdk || route.query.code || '').trim()
   if (loadProgress()) {
-    if (q && code.value.trim() !== q) {
+    const differentCode = q && code.value.trim() !== q
+    if (differentCode && (!submissionStarted.value || isTerminal(resultStatus.value))) {
       resetAll()
       code.value = q
-    } else if (step.value === 4 && (redemptionToken.value || code.value)) {
-      startPoll()
+    } else {
+      if (differentCode) error.value = '当前兑换结果仍在核对，请等待完成后再兑换其他卡密'
+      if (step.value === 4 && (redemptionToken.value || code.value)) startPoll()
     }
   } else if (q) {
     code.value = q
@@ -968,8 +1008,10 @@ onMounted(() => {
 })
 
 function resetAll() {
+  if (busy.value || (submissionStarted.value && !isTerminal(resultStatus.value))) return
   invalidatePreflight()
-  if (pollTimer) clearInterval(pollTimer)
+  pollSequence++
+  if (pollTimer) clearTimeout(pollTimer)
   clearProgress()
   step.value = 1
   error.value = ''
@@ -977,6 +1019,8 @@ function resetAll() {
   previewInfo.value = null
   redemptionToken.value = ''
   preflightToken.value = ''
+  clientRequestId.value = ''
+  submissionStarted.value = false
   clearAccount()
   resultBody.value = null
   resultStatus.value = ''

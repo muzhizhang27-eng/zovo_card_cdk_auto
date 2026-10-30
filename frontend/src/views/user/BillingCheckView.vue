@@ -108,8 +108,8 @@
           </div>
           <div v-if="inv.description" class="text-subtle text-xs">{{ inv.description }}</div>
           <div class="flex gap-3">
-            <a v-if="inv.hosted_invoice_url" class="app-link" :href="inv.hosted_invoice_url" target="_blank" rel="noopener">账单链接</a>
-            <a v-if="inv.invoice_pdf" class="app-link" :href="inv.invoice_pdf" target="_blank" rel="noopener">PDF</a>
+            <a v-if="safeExternalUrl(inv.hosted_invoice_url)" class="app-link" :href="safeExternalUrl(inv.hosted_invoice_url)" target="_blank" rel="noopener noreferrer">账单链接</a>
+            <a v-if="safeExternalUrl(inv.invoice_pdf)" class="app-link" :href="safeExternalUrl(inv.invoice_pdf)" target="_blank" rel="noopener noreferrer">PDF</a>
           </div>
         </div>
       </div>
@@ -119,6 +119,7 @@
 
 <script setup lang="ts">
 import { computed, ref, onMounted } from 'vue'
+import { safeExternalUrl } from '../../lib/url-safety'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import UserPageHeader from '../../components/UserPageHeader.vue'
