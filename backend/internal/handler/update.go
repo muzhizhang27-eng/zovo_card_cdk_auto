@@ -19,6 +19,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/tuzi/cdk-recharge-system/internal/background"
 	"github.com/tuzi/cdk-recharge-system/internal/db"
 )
 
@@ -148,7 +149,7 @@ func AdminSystemUpdate(c *gin.Context) {
 	db.WriteAudit(username, "system_update_start", "target="+target, c.ClientIP())
 
 	// 异步执行：先立即返回，前端轮询 status；完成文件替换后延迟 re-exec
-	go runSeamlessUpdate(target, username)
+	background.Go(func() { runSeamlessUpdate(target, username) })
 
 	c.JSON(http.StatusAccepted, gin.H{
 		"ok":      true,
@@ -341,7 +342,7 @@ func runSeamlessUpdate(target, username string) {
 	})
 
 	// 延迟 re-exec，让状态接口还能被读一次
-	go func() {
+	background.Go(func() {
 		time.Sleep(400 * time.Millisecond)
 		// 优先同进程 re-exec（PID 不变，systemd 无感，亚秒恢复）
 		if err := reexecBinary(binDst); err != nil {
@@ -350,7 +351,7 @@ func runSeamlessUpdate(target, username string) {
 			// 若仍失败，标记 failed（进程若还活着）
 			failUpdate("重载失败: " + err.Error() + "（已尝试 systemctl restart）")
 		}
-	}()
+	})
 }
 
 func failUpdate(msg string) {

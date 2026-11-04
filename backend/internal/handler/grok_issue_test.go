@@ -81,11 +81,13 @@ func TestGrokIssueUsesGrokCatalogueAndPrefixedPlan(t *testing.T) {
 
 func TestIssueProductKeepsGPTDefault(t *testing.T) {
 	cases := map[[2]string]string{
-		{"", "plus"}: "gpt", {"", "pro_20x_renew"}: "gpt", {"", "basic_monthly"}: "x",
+		{"", "plus"}: "gpt", {"", "pro_20x_renew"}: "gpt", {"", "plus_monthly"}: "x",
 		{"", "heavy_yearly"}: "grok", {"gpt", "plus"}: "gpt", {"bogus", "plus"}: "gpt",
 		// 裸 premium_* 同时是 X 和 Grok 的键：没有 product 时归 X；带 grok_ 前缀才是 Grok
-		{"", "premium_monthly"}: "x", {"", "grok_premium_monthly"}: "grok", {"", "super_monthly"}: "grok",
+		{"", "premium_monthly"}: "x", {"", "grok_premium_monthly"}: "grok", {"", "super_monthly"}: "x",
 		{"grok", "premium_monthly"}: "grok",
+		{"grok", "super_monthly"}:   "grok", {"", "grok_super_monthly_half"}: "grok",
+		{"", "claude_pro"}: "claude", {"claude", "max_20x"}: "claude", {"gpt", "pro"}: "gpt",
 	}
 	for in, want := range cases {
 		if got := issueProduct(in[0], in[1]); got != want {

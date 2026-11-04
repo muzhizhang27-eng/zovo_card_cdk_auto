@@ -5,15 +5,16 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
+	"github.com/tuzi/cdk-recharge-system/internal/cardplatform"
 	"github.com/tuzi/cdk-recharge-system/internal/db"
 )
 
 // 允许写入 site_settings 的公开安全键（无密钥）
 var publicSettingKeys = map[string]bool{
-	"brand_name":  true,
-	"brand_sub":   true,
-	"skin":        true,
-	"theme_mode":  true,
+	"brand_name": true,
+	"brand_sub":  true,
+	"skin":       true,
+	"theme_mode": true,
 }
 
 // 密钥类键：只接受写入，读出脱敏
@@ -86,6 +87,12 @@ func AdminPutSettings(c *gin.Context) {
 	if err := c.ShouldBindJSON(&body); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
 		return
+	}
+	if body.CardAPIBase != nil {
+		if err := cardplatform.ValidateBase(*body.CardAPIBase); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
 	}
 
 	setIf := func(key string, p *string, max int) error {

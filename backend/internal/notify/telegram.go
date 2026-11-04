@@ -10,6 +10,8 @@ import (
 	"os"
 	"strings"
 	"time"
+
+	"github.com/tuzi/cdk-recharge-system/internal/background"
 )
 
 var httpClient = &http.Client{Timeout: 10 * time.Second}
@@ -27,7 +29,7 @@ func SendText(text string) {
 	if !ok {
 		return
 	}
-	go func() {
+	background.Go(func() {
 		api := "https://api.telegram.org/bot" + token + "/sendMessage"
 		form := url.Values{}
 		form.Set("chat_id", chatID)
@@ -44,7 +46,7 @@ func SendText(text string) {
 			body, _ := io.ReadAll(resp.Body)
 			log.Printf("[telegram] non-200: %d %s", resp.StatusCode, string(body))
 		}
-	}()
+	})
 }
 
 // NotifyNewOrder formats and sends a "new order" notification.

@@ -1,0 +1,51 @@
+{
+  "observedAt": "2026-11-04T16:59:57.528999+00:00",
+  "browser": "Google Chrome native UI",
+  "changes": {
+    "adminBusinessCnameSavedAt": "2026-11-05T00:44:36+08:00",
+    "cdkBusinessCnameSavedAt": "2026-11-05T00:56:25+08:00",
+    "edgeOneStaticRuleOrder": 5,
+    "bothDomainsUiStatus": "已生效",
+    "bothDomainsCertificateUiStatus": "已部署"
+  },
+  "readOnlyChecks": [
+    {
+      "host": "cdk-admin.lanting.live",
+      "path": "/ops",
+      "rendered": true,
+      "existingSessionPreserved": true
+    },
+    {
+      "host": "cdk-admin.lanting.live",
+      "path": "/ops/cdkeys",
+      "rendered": true,
+      "listLoaded": true,
+      "cardValuesRecorded": false
+    },
+    {
+      "host": "cdk.lanting.live",
+      "path": "/recharge",
+      "rendered": true
+    },
+    {
+      "host": "cdk.lanting.live",
+      "path": "/batch",
+      "rendered": true
+    },
+    {
+      "host": "cdk.lanting.live",
+      "path": "/history",
+      "rendered": true
+    },
+    {
+      "host": "cdk.lanting.live",
+      "path": "/billing",
+      "rendered": true
+    }
+  ],
+  "newCredentialsEntered": false,
+  "realFinancialActions": false,
+  "limitations": [
+    "Read-only page checks and isolated backend tests do not constitute a real customer recharge transaction."
+  ]
+}

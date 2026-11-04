@@ -1,0 +1,408 @@
+{
+  "schema": "cdk-post-cutover-readonly-audit-v1",
+  "observedAt": "2026-11-04T15:59:06.107072Z",
+  "completedAt": "2026-11-04T16:01:06.389727+00:00",
+  "reportedMaintenanceRemovedAt": "2026-11-04T15:57:55.855229Z",
+  "auditScope": "Read-only service/process metadata, synthetic 404/header checks and public static HTML requests.",
+  "configurationChangedByThisAudit": false,
+  "databaseFinalCopy": {
+    "provenance": "Reported by parent migration task; not re-queried by this read-only acceptance audit",
+    "recharge": {
+      "tables": 18,
+      "rows": 72,
+      "contentHashesAndSchemaMatched": true
+    },
+    "admin": {
+      "tables": 18,
+      "rows": 200,
+      "contentHashesAndSchemaMatched": true
+    }
+  },
+  "singapore": {
+    "services": [
+      {
+        "MainPID": "0",
+        "Id": "cdk-recharge.service",
+        "LoadState": "masked",
+        "ActiveState": "inactive",
+        "SubState": "dead",
+        "UnitFileState": "masked"
+      },
+      {
+        "MainPID": "0",
+        "Id": "cdk-admin.service",
+        "LoadState": "masked",
+        "ActiveState": "inactive",
+        "SubState": "dead",
+        "UnitFileState": "masked"
+      },
+      {
+        "MainPID": "0",
+        "Id": "cdk-lookup.service",
+        "LoadState": "masked",
+        "ActiveState": "inactive",
+        "SubState": "dead",
+        "UnitFileState": "masked"
+      }
+    ],
+    "maintenanceMarkerAbsent": true,
+    "compatibilityEntryActive": true
+  },
+  "aliyun": {
+    "services": [
+      {
+        "TimeoutStopUSec": "5min 30s",
+        "MainPID": "35450",
+        "Result": "success",
+        "NRestarts": "0",
+        "Slice": "cdk.slice",
+        "MemoryCurrent": "15200256",
+        "TasksCurrent": "6",
+        "CPUWeight": "25",
+        "CPUShares": "256",
+        "CPUQuotaPerSecUSec": "500ms",
+        "MemoryMax": "201326592",
+        "TasksMax": "11828",
+        "Id": "cdk-recharge.service",
+        "LoadState": "loaded",
+        "ActiveState": "active",
+        "SubState": "running",
+        "UnitFileState": "enabled"
+      },
+      {
+        "TimeoutStopUSec": "5min 30s",
+        "MainPID": "35448",
+        "Result": "success",
+        "NRestarts": "0",
+        "Slice": "cdk.slice",
+        "MemoryCurrent": "20086784",
+        "TasksCurrent": "7",
+        "CPUWeight": "25",
+        "CPUShares": "256",
+        "CPUQuotaPerSecUSec": "500ms",
+        "MemoryMax": "201326592",
+        "TasksMax": "64",
+        "Id": "cdk-admin.service",
+        "LoadState": "loaded",
+        "ActiveState": "active",
+        "SubState": "running",
+        "UnitFileState": "enabled"
+      },
+      {
+        "TimeoutStopUSec": "5min 30s",
+        "MainPID": "35449",
+        "Result": "success",
+        "NRestarts": "0",
+        "Slice": "cdk.slice",
+        "MemoryCurrent": "1212416",
+        "TasksCurrent": "5",
+        "CPUWeight": "25",
+        "CPUShares": "256",
+        "CPUQuotaPerSecUSec": "500ms",
+        "MemoryMax": "100663296",
+        "TasksMax": "32",
+        "Id": "cdk-lookup.service",
+        "LoadState": "loaded",
+        "ActiveState": "active",
+        "SubState": "running",
+        "UnitFileState": "enabled"
+      },
+      {
+        "TimeoutStopUSec": "1min 30s",
+        "MainPID": "25146",
+        "Result": "success",
+        "NRestarts": "0",
+        "Slice": "system.slice",
+        "MemoryCurrent": "3969024",
+        "TasksCurrent": "1",
+        "CPUWeight": "[not set]",
+        "CPUShares": "[not set]",
+        "CPUQuotaPerSecUSec": "50ms",
+        "MemoryMax": "33554432",
+        "TasksMax": "16",
+        "Id": "lanting-google-tunnel.service",
+        "LoadState": "loaded",
+        "ActiveState": "active",
+        "SubState": "running",
+        "UnitFileState": "enabled"
+      },
+      {
+        "TimeoutStopUSec": "1min 30s",
+        "MainPID": "25150",
+        "Result": "success",
+        "NRestarts": "0",
+        "Slice": "system.slice",
+        "MemoryCurrent": "1142784",
+        "TasksCurrent": "1",
+        "CPUWeight": "[not set]",
+        "CPUShares": "[not set]",
+        "CPUQuotaPerSecUSec": "50ms",
+        "MemoryMax": "33554432",
+        "TasksMax": "16",
+        "Id": "lanting-zovo-tunnel.service",
+        "LoadState": "loaded",
+        "ActiveState": "active",
+        "SubState": "running",
+        "UnitFileState": "enabled"
+      },
+      {
+        "TimeoutStopUSec": "1min 30s",
+        "MainPID": "30462",
+        "Result": "success",
+        "NRestarts": "0",
+        "Slice": "system.slice",
+        "MemoryCurrent": "757760",
+        "TasksCurrent": "1",
+        "CPUWeight": "[not set]",
+        "CPUShares": "[not set]",
+        "CPUQuotaPerSecUSec": "50ms",
+        "MemoryMax": "33554432",
+        "TasksMax": "16",
+        "Id": "cdk-gpt-tunnel.service",
+        "LoadState": "loaded",
+        "ActiveState": "active",
+        "SubState": "running",
+        "UnitFileState": "enabled"
+      }
+    ],
+    "cdkSlice": {
+      "MemoryCurrent": "36499456",
+      "CPUWeight": "25",
+      "CPUShares": "256",
+      "MemoryMax": "503316480",
+      "ActiveState": "active"
+    },
+    "maintenanceMarkerAbsent": true,
+    "tunnelListeners": [
+      {
+        "address": "127.0.0.1",
+        "port": 18783,
+        "pid": 25146,
+        "loopbackOnly": true
+      },
+      {
+        "address": "127.0.0.1",
+        "port": 18784,
+        "pid": 25150,
+        "loopbackOnly": true
+      },
+      {
+        "address": "127.0.0.1",
+        "port": 18785,
+        "pid": 30462,
+        "loopbackOnly": true
+      }
+    ],
+    "verifiedProcessSettings": [
+      {
+        "unit": "cdk-recharge.service",
+        "verifiedNonSecretSettings": {
+          "GOMAXPROCS": "1",
+          "GOMEMLIMIT": "144MiB",
+          "CARD_API_PROXY_URL": "http://127.0.0.1:18784",
+          "GPTCHECK_PROXY_URL": "http://127.0.0.1:18785"
+        }
+      },
+      {
+        "unit": "cdk-admin.service",
+        "verifiedNonSecretSettings": {
+          "GOMAXPROCS": "1",
+          "GOMEMLIMIT": "144MiB",
+          "CARD_API_PROXY_URL": "http://127.0.0.1:18784",
+          "GPTCHECK_PROXY_URL": "http://127.0.0.1:18785"
+        }
+      },
+      {
+        "unit": "cdk-lookup.service",
+        "verifiedNonSecretSettings": {
+          "GOMAXPROCS": "1",
+          "GOMEMLIMIT": "64MiB",
+          "CARD_API_PROXY_URL": "http://127.0.0.1:18784"
+        }
+      }
+    ]
+  },
+  "clientIdentity": {
+    "probes": [
+      {
+        "host": "cdk.lanting.live",
+        "route": "Ali client -> pinned SG HTTPS -> Ali HTTPS",
+        "syntheticPathReturned404": true,
+        "uniqueAliLogRecord": true,
+        "clientIpMatchedKnownAliEgress": true,
+        "forgedForwardingHeadersOverwritten": true,
+        "customerDataReturned": false
+      },
+      {
+        "host": "cdk-admin.lanting.live",
+        "route": "Ali client -> pinned SG HTTPS -> Ali HTTPS",
+        "syntheticPathReturned404": true,
+        "uniqueAliLogRecord": true,
+        "clientIpMatchedKnownAliEgress": true,
+        "forgedForwardingHeadersOverwritten": true,
+        "customerDataReturned": false
+      }
+    ],
+    "rawAccessLogRecordsIncluded": false,
+    "customerIpValuesIncluded": false,
+    "allChecksPassed": true
+  },
+  "mainSite": [
+    {
+      "host": "lanting.live",
+      "path": "/ai",
+      "mode": "pinnedAli",
+      "status": 200
+    },
+    {
+      "host": "lanting.live",
+      "path": "/ai",
+      "mode": "publicDns",
+      "status": 200
+    }
+  ],
+  "latency": {
+    "observedAt": "2026-11-04T16:01:06.389727+00:00",
+    "samples": [
+      {
+        "status": 200,
+        "tcpConnectSeconds": 0.033798,
+        "tlsReadySeconds": 0.105614,
+        "ttfbSeconds": 0.139512,
+        "totalSeconds": 0.139755,
+        "sample": 1,
+        "host": "cdk.lanting.live",
+        "path": "/recharge",
+        "route": "pinnedAliOrigin",
+        "vantage": "operator-machine direct curl, same vantage for both origins"
+      },
+      {
+        "status": 200,
+        "tcpConnectSeconds": 0.105159,
+        "tlsReadySeconds": 0.214357,
+        "ttfbSeconds": 9.522867,
+        "totalSeconds": 9.523233,
+        "sample": 1,
+        "host": "cdk.lanting.live",
+        "path": "/recharge",
+        "route": "pinnedSgCompatibility",
+        "vantage": "operator-machine direct curl, same vantage for both origins"
+      },
+      {
+        "status": 200,
+        "tcpConnectSeconds": 0.033934,
+        "tlsReadySeconds": 0.106548,
+        "ttfbSeconds": 0.14017,
+        "totalSeconds": 0.140445,
+        "sample": 1,
+        "host": "cdk-admin.lanting.live",
+        "path": "/ops/cdkeys",
+        "route": "pinnedAliOrigin",
+        "vantage": "operator-machine direct curl, same vantage for both origins"
+      },
+      {
+        "status": 200,
+        "tcpConnectSeconds": 0.107752,
+        "tlsReadySeconds": 0.22022,
+        "ttfbSeconds": 2.020108,
+        "totalSeconds": 2.020506,
+        "sample": 1,
+        "host": "cdk-admin.lanting.live",
+        "path": "/ops/cdkeys",
+        "route": "pinnedSgCompatibility",
+        "vantage": "operator-machine direct curl, same vantage for both origins"
+      },
+      {
+        "status": 200,
+        "tcpConnectSeconds": 0.034128,
+        "tlsReadySeconds": 0.109107,
+        "ttfbSeconds": 0.142711,
+        "totalSeconds": 0.142916,
+        "sample": 2,
+        "host": "cdk.lanting.live",
+        "path": "/recharge",
+        "route": "pinnedAliOrigin",
+        "vantage": "operator-machine direct curl, same vantage for both origins"
+      },
+      {
+        "status": 200,
+        "tcpConnectSeconds": 0.223003,
+        "tlsReadySeconds": 0.730781,
+        "ttfbSeconds": 4.833377,
+        "totalSeconds": 4.833769,
+        "sample": 2,
+        "host": "cdk.lanting.live",
+        "path": "/recharge",
+        "route": "pinnedSgCompatibility",
+        "vantage": "operator-machine direct curl, same vantage for both origins"
+      },
+      {
+        "status": 200,
+        "tcpConnectSeconds": 0.034661,
+        "tlsReadySeconds": 0.121096,
+        "ttfbSeconds": 0.156365,
+        "totalSeconds": 0.157085,
+        "sample": 2,
+        "host": "cdk-admin.lanting.live",
+        "path": "/ops/cdkeys",
+        "route": "pinnedAliOrigin",
+        "vantage": "operator-machine direct curl, same vantage for both origins"
+      },
+      {
+        "status": 200,
+        "tcpConnectSeconds": 0.218314,
+        "tlsReadySeconds": 0.717399,
+        "ttfbSeconds": 3.85265,
+        "totalSeconds": 3.852968,
+        "sample": 2,
+        "host": "cdk-admin.lanting.live",
+        "path": "/ops/cdkeys",
+        "route": "pinnedSgCompatibility",
+        "vantage": "operator-machine direct curl, same vantage for both origins"
+      }
+    ],
+    "scope": "Public static HTML requests only; no login, customer lookup or provider call",
+    "summary": [
+      {
+        "host": "cdk.lanting.live",
+        "route": "pinnedAliOrigin",
+        "sampleCount": 2,
+        "minTtfbSeconds": 0.139512,
+        "maxTtfbSeconds": 0.142711,
+        "medianTtfbSeconds": 0.1411115
+      },
+      {
+        "host": "cdk.lanting.live",
+        "route": "pinnedSgCompatibility",
+        "sampleCount": 2,
+        "minTtfbSeconds": 4.833377,
+        "maxTtfbSeconds": 9.522867,
+        "medianTtfbSeconds": 7.178122
+      },
+      {
+        "host": "cdk-admin.lanting.live",
+        "route": "pinnedAliOrigin",
+        "sampleCount": 2,
+        "minTtfbSeconds": 0.14017,
+        "maxTtfbSeconds": 0.156365,
+        "medianTtfbSeconds": 0.1482675
+      },
+      {
+        "host": "cdk-admin.lanting.live",
+        "route": "pinnedSgCompatibility",
+        "sampleCount": 2,
+        "minTtfbSeconds": 2.020108,
+        "maxTtfbSeconds": 3.85265,
+        "medianTtfbSeconds": 2.936379
+      }
+    ],
+    "interpretation": "The same static pages respond in 0.140–0.156 seconds through pinned Ali origin, while the temporary SG compatibility path shows 2.02–9.52 seconds. The observed extra wait is concentrated in the compatibility route; this does not measure supplier operations or completed CDN acceleration."
+  },
+  "publicRouting": {
+    "cdkPublicEntry": "SG compatibility entry during transition",
+    "edgeOneCertificateRulesAndDns": "Awaiting user configuration and acceptance per parent task",
+    "publicDirectAliVerified": false,
+    "cdnAccelerationCompleted": false
+  },
+  "overallReadOnlyAcceptance": "passed"
+}

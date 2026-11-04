@@ -1,0 +1,27 @@
+[Unit]
+Description=Restricted ChatGPT CONNECT relay for CDK (Singapore)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=cdk-gpt-connect
+Group=cdk-gpt-connect
+ExecStart=/usr/bin/python3 -B /opt/cdk-gpt-egress/gpt-connect-proxy.py
+Restart=on-failure
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+MemoryMax=32M
+CPUQuota=10%
+TasksMax=16
+UMask=0077
+
+[Install]
+WantedBy=multi-user.target

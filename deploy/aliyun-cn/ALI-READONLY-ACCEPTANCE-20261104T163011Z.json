@@ -1,0 +1,510 @@
+{
+  "schema": "cdk-aliyun-readonly-acceptance-v1",
+  "observedFrom": "2026-11-04T16:30:11.359684+00:00",
+  "observedThrough": "2026-11-04T16:33:39.331711+00:00",
+  "scope": "Read-only Ali service/process metadata, pinned Ali HTTPS page/assets and safe unauthenticated GET requests; no mutation of production configuration or business data.",
+  "productionConfigurationChanged": false,
+  "businessMutationRequestsIssued": false,
+  "rawCustomerDataOrCredentialsIncluded": false,
+  "runtime": {
+    "observedAt": "2026-11-04T16:30:11.359684+00:00",
+    "host": "aliyun-prod",
+    "services": [
+      {
+        "TimeoutStopUSec": "5min 30s",
+        "MainPID": "35450",
+        "Result": "success",
+        "NRestarts": "0",
+        "ExecMainStartTimestamp": "Wed 2026-11-04 23:57:18 CST",
+        "Slice": "cdk.slice",
+        "MemoryCurrent": "18350080",
+        "TasksCurrent": "6",
+        "CPUWeight": "25",
+        "CPUShares": "256",
+        "CPUQuotaPerSecUSec": "500ms",
+        "MemoryMax": "201326592",
+        "TasksMax": "11828",
+        "Id": "cdk-recharge.service",
+        "LoadState": "loaded",
+        "ActiveState": "active",
+        "SubState": "running",
+        "UnitFileState": "enabled"
+      },
+      {
+        "TimeoutStopUSec": "5min 30s",
+        "MainPID": "35448",
+        "Result": "success",
+        "NRestarts": "0",
+        "ExecMainStartTimestamp": "Wed 2026-11-04 23:57:18 CST",
+        "Slice": "cdk.slice",
+        "MemoryCurrent": "30769152",
+        "TasksCurrent": "7",
+        "CPUWeight": "25",
+        "CPUShares": "256",
+        "CPUQuotaPerSecUSec": "500ms",
+        "MemoryMax": "201326592",
+        "TasksMax": "64",
+        "Id": "cdk-admin.service",
+        "LoadState": "loaded",
+        "ActiveState": "active",
+        "SubState": "running",
+        "UnitFileState": "enabled"
+      },
+      {
+        "TimeoutStopUSec": "5min 30s",
+        "MainPID": "35449",
+        "Result": "success",
+        "NRestarts": "0",
+        "ExecMainStartTimestamp": "Wed 2026-11-04 23:57:18 CST",
+        "Slice": "cdk.slice",
+        "MemoryCurrent": "6897664",
+        "TasksCurrent": "5",
+        "CPUWeight": "25",
+        "CPUShares": "256",
+        "CPUQuotaPerSecUSec": "500ms",
+        "MemoryMax": "100663296",
+        "TasksMax": "32",
+        "Id": "cdk-lookup.service",
+        "LoadState": "loaded",
+        "ActiveState": "active",
+        "SubState": "running",
+        "UnitFileState": "enabled"
+      },
+      {
+        "TimeoutStopUSec": "1min 30s",
+        "MainPID": "25150",
+        "Result": "success",
+        "NRestarts": "0",
+        "ExecMainStartTimestamp": "Wed 2026-11-04 22:22:31 CST",
+        "Slice": "system.slice",
+        "MemoryCurrent": "1142784",
+        "TasksCurrent": "1",
+        "CPUWeight": "[not set]",
+        "CPUShares": "[not set]",
+        "CPUQuotaPerSecUSec": "50ms",
+        "MemoryMax": "33554432",
+        "TasksMax": "16",
+        "Id": "lanting-zovo-tunnel.service",
+        "LoadState": "loaded",
+        "ActiveState": "active",
+        "SubState": "running",
+        "UnitFileState": "enabled"
+      },
+      {
+        "TimeoutStopUSec": "1min 30s",
+        "MainPID": "30462",
+        "Result": "success",
+        "NRestarts": "0",
+        "ExecMainStartTimestamp": "Wed 2026-11-04 23:19:50 CST",
+        "Slice": "system.slice",
+        "MemoryCurrent": "757760",
+        "TasksCurrent": "1",
+        "CPUWeight": "[not set]",
+        "CPUShares": "[not set]",
+        "CPUQuotaPerSecUSec": "50ms",
+        "MemoryMax": "33554432",
+        "TasksMax": "16",
+        "Id": "cdk-gpt-tunnel.service",
+        "LoadState": "loaded",
+        "ActiveState": "active",
+        "SubState": "running",
+        "UnitFileState": "enabled"
+      },
+      {
+        "TimeoutStopUSec": "1min 30s",
+        "MainPID": "25146",
+        "Result": "success",
+        "NRestarts": "0",
+        "ExecMainStartTimestamp": "Wed 2026-11-04 22:22:31 CST",
+        "Slice": "system.slice",
+        "MemoryCurrent": "3690496",
+        "TasksCurrent": "1",
+        "CPUWeight": "[not set]",
+        "CPUShares": "[not set]",
+        "CPUQuotaPerSecUSec": "50ms",
+        "MemoryMax": "33554432",
+        "TasksMax": "16",
+        "Id": "lanting-google-tunnel.service",
+        "LoadState": "loaded",
+        "ActiveState": "active",
+        "SubState": "running",
+        "UnitFileState": "enabled"
+      }
+    ],
+    "ports": {
+      "9080": "listening",
+      "9081": "listening",
+      "18783": "listening",
+      "18784": "listening",
+      "18785": "listening"
+    },
+    "binary": [
+      {
+        "name": "cdk-recharge",
+        "path": "/opt/cdk-recharge/releases/20261104-cn-migration/cdk-recharge",
+        "sha256": "77fe9d2f80f069b86a891373fac98ecabb0f842dedf4c5a55803e2e55c6309ce"
+      },
+      {
+        "name": "cdk-admin",
+        "path": "/opt/cdk-admin/releases/20261104-cn-migration/cdk-admin",
+        "sha256": "77fe9d2f80f069b86a891373fac98ecabb0f842dedf4c5a55803e2e55c6309ce"
+      },
+      {
+        "name": "cdk-lookup",
+        "path": "/opt/cdk-lookup/releases/20261104-cn-migration/cdk-lookup",
+        "sha256": "f77b8a4adc92322388e4ec63988c4ceec3f4bb63b2d5f91ab91118a983869fbe"
+      }
+    ],
+    "maintenanceMarkerAbsent": true,
+    "lookupSocketExists": true
+  },
+  "http": {
+    "observedAt": "2026-11-04T16:31:08.883725+00:00",
+    "vantage": "operator machine; curl --noproxy '*' and --resolve HOST:443:121.40.64.63",
+    "tlsVerificationEnabled": true,
+    "allTlsVerificationResultsZero": true,
+    "requestCount": 37,
+    "requests": [
+      {
+        "host": "cdk.lanting.live",
+        "path": "/recharge",
+        "status": 200,
+        "kind": "staticSpaEntry"
+      },
+      {
+        "host": "cdk.lanting.live",
+        "path": "/batch",
+        "status": 200,
+        "kind": "staticSpaEntry"
+      },
+      {
+        "host": "cdk.lanting.live",
+        "path": "/history",
+        "status": 200,
+        "kind": "staticSpaEntry"
+      },
+      {
+        "host": "cdk.lanting.live",
+        "path": "/billing",
+        "status": 200,
+        "kind": "staticSpaEntry"
+      },
+      {
+        "host": "cdk-admin.lanting.live",
+        "path": "/ops/login",
+        "status": 200,
+        "kind": "staticSpaEntry"
+      },
+      {
+        "host": "cdk-admin.lanting.live",
+        "path": "/ops/cdkeys",
+        "status": 200,
+        "kind": "staticSpaEntry"
+      },
+      {
+        "host": "cdk-admin.lanting.live",
+        "path": "/ops/orders",
+        "status": 200,
+        "kind": "staticSpaEntry"
+      },
+      {
+        "host": "cdk-admin.lanting.live",
+        "path": "/ops/appearance",
+        "status": 200,
+        "kind": "staticSpaEntry"
+      },
+      {
+        "host": "cdk-admin.lanting.live",
+        "path": "/ops/integration",
+        "status": 200,
+        "kind": "staticSpaEntry"
+      },
+      {
+        "host": "cdk-admin.lanting.live",
+        "path": "/ops/audit",
+        "status": 200,
+        "kind": "staticSpaEntry"
+      },
+      {
+        "host": "cdk-admin.lanting.live",
+        "path": "/ops/webhooks",
+        "status": 200,
+        "kind": "staticSpaEntry"
+      },
+      {
+        "host": "cdk-admin.lanting.live",
+        "path": "/ops/card-selection",
+        "status": 200,
+        "kind": "staticSpaEntry"
+      },
+      {
+        "host": "cdk.lanting.live",
+        "path": "/assets/index-Bkgw8-VM.css",
+        "status": 200,
+        "kind": "htmlReferencedStaticAsset"
+      },
+      {
+        "host": "cdk.lanting.live",
+        "path": "/assets/index-CZdOT2oL.js",
+        "status": 200,
+        "kind": "htmlReferencedStaticAsset"
+      },
+      {
+        "host": "cdk.lanting.live",
+        "path": "/assets/vendor-element-BPxJXzly.css",
+        "status": 200,
+        "kind": "htmlReferencedStaticAsset"
+      },
+      {
+        "host": "cdk.lanting.live",
+        "path": "/assets/vendor-element-SfcNAOem.js",
+        "status": 200,
+        "kind": "htmlReferencedStaticAsset"
+      },
+      {
+        "host": "cdk.lanting.live",
+        "path": "/assets/vendor-vue-DaOs_vSr.js",
+        "status": 200,
+        "kind": "htmlReferencedStaticAsset"
+      },
+      {
+        "host": "cdk-admin.lanting.live",
+        "path": "/assets/index-Bkgw8-VM.css",
+        "status": 200,
+        "kind": "htmlReferencedStaticAsset"
+      },
+      {
+        "host": "cdk-admin.lanting.live",
+        "path": "/assets/index-CZdOT2oL.js",
+        "status": 200,
+        "kind": "htmlReferencedStaticAsset"
+      },
+      {
+        "host": "cdk-admin.lanting.live",
+        "path": "/assets/vendor-element-BPxJXzly.css",
+        "status": 200,
+        "kind": "htmlReferencedStaticAsset"
+      },
+      {
+        "host": "cdk-admin.lanting.live",
+        "path": "/assets/vendor-element-SfcNAOem.js",
+        "status": 200,
+        "kind": "htmlReferencedStaticAsset"
+      },
+      {
+        "host": "cdk-admin.lanting.live",
+        "path": "/assets/vendor-vue-DaOs_vSr.js",
+        "status": 200,
+        "kind": "htmlReferencedStaticAsset"
+      },
+      {
+        "host": "cdk.lanting.live",
+        "path": "/api/v1/public/site",
+        "status": 200,
+        "kind": "publicConfig"
+      },
+      {
+        "host": "cdk-admin.lanting.live",
+        "path": "/api/v1/public/site",
+        "status": 200,
+        "kind": "publicConfig"
+      },
+      {
+        "host": "cdk.lanting.live",
+        "path": "/api/v1/public/cdk/plans",
+        "status": 404,
+        "kind": "existingNginxPolicy"
+      },
+      {
+        "host": "cdk-admin.lanting.live",
+        "path": "/api/v1/auth/admin/me",
+        "status": 401,
+        "kind": "unauthenticatedApi"
+      },
+      {
+        "host": "cdk-admin.lanting.live",
+        "path": "/api/v1/admin/cardplatform/cdks/stored",
+        "status": 401,
+        "kind": "unauthenticatedApi"
+      },
+      {
+        "host": "cdk-admin.lanting.live",
+        "path": "/api/v1/admin/settings",
+        "status": 401,
+        "kind": "unauthenticatedApi"
+      },
+      {
+        "host": "cdk-admin.lanting.live",
+        "path": "/api/v1/admin/system/update",
+        "status": 404,
+        "kind": "disabledUpdater"
+      },
+      {
+        "host": "cdk.lanting.live",
+        "path": "/api/v1/admin/settings",
+        "status": 404,
+        "kind": "publicHostAdminDenied"
+      },
+      {
+        "host": "cdk.lanting.live",
+        "path": "/ops/cdkeys",
+        "status": 404,
+        "kind": "publicHostAdminDenied"
+      },
+      {
+        "host": "cdk-admin.lanting.live",
+        "path": "/recharge",
+        "status": 404,
+        "kind": "adminHostRechargeDenied"
+      },
+      {
+        "host": "cdk-admin.lanting.live",
+        "path": "/api/v1/public/cdk/plans",
+        "status": 404,
+        "kind": "adminHostPublicCdkDenied"
+      },
+      {
+        "host": "cdk.lanting.live",
+        "path": "/api/v1/public/cdk/redeem",
+        "status": 405,
+        "kind": "redeemWrongMethodDenied"
+      },
+      {
+        "host": "cdk.lanting.live",
+        "path": "/api/v1/lookup/cdk",
+        "status": 400,
+        "kind": "emptyLookupInputDenied"
+      },
+      {
+        "host": "cdk-admin.lanting.live",
+        "path": "/api/v1/auth/admin/login",
+        "status": 405,
+        "kind": "loginWrongMethodDenied"
+      },
+      {
+        "host": "lanting.live",
+        "path": "/ai",
+        "status": 200,
+        "kind": "mainSiteUnaffected"
+      }
+    ],
+    "cdkPageTtfbSeconds": {
+      "min": 0.134775,
+      "max": 0.197287
+    },
+    "cdkPagesAndAssetsCacheControl": "no-store",
+    "originServiceReachabilityAndPolicyAcceptance": "passed after explaining one incorrect initial expectation",
+    "initialExpectationMismatch": {
+      "path": "/api/v1/public/cdk/plans",
+      "initialExpectedStatus": 200,
+      "observedStatus": 404,
+      "resolution": "The SG baseline vhost and Ali vhost both intentionally omit this route; frontend/src has zero references to /public/cdk/plans. No route expansion performed. This is not evidence of a migration regression.",
+      "publicLiveCatalogVerified": false
+    },
+    "renderedBrowserInteractionsVerified": false
+  },
+  "health": [
+    {
+      "port": 9080,
+      "status": 200,
+      "statusField": "ok"
+    },
+    {
+      "port": 9081,
+      "status": 200,
+      "statusField": "ok"
+    }
+  ],
+  "runtimeSettings": {
+    "recharge": {
+      "TRUSTED_PROXIES": "127.0.0.1",
+      "UPDATE_ENABLED": "0",
+      "GOMAXPROCS": "1",
+      "GOMEMLIMIT": "144MiB",
+      "CARD_API_PROXY_URL": "http://127.0.0.1:18784",
+      "GPTCHECK_PROXY_URL": "http://127.0.0.1:18785"
+    },
+    "admin": {
+      "APP_ROLE": "admin",
+      "TRUSTED_PROXIES": "127.0.0.1",
+      "UPDATE_ENABLED": "0",
+      "GOMAXPROCS": "1",
+      "GOMEMLIMIT": "144MiB",
+      "CARD_API_PROXY_URL": "http://127.0.0.1:18784",
+      "GPTCHECK_PROXY_URL": "http://127.0.0.1:18785"
+    },
+    "lookup": {
+      "GOMAXPROCS": "1",
+      "GOMEMLIMIT": "64MiB",
+      "CARD_API_PROXY_URL": "http://127.0.0.1:18784"
+    }
+  },
+  "transportAndBackgroundEvidence": {
+    "observedAt": "2026-11-04T16:33:39.331711+00:00",
+    "sync": [
+      {
+        "unit": "cdk-recharge.service",
+        "successCount": 5,
+        "lastSyncHasNonZeroPlans": false,
+        "lastSyncHasNonZeroProducts": false,
+        "errorCount": 0
+      },
+      {
+        "unit": "cdk-admin.service",
+        "successCount": 5,
+        "lastSyncHasNonZeroPlans": true,
+        "lastSyncHasNonZeroProducts": true,
+        "errorCount": 0
+      }
+    ],
+    "listeningAddresses": {
+      "9080": [
+        "127.0.0.1:9080"
+      ],
+      "9081": [
+        "127.0.0.1:9081"
+      ],
+      "18783": [
+        "127.0.0.1:18783"
+      ],
+      "18784": [
+        "127.0.0.1:18784"
+      ],
+      "18785": [
+        "127.0.0.1:18785"
+      ]
+    },
+    "lookupSocket": {
+      "isSocket": true,
+      "mode": "0o660"
+    },
+    "rechargeUsesLookupSocket": true
+  },
+  "loopbackCatalogProbe": {
+    "observedAt": "2026-11-04T16:32:21.767796+00:00",
+    "cdk-recharge": {
+      "status": 200,
+      "source": "docs_default",
+      "errorPresent": false,
+      "registryCount": 10,
+      "providerDataReturned": false
+    },
+    "cdk-admin": {
+      "status": 404
+    }
+  },
+  "interpretation": [
+    "The Ali application and static asset origin is healthy and retains existing public/admin route isolation.",
+    "The admin background synchronizer successfully read non-empty upstream catalog data during the last 15 minutes without errors/fallbacks; configured proxy is the required SG Zovo tunnel.",
+    "The public recharge process deliberately has no upstream management API key; its loopback catalog endpoint returns docs_default. No non-empty provider synchronization is inferred from its quiet 0/0 sync lines.",
+    "HTML 200 proves delivery of SPA entrypoints, not authenticated workflows or real-money redemption.",
+    "The observed localhost listeners, socket permissions and process settings match the migration isolation design."
+  ],
+  "notEstablishedByThisAudit": [
+    "EdgeOne certificate issuance/deployment, all origin-header rules, and business DNS cutover.",
+    "Authenticated browser login and read-only admin UI workflow through the final public CDN route.",
+    "Real recharge, card issuance, account changes, or customer credential/billing flows: deliberately not executed.",
+    "CA renewal dry run, full frontend lazy chunk rendering, or destructive SG cleanup readiness.",
+    "SG legacy code deletion: a separate inventory and final CDN verification gate are required."
+  ]
+}

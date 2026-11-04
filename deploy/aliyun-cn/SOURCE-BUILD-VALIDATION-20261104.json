@@ -1,0 +1,44 @@
+{
+  "status": "passed",
+  "source_baseline_verified": "75/75 SG deployed manifest files matched",
+  "ordinary_tests": "go test -count=1 -p=1 ./... passed",
+  "race_packages": [
+    "background",
+    "lifecycle",
+    "cardplatform",
+    "cdklookup",
+    "gptcheck",
+    "handler",
+    "server"
+  ],
+  "final_diagnostic_change_validation": "handler race rerun passed after final text/metadata adjustment",
+  "static_binary_smoke": [
+    "SQLite initialization",
+    "PRAGMA integrity_check",
+    "HTTP /health 200",
+    "server SIGTERM exits 0 and confirms background drain",
+    "read-only Unix-socket lookup with synthetic invalid CDK",
+    "lookup SIGTERM exits 0 and confirms drain"
+  ],
+  "environment": {
+    "PrivateNetwork": true,
+    "CPUQuota": "60%",
+    "MemoryMax": "900M",
+    "GOMAXPROCS": 1,
+    "GOTOOLCHAIN": "local",
+    "GOPROXY": "off",
+    "GOSUMDB": "off",
+    "production_environment_loaded": false,
+    "production_database_loaded": false,
+    "real_provider_requests": false
+  },
+  "toolchain": "go1.27.3 linux/amd64",
+  "remote_artifact_directory": "/home/ubuntu/cdk-cn-build-20261104/out",
+  "artifacts": {
+    "cdk-recharge": "77fe9d2f80f069b86a891373fac98ecabb0f842dedf4c5a55803e2e55c6309ce",
+    "cdk-lookup": "f77b8a4adc92322388e4ec63988c4ceec3f4bb63b2d5f91ab91118a983869fbe"
+  },
+  "deployment_performed": false,
+  "record_context": "Historical pre-deployment isolated build validation; deployment and later cleanup are recorded separately in README and acceptance reports.",
+  "remote_artifact_directory_current_state": "SG temporary build directory removed after migration acceptance; production binaries remain in Ali releases."
+}

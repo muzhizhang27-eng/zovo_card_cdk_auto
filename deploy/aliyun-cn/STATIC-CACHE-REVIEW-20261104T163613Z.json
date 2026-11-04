@@ -1,0 +1,1369 @@
+{
+  "schema": "cdk-static-cache-readonly-review-v1",
+  "observedFrom": "2026-11-04T16:36:13.453969+00:00",
+  "observedThrough": "2026-11-04T16:38:07.959852+00:00",
+  "productionConfigurationChanged": false,
+  "inventory": {
+    "observedAt": "2026-11-04T16:36:13.453969+00:00",
+    "sites": [
+      {
+        "service": "cdk-recharge",
+        "host": "cdk.lanting.live",
+        "page": "/recharge",
+        "root": "/opt/cdk-recharge/releases/20261104-cn-migration/web",
+        "htmlBytes": 2346,
+        "htmlAssetReferences": [
+          {
+            "tag": "script",
+            "attribute": "src",
+            "path": "/assets/index-CZdOT2oL.js",
+            "rel": null,
+            "exists": true,
+            "bytes": 43301
+          },
+          {
+            "tag": "link",
+            "attribute": "href",
+            "path": "/assets/vendor-vue-DaOs_vSr.js",
+            "rel": "modulepreload",
+            "exists": true,
+            "bytes": 177274
+          },
+          {
+            "tag": "link",
+            "attribute": "href",
+            "path": "/assets/vendor-element-SfcNAOem.js",
+            "rel": "modulepreload",
+            "exists": true,
+            "bytes": 368096
+          },
+          {
+            "tag": "link",
+            "attribute": "href",
+            "path": "/assets/vendor-element-BPxJXzly.css",
+            "rel": "stylesheet",
+            "exists": true,
+            "bytes": 141810
+          },
+          {
+            "tag": "link",
+            "attribute": "href",
+            "path": "/assets/index-Bkgw8-VM.css",
+            "rel": "stylesheet",
+            "exists": true,
+            "bytes": 79951
+          }
+        ],
+        "htmlReferencedAssetTotalBytes": 810432,
+        "assetFileCount": 113,
+        "assetTotalBytes": 3328934,
+        "allAssetNamesHashShaped": true,
+        "nonHashShapedAssets": [],
+        "files": [
+          {
+            "path": "assets/SkinPicker-CvfrJ6s5.js",
+            "bytes": 1879,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/SiteAppearance-BpnLf6OP.js",
+            "bytes": 2989,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/CDKeyManagement-CIPO5216.css",
+            "bytes": 2039,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/vendor-vue-RNvOi5CA.js",
+            "bytes": 174712,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/AdminLayout-DlUIotMc.js",
+            "bytes": 4023,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/plan-CgXsrq53.js",
+            "bytes": 1505,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/grok-CKx1whRA.js",
+            "bytes": 1583,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/RedeemModeTabs.vue_vue_type_script_setup_true_lang-BZF_HN3y.js",
+            "bytes": 873,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/batch-session-BQSYY0CP.js",
+            "bytes": 10384,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/api-DHc4MKFT.js",
+            "bytes": 2072,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/LoginView-tu7VSbSX.js",
+            "bytes": 2902,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/AuditLogs-Bw56-VNe.js",
+            "bytes": 2845,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/HomeView-cZjy4UuO.js",
+            "bytes": 4915,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/CardIntegration-D-2mcZ-o.css",
+            "bytes": 1322,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/CDKeyManagement-c1PBBg2u.css",
+            "bytes": 2039,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/UserPageHeader.vue_vue_type_script_setup_true_lang-CBUBJVwG.js",
+            "bytes": 2017,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/OrderReconcile-BnU9TE25.css",
+            "bytes": 114,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/SetupView-CnU-x3fR.js",
+            "bytes": 5994,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/vendor-element-CX5QP2tj.js",
+            "bytes": 376907,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/CDKeyManagement-Cs2NIXvX.js",
+            "bytes": 38378,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/BillingCheckView-F8OzKQyA.js",
+            "bytes": 6606,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/SkinPicker-CKaoM-0u.js",
+            "bytes": 1882,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/CardSelectionConfig-Bk1mOKnC.js",
+            "bytes": 21484,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/SkinPicker-ZFQtoqub.css",
+            "bytes": 2274,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/ThemeToggle.vue_vue_type_script_setup_true_lang-D2FAy92G.js",
+            "bytes": 1564,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/CDKStatusView-DhHg-7K9.js",
+            "bytes": 12759,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/cdk-request-oc-ZLhl7.js",
+            "bytes": 1057,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/AgentSwapView-BvIV6A2-.js",
+            "bytes": 3293,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/AuditLogs-CmCa2xIE.js",
+            "bytes": 2875,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/vendor-xlsx-D_0l8YDs.js",
+            "bytes": 429487,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/OrderReconcile-Gx4og1rM.js",
+            "bytes": 10297,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/vendor-element-SfcNAOem.js",
+            "bytes": 368096,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/vendor-xlsx-YQ4lDkt_.js",
+            "bytes": 499540,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/AdminDashboard-CY7VSbG2.js",
+            "bytes": 11555,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/RegisterView--oGEhnTh.js",
+            "bytes": 727,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/api-BnrDhw3l.js",
+            "bytes": 2072,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/RechargeView-c6262wxY.js",
+            "bytes": 28452,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/CardSelectionConfig-JmtHQ0z9.css",
+            "bytes": 2576,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/NotFoundView-BDXy2qDQ.js",
+            "bytes": 617,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/CDKStatusView-Dh7XHEgn.js",
+            "bytes": 12567,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/batch-session-CMZKbH3u.js",
+            "bytes": 10145,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/clipboard-DdWkCDS0.js",
+            "bytes": 715,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/WebhookEvents-CR7q93Uq.js",
+            "bytes": 4878,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/CardSelectionConfig-DVujfswO.js",
+            "bytes": 21391,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/NotFoundView-ZewO8APV.js",
+            "bytes": 608,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/RechargeView-C70VbY1f.css",
+            "bytes": 780,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/OrderReconcile-LYOO14Yu.js",
+            "bytes": 10297,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/CardIntegration-C1RUOme-.js",
+            "bytes": 14473,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/CardSelectionConfig-COs9pRzZ.css",
+            "bytes": 2578,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/index-DUUVK9rz.css",
+            "bytes": 79718,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/BatchRedeemView-AkyAS12z.js",
+            "bytes": 30838,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/AdminDashboard-Bfq4kQ0h.js",
+            "bytes": 11695,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/api-CzbKa0_M.js",
+            "bytes": 1844,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/AdminLayout-soU6myXG.js",
+            "bytes": 4117,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/OrderReconcile-mM_fYG0q.js",
+            "bytes": 10296,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/SiteAppearance-7qt-1Cr_.js",
+            "bytes": 3018,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/UserPageHeader.vue_vue_type_script_setup_true_lang-Di8jmavA.js",
+            "bytes": 2010,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/AdminLayout-DcvwLxuG.js",
+            "bytes": 4117,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/url-safety-DsM97pwu.js",
+            "bytes": 1245,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/RechargeView-TO7I2wXA.js",
+            "bytes": 27874,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/plan-CzkruW9A.js",
+            "bytes": 1518,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/CardIntegration-IHLzAnSt.js",
+            "bytes": 14463,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/AdminLayout-eulvUAZC.css",
+            "bytes": 5076,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/WebhookEvents-CDNGbf69.js",
+            "bytes": 4878,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/CDKeyManagement-BvonvZcr.js",
+            "bytes": 39604,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/SiteAppearance-DWu88gGu.js",
+            "bytes": 3018,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/RegisterView-Bouw0yAN.js",
+            "bytes": 727,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/AgentSwapView-m_1jrEab.js",
+            "bytes": 3247,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/CDKeyManagement-Cym5QAWU.css",
+            "bytes": 2039,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/BatchRedeemView-Zpg6FNj-.js",
+            "bytes": 32004,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/AgentSwapView-Bgnsf4kc.js",
+            "bytes": 3247,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/UserPageHeader.vue_vue_type_script_setup_true_lang-Dk9GpOPp.js",
+            "bytes": 2010,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/index-CCG3ber9.js",
+            "bytes": 43233,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/CardIntegration-YcCFwp4j.js",
+            "bytes": 14463,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/BillingCheckView-h7HcbsS6.js",
+            "bytes": 7052,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/clipboard-CPGj1ZbJ.js",
+            "bytes": 735,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/LoginView-BY73u0wu.js",
+            "bytes": 2786,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/HomeView-DA81gjN9.js",
+            "bytes": 5088,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/RechargeView-CmAU-Dr9.css",
+            "bytes": 780,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/BatchRedeemView-B6p0Dpjr.css",
+            "bytes": 970,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/CDKStatusView-CTDc0dKl.js",
+            "bytes": 12759,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/grok-yHJzLemA.js",
+            "bytes": 1577,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/WebhookEvents-DjwFWd8s.js",
+            "bytes": 4701,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/RedeemModeTabs.vue_vue_type_script_setup_true_lang-CjkDsq4D.js",
+            "bytes": 865,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/RegisterView-DzzVs8SR.js",
+            "bytes": 734,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/HomeView-yvNkndeF.js",
+            "bytes": 4915,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/CardIntegration-DeX-MJIG.css",
+            "bytes": 1322,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/AdminLayout-CE3KFEQT.css",
+            "bytes": 5074,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/cdk-request-NyI_UYof.js",
+            "bytes": 892,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/batch-session-rkhgZtI_.js",
+            "bytes": 10145,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/SetupView-BX5H0q13.js",
+            "bytes": 5845,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/CDKeyManagement-v2gY2EKl.js",
+            "bytes": 39517,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/AuditLogs-DH7aoIrI.js",
+            "bytes": 2875,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/vendor-element-BPxJXzly.css",
+            "bytes": 141810,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/DashboardView-CxakWev0.js",
+            "bytes": 5344,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/index-CZdOT2oL.js",
+            "bytes": 43301,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/vendor-vue-DaOs_vSr.js",
+            "bytes": 177274,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/ThemeToggle.vue_vue_type_script_setup_true_lang-C-ZkzJQB.js",
+            "bytes": 1564,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/vendor-element-dy0VYFTZ.css",
+            "bytes": 142553,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/plan-BBhrMIfi.js",
+            "bytes": 1500,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/grok-CSk1TMM2.js",
+            "bytes": 1588,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/AdminDashboard-AGjX5OQp.js",
+            "bytes": 11695,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/BatchRedeemView-e-G8ZzP9.js",
+            "bytes": 30838,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/index-Bkgw8-VM.css",
+            "bytes": 79951,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/LoginView-Dl2MRAkL.js",
+            "bytes": 2786,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/RechargeView-DfS9J0mB.js",
+            "bytes": 27555,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/BillingCheckView-Dtb0Vysz.js",
+            "bytes": 7052,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/SkinPicker-FhmZtsDS.js",
+            "bytes": 1879,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/ThemeToggle.vue_vue_type_script_setup_true_lang-RCXkN6l9.js",
+            "bytes": 1567,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/index-l7dQM2tp.js",
+            "bytes": 42591,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/CardSelectionConfig-CmzxvwR_.js",
+            "bytes": 21391,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/RechargeView-VAScsN2D.css",
+            "bytes": 782,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/SetupView-Bt2oe8i-.js",
+            "bytes": 5845,
+            "hashShapedName": true
+          }
+        ]
+      },
+      {
+        "service": "cdk-admin",
+        "host": "cdk-admin.lanting.live",
+        "page": "/ops/login",
+        "root": "/opt/cdk-admin/releases/20261104-cn-migration/web",
+        "htmlBytes": 2346,
+        "htmlAssetReferences": [
+          {
+            "tag": "script",
+            "attribute": "src",
+            "path": "/assets/index-CZdOT2oL.js",
+            "rel": null,
+            "exists": true,
+            "bytes": 43301
+          },
+          {
+            "tag": "link",
+            "attribute": "href",
+            "path": "/assets/vendor-vue-DaOs_vSr.js",
+            "rel": "modulepreload",
+            "exists": true,
+            "bytes": 177274
+          },
+          {
+            "tag": "link",
+            "attribute": "href",
+            "path": "/assets/vendor-element-SfcNAOem.js",
+            "rel": "modulepreload",
+            "exists": true,
+            "bytes": 368096
+          },
+          {
+            "tag": "link",
+            "attribute": "href",
+            "path": "/assets/vendor-element-BPxJXzly.css",
+            "rel": "stylesheet",
+            "exists": true,
+            "bytes": 141810
+          },
+          {
+            "tag": "link",
+            "attribute": "href",
+            "path": "/assets/index-Bkgw8-VM.css",
+            "rel": "stylesheet",
+            "exists": true,
+            "bytes": 79951
+          }
+        ],
+        "htmlReferencedAssetTotalBytes": 810432,
+        "assetFileCount": 73,
+        "assetTotalBytes": 1834064,
+        "allAssetNamesHashShaped": true,
+        "nonHashShapedAssets": [],
+        "files": [
+          {
+            "path": "assets/index-5GVxKY5j.js",
+            "bytes": 43233,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/RegisterView-DHrc-bK6.js",
+            "bytes": 727,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/CDKeyManagement-CIPO5216.css",
+            "bytes": 2039,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/SetupView-DaAKyBgn.js",
+            "bytes": 5845,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/CardIntegration-M31yK17_.js",
+            "bytes": 14463,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/grok-CKx1whRA.js",
+            "bytes": 1583,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/batch-session-BFWMXjaP.js",
+            "bytes": 10145,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/api-DHc4MKFT.js",
+            "bytes": 2072,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/CDKStatusView-D6J3GyMh.js",
+            "bytes": 12557,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/OrderReconcile-BnU9TE25.css",
+            "bytes": 114,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/CardSelectionConfig-DrDF0kAh.js",
+            "bytes": 21391,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/SkinPicker-ZFQtoqub.css",
+            "bytes": 2274,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/WebhookEvents-B48WfQoV.js",
+            "bytes": 4878,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/AuditLogs-CmCa2xIE.js",
+            "bytes": 2875,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/OrderReconcile-Gx4og1rM.js",
+            "bytes": 10297,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/vendor-element-SfcNAOem.js",
+            "bytes": 368096,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/vendor-xlsx-YQ4lDkt_.js",
+            "bytes": 499540,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/AuditLogs-CaRVDjRv.js",
+            "bytes": 2875,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/CardSelectionConfig-JmtHQ0z9.css",
+            "bytes": 2576,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/clipboard-DdWkCDS0.js",
+            "bytes": 715,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/CardSelectionConfig-DVujfswO.js",
+            "bytes": 21391,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/NotFoundView-ZewO8APV.js",
+            "bytes": 608,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/AdminLayout-Bz0Ic6v-.js",
+            "bytes": 4117,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/RechargeView-C70VbY1f.css",
+            "bytes": 780,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/CDKeyManagement-BtZiTeye.js",
+            "bytes": 39517,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/api-CMPWnWnt.js",
+            "bytes": 2072,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/url-safety-Cj1A0ruu.js",
+            "bytes": 1269,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/BatchRedeemView-AkyAS12z.js",
+            "bytes": 30838,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/AdminDashboard-Bfq4kQ0h.js",
+            "bytes": 11695,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/AdminDashboard-DYqT96jg.js",
+            "bytes": 11695,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/AdminLayout-soU6myXG.js",
+            "bytes": 4117,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/SiteAppearance-7qt-1Cr_.js",
+            "bytes": 3018,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/SiteAppearance-Cl1yTUOq.js",
+            "bytes": 3018,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/SkinPicker-DF0VNmY8.js",
+            "bytes": 1879,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/OrderReconcile-rE9gxaCn.js",
+            "bytes": 10297,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/url-safety-DsM97pwu.js",
+            "bytes": 1245,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/RechargeView-TO7I2wXA.js",
+            "bytes": 27874,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/plan-CzkruW9A.js",
+            "bytes": 1518,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/WebhookEvents-CDNGbf69.js",
+            "bytes": 4878,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/CDKeyManagement-BvonvZcr.js",
+            "bytes": 39604,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/RegisterView-Bouw0yAN.js",
+            "bytes": 727,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/AgentSwapView-m_1jrEab.js",
+            "bytes": 3247,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/CDKeyManagement-Cym5QAWU.css",
+            "bytes": 2039,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/UserPageHeader.vue_vue_type_script_setup_true_lang-Dk9GpOPp.js",
+            "bytes": 2010,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/CardIntegration-YcCFwp4j.js",
+            "bytes": 14463,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/BillingCheckView-h7HcbsS6.js",
+            "bytes": 7052,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/RechargeView-BmE8m_Iy.js",
+            "bytes": 27555,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/RechargeView-CmAU-Dr9.css",
+            "bytes": 780,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/BatchRedeemView-B6p0Dpjr.css",
+            "bytes": 970,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/CDKStatusView-CTDc0dKl.js",
+            "bytes": 12759,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/grok-yHJzLemA.js",
+            "bytes": 1577,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/RedeemModeTabs.vue_vue_type_script_setup_true_lang-CjkDsq4D.js",
+            "bytes": 865,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/HomeView-D1V82N8d.js",
+            "bytes": 4915,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/HomeView-yvNkndeF.js",
+            "bytes": 4915,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/CardIntegration-DeX-MJIG.css",
+            "bytes": 1322,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/AdminLayout-CE3KFEQT.css",
+            "bytes": 5074,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/cdk-request-NyI_UYof.js",
+            "bytes": 892,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/batch-session-rkhgZtI_.js",
+            "bytes": 10145,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/SetupView-BX5H0q13.js",
+            "bytes": 5845,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/BillingCheckView-DoeLzaMw.js",
+            "bytes": 6677,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/vendor-element-BPxJXzly.css",
+            "bytes": 141810,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/BatchRedeemView-CjF7dIyj.js",
+            "bytes": 30838,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/LoginView-Ba3jNzaN.js",
+            "bytes": 2786,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/ThemeToggle.vue_vue_type_script_setup_true_lang-BjqgazVC.js",
+            "bytes": 1564,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/index-CZdOT2oL.js",
+            "bytes": 43301,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/vendor-vue-DaOs_vSr.js",
+            "bytes": 177274,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/ThemeToggle.vue_vue_type_script_setup_true_lang-C-ZkzJQB.js",
+            "bytes": 1564,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/plan-BBhrMIfi.js",
+            "bytes": 1500,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/index-Bkgw8-VM.css",
+            "bytes": 79951,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/LoginView-Dl2MRAkL.js",
+            "bytes": 2786,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/SkinPicker-FhmZtsDS.js",
+            "bytes": 1879,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/AgentSwapView-BiLxysbc.js",
+            "bytes": 3247,
+            "hashShapedName": true
+          },
+          {
+            "path": "assets/UserPageHeader.vue_vue_type_script_setup_true_lang-mYG50u-E.js",
+            "bytes": 2010,
+            "hashShapedName": true
+          }
+        ]
+      }
+    ]
+  },
+  "http": {
+    "observedAt": "2026-11-04T16:38:07.959852+00:00",
+    "acceptEncoding": "curl --compressed",
+    "assets": [
+      {
+        "host": "cdk.lanting.live",
+        "path": "/assets/index-CZdOT2oL.js",
+        "status": 200,
+        "transferredBodyBytes": 43301,
+        "tlsVerifyResult": 0,
+        "headers": {
+          "content-type": [
+            "application/javascript"
+          ],
+          "content-length": [
+            "43301"
+          ],
+          "cache-control": [
+            "no-store"
+          ]
+        },
+        "exit": 0
+      },
+      {
+        "host": "cdk.lanting.live",
+        "path": "/assets/vendor-vue-DaOs_vSr.js",
+        "status": 200,
+        "transferredBodyBytes": 177274,
+        "tlsVerifyResult": 0,
+        "headers": {
+          "content-type": [
+            "application/javascript"
+          ],
+          "content-length": [
+            "177274"
+          ],
+          "cache-control": [
+            "no-store"
+          ]
+        },
+        "exit": 0
+      },
+      {
+        "host": "cdk.lanting.live",
+        "path": "/assets/vendor-element-SfcNAOem.js",
+        "status": 200,
+        "transferredBodyBytes": 368096,
+        "tlsVerifyResult": 0,
+        "headers": {
+          "content-type": [
+            "application/javascript"
+          ],
+          "content-length": [
+            "368096"
+          ],
+          "cache-control": [
+            "no-store"
+          ]
+        },
+        "exit": 0
+      },
+      {
+        "host": "cdk.lanting.live",
+        "path": "/assets/vendor-element-BPxJXzly.css",
+        "status": 200,
+        "transferredBodyBytes": 141810,
+        "tlsVerifyResult": 0,
+        "headers": {
+          "content-type": [
+            "text/css"
+          ],
+          "content-length": [
+            "141810"
+          ],
+          "cache-control": [
+            "no-store"
+          ]
+        },
+        "exit": 0
+      },
+      {
+        "host": "cdk.lanting.live",
+        "path": "/assets/index-Bkgw8-VM.css",
+        "status": 200,
+        "transferredBodyBytes": 79951,
+        "tlsVerifyResult": 0,
+        "headers": {
+          "content-type": [
+            "text/css"
+          ],
+          "content-length": [
+            "79951"
+          ],
+          "cache-control": [
+            "no-store"
+          ]
+        },
+        "exit": 0
+      },
+      {
+        "host": "cdk-admin.lanting.live",
+        "path": "/assets/index-CZdOT2oL.js",
+        "status": 200,
+        "transferredBodyBytes": 43301,
+        "tlsVerifyResult": 0,
+        "headers": {
+          "content-type": [
+            "application/javascript"
+          ],
+          "content-length": [
+            "43301"
+          ],
+          "cache-control": [
+            "no-store"
+          ]
+        },
+        "exit": 0
+      },
+      {
+        "host": "cdk-admin.lanting.live",
+        "path": "/assets/vendor-vue-DaOs_vSr.js",
+        "status": 200,
+        "transferredBodyBytes": 177274,
+        "tlsVerifyResult": 0,
+        "headers": {
+          "content-type": [
+            "application/javascript"
+          ],
+          "content-length": [
+            "177274"
+          ],
+          "cache-control": [
+            "no-store"
+          ]
+        },
+        "exit": 0
+      },
+      {
+        "host": "cdk-admin.lanting.live",
+        "path": "/assets/vendor-element-SfcNAOem.js",
+        "status": 200,
+        "transferredBodyBytes": 368096,
+        "tlsVerifyResult": 0,
+        "headers": {
+          "content-type": [
+            "application/javascript"
+          ],
+          "content-length": [
+            "368096"
+          ],
+          "cache-control": [
+            "no-store"
+          ]
+        },
+        "exit": 0
+      },
+      {
+        "host": "cdk-admin.lanting.live",
+        "path": "/assets/vendor-element-BPxJXzly.css",
+        "status": 200,
+        "transferredBodyBytes": 141810,
+        "tlsVerifyResult": 0,
+        "headers": {
+          "content-type": [
+            "text/css"
+          ],
+          "content-length": [
+            "141810"
+          ],
+          "cache-control": [
+            "no-store"
+          ]
+        },
+        "exit": 0
+      },
+      {
+        "host": "cdk-admin.lanting.live",
+        "path": "/assets/index-Bkgw8-VM.css",
+        "status": 200,
+        "transferredBodyBytes": 79951,
+        "tlsVerifyResult": 0,
+        "headers": {
+          "content-type": [
+            "text/css"
+          ],
+          "content-length": [
+            "79951"
+          ],
+          "cache-control": [
+            "no-store"
+          ]
+        },
+        "exit": 0
+      }
+    ],
+    "totals": {
+      "cdk.lanting.live": 810432,
+      "cdk-admin.lanting.live": 810432
+    }
+  },
+  "entryGraph": {
+    "entry": "/assets/index-CZdOT2oL.js",
+    "referencesPerSite": 41,
+    "missingReferencesPerSite": 0,
+    "publicRouteAdditionalViewAssets": [
+      {
+        "path": "/assets/RechargeView-TO7I2wXA.js",
+        "bytes": 27874
+      },
+      {
+        "path": "/assets/RechargeView-CmAU-Dr9.css",
+        "bytes": 780
+      }
+    ],
+    "adminLoginAdditionalViewAsset": {
+      "path": "/assets/LoginView-Dl2MRAkL.js",
+      "bytes": 2786
+    },
+    "limitation": "Regex inspection of current entry references; not a full browser network dependency trace."
+  },
+  "findings": [
+    "Both index.html files reference the same five hashed JS/CSS files totaling 810432 bytes, plus 2346 bytes HTML. Totals do not include route-lazy-loaded dependencies.",
+    "All 113 public and 73 admin assets have Vite-style eight-character version suffixes. Filename shape verified; no independent reproduction of Vite's content hash algorithm was attempted.",
+    "All ten origin assets returned HTTP 200 with TLS verification and Cache-Control:no-store; curl --compressed received no Content-Encoding and transferred raw asset sizes.",
+    "The current Nginx static location only serves filesystem files (try_files) with restricted extensions, so the reviewed /assets JS/CSS responses are not personalized.",
+    "Public and admin roots retain older hashed files; their presence supports cached older HTML/module references and is not a reason to delete them."
+  ],
+  "recommendedRule": {
+    "condition": "(HOST equals cdk.lanting.live OR HOST equals cdk-admin.lanting.live) AND URL path matches /assets/* AND file extension in [js,css] AND request method in [GET,HEAD]",
+    "optionalStricterPathRegex": "^/assets/[A-Za-z0-9_.-]+-[A-Za-z0-9_-]{8}\\.(js|css)$",
+    "cacheKey": "Keep the default host-aware key; do not merge these two hosts or cache personalized routes.",
+    "priority": "The current live console, inspected by the parent agent, explicitly says lower rules have higher priority. Add the static exception AFTER/below the two existing CDK host-wide no-cache rules. Preserve per-host origin-auth/IP headers.",
+    "minimalEdgeOnlyChange": "Set node TTL 86400 seconds and force-cache only this static scope; source no-store otherwise prevents caching. Browser remains subject to source no-store.",
+    "preferredSourceAndEdgeChange": "For successful hashed static JS/CSS only, return Cache-Control: public,max-age=31536000,immutable; EdgeOne follows source cache policy. HTML/API remain no-store. Do not apply immutable to missing-file/error responses.",
+    "nginxInheritanceCaution": "Adding add_header inside a location replaces inherited add_header directives on the installed Nginx; preserve existing security headers explicitly or implement the selected policy through a safely scoped map.",
+    "compression": "Enable compression for only reviewed static JS/CSS at source/edge and verify Content-Encoding/Vary plus decoded byte equivalence. Do not broaden to sensitive dynamic responses as part of this change.",
+    "notApplied": true,
+    "prioritySourceConflict": "The official web page consulted by this audit described top-first cache priority; current console wording is authoritative for this configuration and was confirmed by the parent agent."
+  },
+  "officialSources": [
+    "https://cloud.tencent.com/document/product/1552/87651",
+    "https://cloud.tencent.com/document/product/1552/70777"
+  ],
+  "verificationWithoutRealUserSession": {
+    "currentReadOnlyEvidence": "See ALI-READONLY-ACCEPTANCE-20261104T163011Z.json: 37 origin HTTP/asset/policy outcomes, health, valid TLS, loopback isolation, and non-empty admin upstream catalog synchronization.",
+    "existingBuildValidationArtifact": "/tmp/cdk-cn-migration-20261104/source-build-validation.json",
+    "buildArtifactMatchesLiveBinary": true,
+    "existingIsolation": {
+      "PrivateNetwork": true,
+      "productionEnvironmentLoaded": false,
+      "productionDatabaseLoaded": false,
+      "realProviderRequests": false
+    },
+    "testCoverage": [
+      {
+        "area": "Admin login/session/CSRF/logout/revocation",
+        "file": "backend/internal/server/admin_auth_test.go",
+        "isolation": "in-memory SQLite, synthetic administrator/password/JWT, httptest"
+      },
+      {
+        "area": "Role boundaries and request log credential stripping",
+        "files": [
+          "backend/internal/server/role_test.go",
+          "backend/internal/server/logger_test.go"
+        ],
+        "isolation": "synthetic HTTP requests"
+      },
+      {
+        "area": "Provider CONNECT/TLS/domain allowlist, redirect refusal, no direct fallback",
+        "files": [
+          "backend/internal/cardplatform/transport_test.go",
+          "backend/internal/cardplatform/origin_test.go",
+          "backend/internal/gptcheck/proxy_test.go"
+        ],
+        "isolation": "local fake proxy/upstream"
+      },
+      {
+        "area": "Read-only lookup lifecycle/full-code match/socket protocol/error sanitization",
+        "file": "backend/internal/cdklookup/lookup_test.go",
+        "isolation": "synthetic upstream and Unix socket"
+      },
+      {
+        "area": "Account/session expiry and invoice response parsing",
+        "file": "backend/internal/gptcheck/check_test.go",
+        "isolation": "injected fake transport and synthetic credentials"
+      },
+      {
+        "area": "Request/asynchronous-work draining on shutdown",
+        "files": [
+          "backend/internal/lifecycle/http_test.go",
+          "backend/internal/background/tasks_test.go"
+        ],
+        "isolation": "local synthetic HTTP and tasks"
+      },
+      {
+        "area": "SQLite snapshot/install type/schema/integrity safeguards",
+        "files": [
+          "deploy/aliyun-cn/test_sqlite_snapshot.py",
+          "deploy/aliyun-cn/test_final_snapshot_install.py"
+        ],
+        "isolation": "temporary synthetic databases"
+      },
+      {
+        "area": "EdgeOne/SG header identity and stripping",
+        "file": "deploy/aliyun-cn/nginx/verify_candidates.py",
+        "isolation": "candidate Nginx and fake upstream, synthetic credentials"
+      },
+      {
+        "area": "Grace-recovery frontend consent/pending/stale response/no redemption",
+        "file": "frontend/scripts/test-grace-recovery.mjs",
+        "isolation": "mocked fetch/session and Vue effect scope; available test, not rerun by this audit"
+      }
+    ],
+    "limitation": "This can establish migration mechanisms and non-transactional behavior without a real user session. It cannot prove an actual user's third-party account/session, payment or card redemption succeeds. Never submit synthetic or real charge-bearing transactions against production merely to claim migration acceptance.",
+    "testRerunPerformedByThisAudit": false
+  }
+}

@@ -1,0 +1,654 @@
+{
+  "schema": "cdk-admin-edge-public-acceptance-v1",
+  "observedAt": "2026-11-04T16:54:20.966855+00:00",
+  "host": "cdk-admin.lanting.live",
+  "checks": [
+    {
+      "path": "/assets/vendor-element-SfcNAOem.js",
+      "round": 0,
+      "acceptEncoding": "identity",
+      "exit": 0,
+      "status": 200,
+      "tlsVerifyResult": 0,
+      "edgeIp": "39.156.8.121",
+      "ttfbSeconds": 0.292602,
+      "transferredBodyBytes": 368096,
+      "headers": {
+        "server": [
+          "nginx"
+        ],
+        "content-type": [
+          "application/javascript"
+        ],
+        "vary": [
+          "Accept-Encoding"
+        ],
+        "etag": [
+          "\"6ae1ecc6-59de0\""
+        ],
+        "last-modified": [
+          "Wed, 28 Oct 2026 12:38:30 GMT"
+        ],
+        "cache-control": [
+          "public, immutable, max-age=31536000"
+        ],
+        "content-length": [
+          "368096"
+        ],
+        "date": [
+          "Wed, 04 Nov 2026 16:54:21 GMT"
+        ],
+        "eo-cache-status": [
+          "MISS"
+        ]
+      },
+      "decodedBodyBytes": 368096,
+      "decodedBodySha256": "ca29b69c17b6dd7253acf3ebddbaf86515566301b0f19eba335a72df01e5e9f2"
+    },
+    {
+      "path": "/assets/vendor-element-SfcNAOem.js",
+      "round": 1,
+      "acceptEncoding": "identity",
+      "exit": 0,
+      "status": 200,
+      "tlsVerifyResult": 0,
+      "edgeIp": "39.156.8.121",
+      "ttfbSeconds": 0.030431,
+      "transferredBodyBytes": 368096,
+      "headers": {
+        "last-modified": [
+          "Wed, 28 Oct 2026 12:38:30 GMT"
+        ],
+        "etag": [
+          "\"6ae1ecc6-59de0\""
+        ],
+        "server": [
+          "nginx"
+        ],
+        "content-type": [
+          "application/javascript"
+        ],
+        "vary": [
+          "Accept-Encoding"
+        ],
+        "cache-control": [
+          "public, immutable, max-age=31536000"
+        ],
+        "content-length": [
+          "368096"
+        ],
+        "date": [
+          "Wed, 04 Nov 2026 16:54:21 GMT"
+        ],
+        "eo-cache-status": [
+          "HIT"
+        ]
+      },
+      "decodedBodyBytes": 368096,
+      "decodedBodySha256": "ca29b69c17b6dd7253acf3ebddbaf86515566301b0f19eba335a72df01e5e9f2"
+    },
+    {
+      "path": "/assets/vendor-element-SfcNAOem.js",
+      "round": 1,
+      "acceptEncoding": "gzip",
+      "exit": 0,
+      "status": 200,
+      "tlsVerifyResult": 0,
+      "edgeIp": "39.156.8.121",
+      "ttfbSeconds": 0.03598,
+      "transferredBodyBytes": 121914,
+      "headers": {
+        "last-modified": [
+          "Wed, 28 Oct 2026 12:38:30 GMT"
+        ],
+        "etag": [
+          "\"6ae1ecc6-59de0\""
+        ],
+        "server": [
+          "nginx"
+        ],
+        "content-type": [
+          "application/javascript"
+        ],
+        "vary": [
+          "Accept-Encoding"
+        ],
+        "cache-control": [
+          "public, immutable, max-age=31536000"
+        ],
+        "content-encoding": [
+          "gzip"
+        ],
+        "date": [
+          "Wed, 04 Nov 2026 16:54:21 GMT"
+        ],
+        "eo-cache-status": [
+          "HIT"
+        ]
+      },
+      "gzipDecoded": true,
+      "decodedBodyBytes": 368096,
+      "decodedBodySha256": "ca29b69c17b6dd7253acf3ebddbaf86515566301b0f19eba335a72df01e5e9f2"
+    },
+    {
+      "path": "/assets/index-Bkgw8-VM.css",
+      "round": 1,
+      "acceptEncoding": "identity",
+      "exit": 0,
+      "status": 200,
+      "tlsVerifyResult": 0,
+      "edgeIp": "39.156.8.121",
+      "ttfbSeconds": 0.180788,
+      "transferredBodyBytes": 79951,
+      "headers": {
+        "server": [
+          "nginx"
+        ],
+        "content-type": [
+          "text/css"
+        ],
+        "vary": [
+          "Accept-Encoding"
+        ],
+        "etag": [
+          "\"6ae1ecc6-1384f\""
+        ],
+        "last-modified": [
+          "Wed, 28 Oct 2026 12:38:30 GMT"
+        ],
+        "cache-control": [
+          "public, immutable, max-age=31536000"
+        ],
+        "content-length": [
+          "79951"
+        ],
+        "date": [
+          "Wed, 04 Nov 2026 16:54:21 GMT"
+        ],
+        "eo-cache-status": [
+          "MISS"
+        ]
+      },
+      "decodedBodyBytes": 79951,
+      "decodedBodySha256": "c8b5766dacdc3903227a240aa6bc83d4a0df9a232dc8c09c5b66262a98a7b5d1"
+    },
+    {
+      "path": "/assets/index-Bkgw8-VM.css",
+      "round": 1,
+      "acceptEncoding": "gzip",
+      "exit": 0,
+      "status": 200,
+      "tlsVerifyResult": 0,
+      "edgeIp": "39.156.8.121",
+      "ttfbSeconds": 0.031331,
+      "transferredBodyBytes": 17099,
+      "headers": {
+        "last-modified": [
+          "Wed, 28 Oct 2026 12:38:30 GMT"
+        ],
+        "etag": [
+          "\"6ae1ecc6-1384f\""
+        ],
+        "server": [
+          "nginx"
+        ],
+        "content-type": [
+          "text/css"
+        ],
+        "vary": [
+          "Accept-Encoding"
+        ],
+        "cache-control": [
+          "public, immutable, max-age=31536000"
+        ],
+        "content-encoding": [
+          "gzip"
+        ],
+        "date": [
+          "Wed, 04 Nov 2026 16:54:21 GMT"
+        ],
+        "eo-cache-status": [
+          "HIT"
+        ]
+      },
+      "gzipDecoded": true,
+      "decodedBodyBytes": 79951,
+      "decodedBodySha256": "c8b5766dacdc3903227a240aa6bc83d4a0df9a232dc8c09c5b66262a98a7b5d1"
+    },
+    {
+      "path": "/ops/login",
+      "round": 1,
+      "acceptEncoding": "identity",
+      "exit": 0,
+      "status": 200,
+      "tlsVerifyResult": 0,
+      "edgeIp": "39.156.8.121",
+      "ttfbSeconds": 0.200281,
+      "transferredBodyBytes": 2346,
+      "headers": {
+        "server": [
+          "nginx"
+        ],
+        "content-type": [
+          "text/html"
+        ],
+        "etag": [
+          "\"6ae1ecc6-92a\""
+        ],
+        "last-modified": [
+          "Wed, 28 Oct 2026 12:38:30 GMT"
+        ],
+        "cache-control": [
+          "no-store"
+        ],
+        "content-length": [
+          "2346"
+        ],
+        "date": [
+          "Wed, 04 Nov 2026 16:54:21 GMT"
+        ],
+        "eo-cache-status": [
+          "MISS"
+        ]
+      },
+      "decodedBodyBytes": 2346,
+      "decodedBodySha256": "86430e2df161f0175c61adc0e7a71be57655eb9c6e9912f19057ec333cebca26"
+    },
+    {
+      "path": "/api/v1/public/site",
+      "round": 1,
+      "acceptEncoding": "identity",
+      "exit": 0,
+      "status": 200,
+      "tlsVerifyResult": 0,
+      "edgeIp": "39.156.8.121",
+      "ttfbSeconds": 0.204231,
+      "transferredBodyBytes": 127,
+      "headers": {
+        "server": [
+          "nginx"
+        ],
+        "content-type": [
+          "application/json; charset=utf-8"
+        ],
+        "cache-control": [
+          "no-store"
+        ],
+        "content-length": [
+          "127"
+        ],
+        "date": [
+          "Wed, 04 Nov 2026 16:54:22 GMT"
+        ],
+        "eo-cache-status": [
+          "MISS"
+        ]
+      },
+      "decodedBodyBytes": 127,
+      "decodedBodySha256": "94218608520d6a18a431f3688447d3eefc473850ce339ec36142296d5a8c11a2"
+    },
+    {
+      "path": "/assets/codex-missing-Abc12345.js",
+      "round": 1,
+      "acceptEncoding": "identity",
+      "exit": 0,
+      "status": 404,
+      "tlsVerifyResult": 0,
+      "edgeIp": "39.156.8.121",
+      "ttfbSeconds": 0.163912,
+      "transferredBodyBytes": 146,
+      "headers": {
+        "server": [
+          "nginx"
+        ],
+        "content-type": [
+          "text/html"
+        ],
+        "cache-control": [
+          "no-store"
+        ],
+        "content-length": [
+          "146"
+        ],
+        "date": [
+          "Wed, 04 Nov 2026 16:54:22 GMT"
+        ],
+        "eo-cache-status": [
+          "MISS"
+        ]
+      },
+      "decodedBodyBytes": 146,
+      "decodedBodySha256": "55f7d9e99b8e2d4e0e193b2f0275501e6d9c1ebd29cadbea6a0da48a8587e3e0"
+    },
+    {
+      "path": "/assets/vendor-element-SfcNAOem.js",
+      "round": 2,
+      "acceptEncoding": "identity",
+      "exit": 0,
+      "status": 200,
+      "tlsVerifyResult": 0,
+      "edgeIp": "39.156.8.121",
+      "ttfbSeconds": 0.032219,
+      "transferredBodyBytes": 368096,
+      "headers": {
+        "last-modified": [
+          "Wed, 28 Oct 2026 12:38:30 GMT"
+        ],
+        "etag": [
+          "\"6ae1ecc6-59de0\""
+        ],
+        "server": [
+          "nginx"
+        ],
+        "content-type": [
+          "application/javascript"
+        ],
+        "vary": [
+          "Accept-Encoding"
+        ],
+        "cache-control": [
+          "public, immutable, max-age=31536000"
+        ],
+        "content-length": [
+          "368096"
+        ],
+        "date": [
+          "Wed, 04 Nov 2026 16:54:24 GMT"
+        ],
+        "age": [
+          "3"
+        ],
+        "eo-cache-status": [
+          "HIT"
+        ]
+      },
+      "decodedBodyBytes": 368096,
+      "decodedBodySha256": "ca29b69c17b6dd7253acf3ebddbaf86515566301b0f19eba335a72df01e5e9f2"
+    },
+    {
+      "path": "/assets/vendor-element-SfcNAOem.js",
+      "round": 2,
+      "acceptEncoding": "gzip",
+      "exit": 0,
+      "status": 200,
+      "tlsVerifyResult": 0,
+      "edgeIp": "39.156.8.121",
+      "ttfbSeconds": 0.027844,
+      "transferredBodyBytes": 121914,
+      "headers": {
+        "last-modified": [
+          "Wed, 28 Oct 2026 12:38:30 GMT"
+        ],
+        "content-encoding": [
+          "gzip"
+        ],
+        "etag": [
+          "\"6ae1ecc6-59de0\""
+        ],
+        "server": [
+          "nginx"
+        ],
+        "content-type": [
+          "application/javascript"
+        ],
+        "vary": [
+          "Accept-Encoding"
+        ],
+        "cache-control": [
+          "public, immutable, max-age=31536000"
+        ],
+        "content-length": [
+          "121914"
+        ],
+        "date": [
+          "Wed, 04 Nov 2026 16:54:24 GMT"
+        ],
+        "age": [
+          "3"
+        ],
+        "eo-cache-status": [
+          "HIT"
+        ]
+      },
+      "gzipDecoded": true,
+      "decodedBodyBytes": 368096,
+      "decodedBodySha256": "ca29b69c17b6dd7253acf3ebddbaf86515566301b0f19eba335a72df01e5e9f2"
+    },
+    {
+      "path": "/assets/index-Bkgw8-VM.css",
+      "round": 2,
+      "acceptEncoding": "identity",
+      "exit": 0,
+      "status": 200,
+      "tlsVerifyResult": 0,
+      "edgeIp": "39.156.8.121",
+      "ttfbSeconds": 0.02912,
+      "transferredBodyBytes": 79951,
+      "headers": {
+        "last-modified": [
+          "Wed, 28 Oct 2026 12:38:30 GMT"
+        ],
+        "etag": [
+          "\"6ae1ecc6-1384f\""
+        ],
+        "server": [
+          "nginx"
+        ],
+        "content-type": [
+          "text/css"
+        ],
+        "vary": [
+          "Accept-Encoding"
+        ],
+        "cache-control": [
+          "public, immutable, max-age=31536000"
+        ],
+        "content-length": [
+          "79951"
+        ],
+        "date": [
+          "Wed, 04 Nov 2026 16:54:24 GMT"
+        ],
+        "age": [
+          "3"
+        ],
+        "eo-cache-status": [
+          "HIT"
+        ]
+      },
+      "decodedBodyBytes": 79951,
+      "decodedBodySha256": "c8b5766dacdc3903227a240aa6bc83d4a0df9a232dc8c09c5b66262a98a7b5d1"
+    },
+    {
+      "path": "/assets/index-Bkgw8-VM.css",
+      "round": 2,
+      "acceptEncoding": "gzip",
+      "exit": 0,
+      "status": 200,
+      "tlsVerifyResult": 0,
+      "edgeIp": "39.156.8.121",
+      "ttfbSeconds": 0.028665,
+      "transferredBodyBytes": 17099,
+      "headers": {
+        "last-modified": [
+          "Wed, 28 Oct 2026 12:38:30 GMT"
+        ],
+        "content-encoding": [
+          "gzip"
+        ],
+        "etag": [
+          "\"6ae1ecc6-1384f\""
+        ],
+        "server": [
+          "nginx"
+        ],
+        "content-type": [
+          "text/css"
+        ],
+        "vary": [
+          "Accept-Encoding"
+        ],
+        "cache-control": [
+          "public, immutable, max-age=31536000"
+        ],
+        "content-length": [
+          "17099"
+        ],
+        "date": [
+          "Wed, 04 Nov 2026 16:54:24 GMT"
+        ],
+        "age": [
+          "3"
+        ],
+        "eo-cache-status": [
+          "HIT"
+        ]
+      },
+      "gzipDecoded": true,
+      "decodedBodyBytes": 79951,
+      "decodedBodySha256": "c8b5766dacdc3903227a240aa6bc83d4a0df9a232dc8c09c5b66262a98a7b5d1"
+    },
+    {
+      "path": "/ops/login",
+      "round": 2,
+      "acceptEncoding": "identity",
+      "exit": 0,
+      "status": 200,
+      "tlsVerifyResult": 0,
+      "edgeIp": "39.156.8.121",
+      "ttfbSeconds": 0.174299,
+      "transferredBodyBytes": 2346,
+      "headers": {
+        "server": [
+          "nginx"
+        ],
+        "content-type": [
+          "text/html"
+        ],
+        "etag": [
+          "\"6ae1ecc6-92a\""
+        ],
+        "last-modified": [
+          "Wed, 28 Oct 2026 12:38:30 GMT"
+        ],
+        "cache-control": [
+          "no-store"
+        ],
+        "content-length": [
+          "2346"
+        ],
+        "date": [
+          "Wed, 04 Nov 2026 16:54:24 GMT"
+        ],
+        "eo-cache-status": [
+          "MISS"
+        ]
+      },
+      "decodedBodyBytes": 2346,
+      "decodedBodySha256": "86430e2df161f0175c61adc0e7a71be57655eb9c6e9912f19057ec333cebca26"
+    },
+    {
+      "path": "/api/v1/public/site",
+      "round": 2,
+      "acceptEncoding": "identity",
+      "exit": 0,
+      "status": 200,
+      "tlsVerifyResult": 0,
+      "edgeIp": "39.156.8.121",
+      "ttfbSeconds": 0.238141,
+      "transferredBodyBytes": 127,
+      "headers": {
+        "server": [
+          "nginx"
+        ],
+        "content-type": [
+          "application/json; charset=utf-8"
+        ],
+        "cache-control": [
+          "no-store"
+        ],
+        "content-length": [
+          "127"
+        ],
+        "date": [
+          "Wed, 04 Nov 2026 16:54:24 GMT"
+        ],
+        "eo-cache-status": [
+          "MISS"
+        ]
+      },
+      "decodedBodyBytes": 127,
+      "decodedBodySha256": "94218608520d6a18a431f3688447d3eefc473850ce339ec36142296d5a8c11a2"
+    },
+    {
+      "path": "/assets/codex-missing-Abc12345.js",
+      "round": 2,
+      "acceptEncoding": "identity",
+      "exit": 0,
+      "status": 404,
+      "tlsVerifyResult": 0,
+      "edgeIp": "39.156.8.121",
+      "ttfbSeconds": 0.212033,
+      "transferredBodyBytes": 146,
+      "headers": {
+        "server": [
+          "nginx"
+        ],
+        "content-type": [
+          "text/html"
+        ],
+        "cache-control": [
+          "no-store"
+        ],
+        "content-length": [
+          "146"
+        ],
+        "date": [
+          "Wed, 04 Nov 2026 16:54:25 GMT"
+        ],
+        "eo-cache-status": [
+          "MISS"
+        ]
+      },
+      "decodedBodyBytes": 146,
+      "decodedBodySha256": "55f7d9e99b8e2d4e0e193b2f0275501e6d9c1ebd29cadbea6a0da48a8587e3e0"
+    }
+  ],
+  "tlsVerificationEnabled": true,
+  "cdkPublicHostTouched": false,
+  "responseBodiesIncluded": false,
+  "initialPublicDnsEdgeIp": "39.156.8.121",
+  "completedAt": "2026-11-04T16:54:25.425555+00:00",
+  "authoritativeDns": [
+    {
+      "nameserver": "dns9.hichina.com",
+      "CNAME": "cdk-admin.lanting.live.eo.dnse1.com."
+    },
+    {
+      "nameserver": "dns10.hichina.com",
+      "CNAME": "cdk-admin.lanting.live.eo.dnse1.com."
+    }
+  ],
+  "originAssetSha256": {
+    "/assets/vendor-element-SfcNAOem.js": "ca29b69c17b6dd7253acf3ebddbaf86515566301b0f19eba335a72df01e5e9f2",
+    "/assets/index-Bkgw8-VM.css": "c8b5766dacdc3903227a240aa6bc83d4a0df9a232dc8c09c5b66262a98a7b5d1"
+  },
+  "assertions": {
+    "tlsAndHttpExitPassed": true,
+    "secondRoundAssetsHit": true,
+    "secondRoundAssetsAgePositive": true,
+    "assetEncodingVariantsMatchOrigin": true,
+    "gzipActuallyReturnedAndDecoded": true,
+    "identityNotGzip": true,
+    "dynamicAndMissingAssetsNoStoreMiss": true,
+    "missingAsset404BothRounds": true
+  },
+  "allAssertionsPassed": true,
+  "interpretation": [
+    "Business DNS is authoritative CNAME to EdgeOne; public HTTPS certificate verification succeeded.",
+    "Same-edge two-round JS/CSS requests demonstrate reusable cache entries and correct identity/gzip negotiation; decoded cached bytes match Ali source hashes.",
+    "Edge gzip payload sizes differ from the measured origin gzip sizes, so this proves correct compressed delivery rather than byte-for-byte gzip passthrough.",
+    "HTML, public API, and the same missing hashed static asset remained no-store/MISS in both rounds; this audit observes current sample behavior, not all regions or all future cache states.",
+    "Only cdk-admin was tested. No production writes, real-user sessions, financial transactions or cdk-domain changes occurred."
+  ]
+}

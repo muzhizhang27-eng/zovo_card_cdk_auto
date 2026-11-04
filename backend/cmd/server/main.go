@@ -4,6 +4,9 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"os"
+	"os/signal"
+	"syscall"
 
 	"github.com/gin-gonic/gin"
 	"github.com/tuzi/cdk-recharge-system/internal/config"
@@ -11,7 +14,8 @@ import (
 )
 
 func main() {
-	ctx := context.Background()
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+	defer stop()
 
 	// Load configuration
 	cfg, err := config.Load()
@@ -35,7 +39,7 @@ func main() {
 	// Start server
 	addr := fmt.Sprintf("%s:%d", cfg.Server.Host, cfg.Server.Port)
 	log.Printf("Starting server on %s", addr)
-	if err := srv.Run(addr); err != nil {
+	if err := srv.Run(ctx, addr); err != nil {
 		log.Fatalf("Server error: %v", err)
 	}
 }

@@ -1,0 +1,9 @@
+[Unit]
+Description=CDK services aggregate memory and CPU isolation
+
+[Slice]
+MemoryAccounting=true
+MemoryMax=480M
+CPUAccounting=true
+CPUWeight=25
+CPUShares=256

@@ -115,7 +115,7 @@ type VerifyCDKResponse struct {
 
 // CreateTaskRequest request for creating a recharge task
 type CreateTaskRequest struct {
-	CDKCode   string `json:"cdk_code" binding:"required"`
+	CDKCode     string `json:"cdk_code" binding:"required"`
 	SessionJSON string `json:"session_json" binding:"required"`
 }
 
@@ -126,12 +126,12 @@ type ConfirmTaskRequest struct {
 
 // BillingInfo represents billing information
 type BillingInfo struct {
-	AccountEmail       string `json:"account_email"`
-	SubscriptionStatus string `json:"subscription_status"`
-	PlanType          string `json:"plan_type"`
-	BillingAmount     float64 `json:"billing_amount"`
-	Currency          string `json:"currency"`
-	NextBillingDate   string `json:"next_billing_date,omitempty"`
+	AccountEmail       string  `json:"account_email"`
+	SubscriptionStatus string  `json:"subscription_status"`
+	PlanType           string  `json:"plan_type"`
+	BillingAmount      float64 `json:"billing_amount"`
+	Currency           string  `json:"currency"`
+	NextBillingDate    string  `json:"next_billing_date,omitempty"`
 }
 
 type AdminLoginRequest struct {
@@ -140,24 +140,48 @@ type AdminLoginRequest struct {
 }
 
 type AdminLoginResponse struct {
-	Token     string `json:"token"`
 	Username  string `json:"username"`
 	Name      string `json:"name"`
 	ExpiresAt string `json:"expires_at"`
 }
 
+// Unknown accounts perform the same bcrypt work as normal incorrect passwords.
+var dummyAdminPasswordHash = func() string {
+	hash, err := db.HashAdminPassword("synthetic-dummy-login-password")
+	if err != nil {
+		panic("cannot initialize login password verification")
+	}
+	return hash
+}()
+
 // ===== Recharge Portal APIs =====
 
 func AdminLogin(c *gin.Context) {
+	c.Header("Cache-Control", "no-store")
+	if !auth.RequireSecureTransport(c.Request) {
+		c.AbortWithStatusJSON(http.StatusUpgradeRequired, gin.H{"error": "管理员登录必须使用 HTTPS"})
+		return
+	}
+	if !auth.WriteOriginAllowed(c.Request) {
+		c.AbortWithStatusJSON(http.StatusForbidden, gin.H{"error": "请求来源不允许"})
+		return
+	}
+	c.Request.Body = http.MaxBytesReader(c.Writer, c.Request.Body, 64<<10)
 	var req AdminLoginRequest
-	if err := c.BindJSON(&req); err != nil {
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
+		return
+	}
+	req.Username = strings.TrimSpace(req.Username)
+	if len(req.Username) > 128 || len(req.Password) > 1024 {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
 		return
 	}
 
 	// 登录限流：按 客户端IP + 用户名 计数
-	rateKey := c.ClientIP() + "|" + strings.ToLower(strings.TrimSpace(req.Username))
-	if ok, wait := loginAllowed(rateKey); !ok {
+	ip, rateUser := c.ClientIP(), strings.ToLower(req.Username)
+	if ok, wait := loginAllowed(ip, rateUser); !ok {
+		c.Header("Retry-After", strconv.Itoa(int(wait.Seconds())+1))
 		c.JSON(http.StatusTooManyRequests, gin.H{
 			"error": fmt.Sprintf("尝试次数过多，请 %d 分钟后再试", int(wait.Minutes())+1),
 		})
@@ -175,38 +199,41 @@ func AdminLogin(c *gin.Context) {
 		FROM admin_users
 		WHERE username = ?
 	`, strings.TrimSpace(req.Username)).Scan(&userID, &username, &passwordHash, &displayName, &isActive)
-	if err == sql.ErrNoRows {
-		loginFailed(rateKey)
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "用户名或密码错误"})
-		return
-	}
-	if err != nil {
+	if err != nil && err != sql.ErrNoRows {
 		log.Printf("admin login lookup error: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "系统错误"})
 		return
 	}
-	if isActive != 1 {
-		c.JSON(http.StatusForbidden, gin.H{"error": "账号已被禁用"})
-		return
+	if err == sql.ErrNoRows {
+		passwordHash = dummyAdminPasswordHash
 	}
 	// 密码两侧空白常因复制粘贴产生，校验时 Trim；入库仍按原样（生成口令无空白）
 	plain := strings.TrimSpace(req.Password)
 	ok, upgradedHash := db.VerifyAdminPassword(passwordHash, plain)
-	if !ok {
-		loginFailed(rateKey)
+	if !ok && !strings.HasPrefix(passwordHash, "$2") {
+		// Old SHA-256 records should not expose account existence through a fast failure.
+		db.VerifyAdminPassword(dummyAdminPasswordHash, plain)
+	}
+	if !ok || isActive != 1 {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "用户名或密码错误"})
 		return
 	}
-	loginSucceeded(rateKey)
+	loginSucceeded(ip, rateUser)
 	// 旧 SHA-256 哈希登录成功后，无感升级为 bcrypt
-	db.UpgradeAdminHash(username, upgradedHash)
+	if err := db.UpgradeAdminHash(username, passwordHash, upgradedHash); err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "用户名或密码错误"})
+		return
+	}
+	if upgradedHash != "" {
+		passwordHash = upgradedHash
+	}
 	db.WriteAudit(username, "login", "", c.ClientIP())
 
 	name := username
 	if displayName.Valid && strings.TrimSpace(displayName.String) != "" {
 		name = displayName.String
 	}
-	sess, err := issueAdminSession(c, userID, username, name)
+	sess, err := issueAdminSession(c, userID, username, name, passwordHash)
 	if err != nil {
 		log.Printf("admin login session error: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "系统错误"})
@@ -216,13 +243,23 @@ func AdminLogin(c *gin.Context) {
 }
 
 // issueAdminSession 签发 JWT + HttpOnly cookie，供登录与安装向导共用。
-func issueAdminSession(c *gin.Context, userID int64, username, displayName string) (gin.H, error) {
+func issueAdminSession(c *gin.Context, userID int64, username, displayName string, expectedHash ...string) (gin.H, error) {
 	expiration := time.Now().Add(24 * time.Hour)
+	sessionID, err := auth.NewSessionSecret()
+	if err != nil {
+		return nil, err
+	}
+	csrf, err := auth.NewSessionSecret()
+	if err != nil {
+		return nil, err
+	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, auth.CustomClaims{
 		UserID:   userID,
 		IsAdmin:  true,
 		Username: username,
 		RegisteredClaims: jwt.RegisteredClaims{
+			ID:        sessionID,
+			Issuer:    auth.AdminIssuer,
 			ExpiresAt: jwt.NewNumericDate(expiration),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
 			Subject:   username,
@@ -235,10 +272,11 @@ func issueAdminSession(c *gin.Context, userID int64, username, displayName strin
 	if displayName == "" {
 		displayName = username
 	}
-	csrf := newCSRFToken()
+	if err := db.CreateAdminSession(userID, auth.SecretDigest(sessionID), auth.SecretDigest(csrf), expiration, expectedHash...); err != nil {
+		return nil, err
+	}
 	setAuthCookies(c, signedToken, csrf, int(time.Until(expiration).Seconds()))
 	return gin.H{
-		"token":      signedToken,
 		"username":   username,
 		"name":       displayName,
 		"expires_at": expiration.Format(time.RFC3339),
@@ -248,6 +286,15 @@ func issueAdminSession(c *gin.Context, userID int64, username, displayName strin
 
 // AdminLogout 清除认证 cookie。
 func AdminLogout(c *gin.Context) {
+	sessionHash := c.GetString("admin_session_hash")
+	if sessionHash == "" {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid or expired token"})
+		return
+	}
+	if err := db.RevokeAdminSession(sessionHash); err != nil {
+		c.JSON(http.StatusServiceUnavailable, gin.H{"error": "退出登录暂不可用"})
+		return
+	}
 	clearAuthCookies(c)
 	c.JSON(http.StatusOK, gin.H{"message": "已退出登录"})
 }
@@ -258,9 +305,11 @@ func AdminMe(c *gin.Context) {
 	isAdmin, _ := c.Get("is_admin")
 
 	c.JSON(http.StatusOK, gin.H{
-		"user_id":  userID,
-		"username": username,
-		"is_admin": isAdmin,
+		"user_id":    userID,
+		"username":   username,
+		"is_admin":   isAdmin,
+		"name":       username,
+		"expires_at": c.GetString("admin_session_expires_at"),
 	})
 }
 
@@ -271,14 +320,15 @@ func AdminChangePassword(c *gin.Context) {
 		NewPassword string `json:"new_password" binding:"required"`
 	}
 
+	c.Request.Body = http.MaxBytesReader(c.Writer, c.Request.Body, 64<<10)
 	var req ChangePasswordRequest
-	if err := c.BindJSON(&req); err != nil {
+	if err := c.ShouldBindJSON(&req); err != nil || len(req.OldPassword) > 1024 {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
 		return
 	}
 
-	if len(req.NewPassword) < 12 || db.IsWeakPassword(req.NewPassword) {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "新密码至少 12 位，且不能为常见弱口令"})
+	if len(req.NewPassword) < 12 || len(req.NewPassword) > 72 || db.IsWeakPassword(req.NewPassword) {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "新密码须为 12–72 字节，且不能为常见弱口令"})
 		return
 	}
 	if req.NewPassword == req.OldPassword {
@@ -304,13 +354,14 @@ func AdminChangePassword(c *gin.Context) {
 		return
 	}
 
-	if err := db.SetAdminPassword(username, req.NewPassword); err != nil {
+	if err := db.SetAdminPassword(username, req.NewPassword, storedHash); err != nil {
 		log.Printf("change password error: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "修改密码失败"})
 		return
 	}
 
 	auditAdmin(c, "change_password", "")
+	clearAuthCookies(c)
 	c.JSON(http.StatusOK, gin.H{"message": "密码已修改，请用新密码重新登录"})
 }
 
@@ -464,7 +515,7 @@ func CreateRechargeTask(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"task_id": taskID,
-		"status": "pending",
+		"status":  "pending",
 		"message": "任务创建成功，请确认信息",
 	})
 }
@@ -535,7 +586,7 @@ func ConfirmRechargeTask(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"task_id": req.TaskID,
-		"status": "submitted",
+		"status":  "submitted",
 		"message": "充值申请已提交，请等待处理",
 	})
 }
@@ -584,7 +635,7 @@ func SaveBillingInfo(c *gin.Context) {
 	type SaveBillingRequest struct {
 		SessionJSON        string  `json:"session_json" binding:"required"`
 		AccountEmail       string  `json:"account_email" binding:"required"`
-		SubscriptionStatus string `json:"subscription_status"`
+		SubscriptionStatus string  `json:"subscription_status"`
 		PlanType           string  `json:"plan_type"`
 		BillingAmount      float64 `json:"billing_amount"`
 		Currency           string  `json:"currency"`
@@ -633,21 +684,21 @@ func SaveBillingInfo(c *gin.Context) {
 // GetSystemStats 管理后台总览：CDK / 兑换订单以卡台 Open API 为准（不再读本地过渡表）。
 func GetSystemStats(c *gin.Context) {
 	out := gin.H{
-		"source":            "cardplatform",
-		"configured":        false,
-		"total_cdks":        0,
-		"unused_cdks":       0,
-		"active_cdks":       0, // 兼容旧字段 = unused
-		"active_cdkeys":     0, // 兼容前端曾用的字段名
-		"total_cdkeys":      0, // 兼容
-		"reserved_cdks":     0,
-		"consumed_cdks":     0,
-		"frozen_cdks":       0,
-		"disabled_cdks":     0,
-		"total_cdk_orders":  0,
-		"webhook_events":    0,
-		"counts_partial":    false,
-		"error":             "",
+		"source":           "cardplatform",
+		"configured":       false,
+		"total_cdks":       0,
+		"unused_cdks":      0,
+		"active_cdks":      0, // 兼容旧字段 = unused
+		"active_cdkeys":    0, // 兼容前端曾用的字段名
+		"total_cdkeys":     0, // 兼容
+		"reserved_cdks":    0,
+		"consumed_cdks":    0,
+		"frozen_cdks":      0,
+		"disabled_cdks":    0,
+		"total_cdk_orders": 0,
+		"webhook_events":   0,
+		"counts_partial":   false,
+		"error":            "",
 	}
 
 	var webhookCount int

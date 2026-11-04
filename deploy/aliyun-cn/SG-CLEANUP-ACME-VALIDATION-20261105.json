@@ -1,0 +1,141 @@
+{
+  "observed_at": "2026-11-04T17:03:08.602661+00:00",
+  "scope": "After SG obsolete code cleanup; synthetic public ACME file was created with exclusive name and deleted in finally; no CA renewal performed",
+  "results": [
+    {
+      "host": "cdk.lanting.live",
+      "scheme": "http",
+      "route": "sg_origin",
+      "exit": 0,
+      "http_status": "200",
+      "tls_verify": "0",
+      "body_matches": true
+    },
+    {
+      "host": "cdk.lanting.live",
+      "scheme": "http",
+      "route": "ali_origin",
+      "exit": 0,
+      "http_status": "200",
+      "tls_verify": "0",
+      "body_matches": true
+    },
+    {
+      "host": "cdk.lanting.live",
+      "scheme": "http",
+      "route": "public_edge",
+      "exit": 0,
+      "http_status": "301",
+      "tls_verify": "0",
+      "body_matches": false
+    },
+    {
+      "host": "cdk.lanting.live",
+      "scheme": "https",
+      "route": "sg_origin",
+      "exit": 0,
+      "http_status": "200",
+      "tls_verify": "0",
+      "body_matches": true
+    },
+    {
+      "host": "cdk.lanting.live",
+      "scheme": "https",
+      "route": "ali_origin",
+      "exit": 0,
+      "http_status": "200",
+      "tls_verify": "0",
+      "body_matches": true
+    },
+    {
+      "host": "cdk.lanting.live",
+      "scheme": "https",
+      "route": "public_edge",
+      "exit": 0,
+      "http_status": "200",
+      "tls_verify": "0",
+      "body_matches": true
+    },
+    {
+      "host": "cdk-admin.lanting.live",
+      "scheme": "http",
+      "route": "sg_origin",
+      "exit": 0,
+      "http_status": "200",
+      "tls_verify": "0",
+      "body_matches": true
+    },
+    {
+      "host": "cdk-admin.lanting.live",
+      "scheme": "http",
+      "route": "ali_origin",
+      "exit": 0,
+      "http_status": "200",
+      "tls_verify": "0",
+      "body_matches": true
+    },
+    {
+      "host": "cdk-admin.lanting.live",
+      "scheme": "http",
+      "route": "public_edge",
+      "exit": 0,
+      "http_status": "301",
+      "tls_verify": "0",
+      "body_matches": false
+    },
+    {
+      "host": "cdk-admin.lanting.live",
+      "scheme": "https",
+      "route": "sg_origin",
+      "exit": 0,
+      "http_status": "200",
+      "tls_verify": "0",
+      "body_matches": true
+    },
+    {
+      "host": "cdk-admin.lanting.live",
+      "scheme": "https",
+      "route": "ali_origin",
+      "exit": 0,
+      "http_status": "200",
+      "tls_verify": "0",
+      "body_matches": true
+    },
+    {
+      "host": "cdk-admin.lanting.live",
+      "scheme": "https",
+      "route": "public_edge",
+      "exit": 0,
+      "http_status": "200",
+      "tls_verify": "0",
+      "body_matches": true
+    }
+  ],
+  "all_passed": true,
+  "probe_file_removed": true,
+  "http_redirect_followup": [
+    {
+      "host": "cdk.lanting.live",
+      "route": "public_edge_http_follow_https",
+      "exit": 0,
+      "http_status": "200",
+      "tls_verify": "0",
+      "redirects": "1",
+      "final_url_same_domain_https": true,
+      "body_matches": true
+    },
+    {
+      "host": "cdk-admin.lanting.live",
+      "route": "public_edge_http_follow_https",
+      "exit": 0,
+      "http_status": "200",
+      "tls_verify": "0",
+      "redirects": "1",
+      "final_url_same_domain_https": true,
+      "body_matches": true
+    }
+  ],
+  "followup_observed_at": "2026-11-04T17:04:07.285468+00:00",
+  "expected_public_http_redirect": "301 to same-host HTTPS; followed with TLS verification and exact challenge body check",
+  "followup_probe_file_removed": true
+}

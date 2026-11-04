@@ -1,0 +1,1587 @@
+{
+  "schema_version": 1,
+  "purpose": "Read-only DNS delegation validation for CDK EdgeOne certificate enrollment",
+  "contains_txt_values": false,
+  "checks_only_no_configuration_changes": true,
+  "earlier_sg_observation": {
+    "captured_at_utc": "2026-11-04T16:49:07.540074Z",
+    "cdk_checks": [
+      {
+        "resolver": "default",
+        "name": "_dnsauth.cdk.lanting.live",
+        "type": "TXT",
+        "tcp": false,
+        "exit": 0,
+        "status": "NOERROR",
+        "txt_count": 1,
+        "cname_targets": [
+          "cdk.lanting.live.eoacme0.com"
+        ]
+      },
+      {
+        "resolver": "default",
+        "name": "_dnsauth.cdk.lanting.live",
+        "type": "CNAME",
+        "tcp": true,
+        "exit": 0,
+        "status": "NXDOMAIN",
+        "txt_count": 0,
+        "cname_targets": []
+      },
+      {
+        "resolver": "1.1.1.1",
+        "name": "_dnsauth.cdk.lanting.live",
+        "type": "TXT",
+        "tcp": false,
+        "exit": 0,
+        "status": "NOERROR",
+        "txt_count": 1,
+        "cname_targets": [
+          "cdk.lanting.live.eoacme0.com"
+        ]
+      },
+      {
+        "resolver": "1.1.1.1",
+        "name": "_dnsauth.cdk.lanting.live",
+        "type": "CNAME",
+        "tcp": true,
+        "exit": 0,
+        "status": "NOERROR",
+        "txt_count": 0,
+        "cname_targets": [
+          "cdk.lanting.live.eoacme0.com"
+        ]
+      },
+      {
+        "resolver": "8.8.8.8",
+        "name": "_dnsauth.cdk.lanting.live",
+        "type": "TXT",
+        "tcp": false,
+        "exit": 0,
+        "status": "NOERROR",
+        "txt_count": 1,
+        "cname_targets": [
+          "cdk.lanting.live.eoacme0.com"
+        ]
+      },
+      {
+        "resolver": "8.8.8.8",
+        "name": "_dnsauth.cdk.lanting.live",
+        "type": "CNAME",
+        "tcp": true,
+        "exit": 0,
+        "status": "NOERROR",
+        "txt_count": 0,
+        "cname_targets": [
+          "cdk.lanting.live.eoacme0.com"
+        ]
+      },
+      {
+        "resolver": "119.29.29.29",
+        "name": "_dnsauth.cdk.lanting.live",
+        "type": "TXT",
+        "tcp": false,
+        "exit": 0,
+        "status": "NOERROR",
+        "txt_count": 1,
+        "cname_targets": [
+          "cdk.lanting.live.eoacme0.com"
+        ]
+      },
+      {
+        "resolver": "119.29.29.29",
+        "name": "_dnsauth.cdk.lanting.live",
+        "type": "CNAME",
+        "tcp": true,
+        "exit": 0,
+        "status": "NOERROR",
+        "txt_count": 0,
+        "cname_targets": [
+          "cdk.lanting.live.eoacme0.com"
+        ]
+      }
+    ]
+  },
+  "latest_observations": [
+    {
+      "host": "aliyun-prod",
+      "captured_at_utc": "2026-11-04T16:50:41.976614Z",
+      "checks": [
+        {
+          "name": "_dnsauth.cdk.lanting.live",
+          "resolver": "100.100.2.136",
+          "type": "CNAME",
+          "tcp": false,
+          "status": "NOERROR",
+          "authoritative": false,
+          "truncated": false,
+          "cname_records": [
+            {
+              "owner": "_dnsauth.cdk.lanting.live",
+              "target": "cdk.lanting.live.eoacme0.com",
+              "ttl": 10
+            }
+          ],
+          "txt_count": 0,
+          "txt_ttls": [],
+          "soa_negative_cache": []
+        },
+        {
+          "name": "_dnsauth.cdk.lanting.live",
+          "resolver": "100.100.2.136",
+          "type": "CNAME",
+          "tcp": true,
+          "status": "NOERROR",
+          "authoritative": false,
+          "truncated": false,
+          "cname_records": [
+            {
+              "owner": "_dnsauth.cdk.lanting.live",
+              "target": "cdk.lanting.live.eoacme0.com",
+              "ttl": 10
+            }
+          ],
+          "txt_count": 0,
+          "txt_ttls": [],
+          "soa_negative_cache": []
+        },
+        {
+          "name": "_dnsauth.cdk.lanting.live",
+          "resolver": "100.100.2.136",
+          "type": "TXT",
+          "tcp": false,
+          "status": "NOERROR",
+          "authoritative": false,
+          "truncated": false,
+          "cname_records": [
+            {
+              "owner": "_dnsauth.cdk.lanting.live",
+              "target": "cdk.lanting.live.eoacme0.com",
+              "ttl": 10
+            }
+          ],
+          "txt_count": 1,
+          "txt_ttls": [
+            10
+          ],
+          "soa_negative_cache": []
+        },
+        {
+          "name": "cdk.lanting.live.eoacme0.com",
+          "resolver": "100.100.2.136",
+          "type": "TXT",
+          "tcp": false,
+          "status": "NOERROR",
+          "authoritative": false,
+          "truncated": false,
+          "cname_records": [],
+          "txt_count": 1,
+          "txt_ttls": [
+            10
+          ],
+          "soa_negative_cache": []
+        },
+        {
+          "name": "_dnsauth.cdk.lanting.live",
+          "resolver": "100.100.2.138",
+          "type": "CNAME",
+          "tcp": false,
+          "status": "NOERROR",
+          "authoritative": false,
+          "truncated": false,
+          "cname_records": [
+            {
+              "owner": "_dnsauth.cdk.lanting.live",
+              "target": "cdk.lanting.live.eoacme0.com",
+              "ttl": 10
+            }
+          ],
+          "txt_count": 0,
+          "txt_ttls": [],
+          "soa_negative_cache": []
+        },
+        {
+          "name": "_dnsauth.cdk.lanting.live",
+          "resolver": "100.100.2.138",
+          "type": "CNAME",
+          "tcp": true,
+          "status": "NOERROR",
+          "authoritative": false,
+          "truncated": false,
+          "cname_records": [
+            {
+              "owner": "_dnsauth.cdk.lanting.live",
+              "target": "cdk.lanting.live.eoacme0.com",
+              "ttl": 10
+            }
+          ],
+          "txt_count": 0,
+          "txt_ttls": [],
+          "soa_negative_cache": []
+        },
+        {
+          "name": "_dnsauth.cdk.lanting.live",
+          "resolver": "100.100.2.138",
+          "type": "TXT",
+          "tcp": false,
+          "status": "NOERROR",
+          "authoritative": false,
+          "truncated": false,
+          "cname_records": [
+            {
+              "owner": "_dnsauth.cdk.lanting.live",
+              "target": "cdk.lanting.live.eoacme0.com",
+              "ttl": 10
+            }
+          ],
+          "txt_count": 1,
+          "txt_ttls": [
+            10
+          ],
+          "soa_negative_cache": []
+        },
+        {
+          "name": "cdk.lanting.live.eoacme0.com",
+          "resolver": "100.100.2.138",
+          "type": "TXT",
+          "tcp": false,
+          "status": "NOERROR",
+          "authoritative": false,
+          "truncated": false,
+          "cname_records": [],
+          "txt_count": 1,
+          "txt_ttls": [
+            10
+          ],
+          "soa_negative_cache": []
+        },
+        {
+          "name": "_dnsauth.cdk.lanting.live",
+          "resolver": "1.1.1.1",
+          "type": "CNAME",
+          "tcp": false,
+          "status": "NOERROR",
+          "authoritative": false,
+          "truncated": false,
+          "cname_records": [
+            {
+              "owner": "_dnsauth.cdk.lanting.live",
+              "target": "cdk.lanting.live.eoacme0.com",
+              "ttl": 600
+            }
+          ],
+          "txt_count": 0,
+          "txt_ttls": [],
+          "soa_negative_cache": []
+        },
+        {
+          "name": "_dnsauth.cdk.lanting.live",
+          "resolver": "1.1.1.1",
+          "type": "CNAME",
+          "tcp": true,
+          "status": "NOERROR",
+          "authoritative": false,
+          "truncated": false,
+          "cname_records": [
+            {
+              "owner": "_dnsauth.cdk.lanting.live",
+              "target": "cdk.lanting.live.eoacme0.com",
+              "ttl": 600
+            }
+          ],
+          "txt_count": 0,
+          "txt_ttls": [],
+          "soa_negative_cache": []
+        },
+        {
+          "name": "_dnsauth.cdk.lanting.live",
+          "resolver": "1.1.1.1",
+          "type": "TXT",
+          "tcp": false,
+          "status": "NOERROR",
+          "authoritative": false,
+          "truncated": false,
+          "cname_records": [
+            {
+              "owner": "_dnsauth.cdk.lanting.live",
+              "target": "cdk.lanting.live.eoacme0.com",
+              "ttl": 600
+            }
+          ],
+          "txt_count": 1,
+          "txt_ttls": [
+            60
+          ],
+          "soa_negative_cache": []
+        },
+        {
+          "name": "cdk.lanting.live.eoacme0.com",
+          "resolver": "1.1.1.1",
+          "type": "TXT",
+          "tcp": false,
+          "status": "NOERROR",
+          "authoritative": false,
+          "truncated": false,
+          "cname_records": [],
+          "txt_count": 1,
+          "txt_ttls": [
+            60
+          ],
+          "soa_negative_cache": []
+        },
+        {
+          "name": "_dnsauth.cdk.lanting.live",
+          "resolver": "8.8.8.8",
+          "type": "CNAME",
+          "tcp": false,
+          "status": "NOERROR",
+          "authoritative": false,
+          "truncated": false,
+          "cname_records": [
+            {
+              "owner": "_dnsauth.cdk.lanting.live",
+              "target": "cdk.lanting.live.eoacme0.com",
+              "ttl": 600
+            }
+          ],
+          "txt_count": 0,
+          "txt_ttls": [],
+          "soa_negative_cache": []
+        },
+        {
+          "name": "_dnsauth.cdk.lanting.live",
+          "resolver": "8.8.8.8",
+          "type": "CNAME",
+          "tcp": true,
+          "status": "NOERROR",
+          "authoritative": false,
+          "truncated": false,
+          "cname_records": [
+            {
+              "owner": "_dnsauth.cdk.lanting.live",
+              "target": "cdk.lanting.live.eoacme0.com",
+              "ttl": 600
+            }
+          ],
+          "txt_count": 0,
+          "txt_ttls": [],
+          "soa_negative_cache": []
+        },
+        {
+          "name": "_dnsauth.cdk.lanting.live",
+          "resolver": "8.8.8.8",
+          "type": "TXT",
+          "tcp": false,
+          "status": "NOERROR",
+          "authoritative": false,
+          "truncated": false,
+          "cname_records": [
+            {
+              "owner": "_dnsauth.cdk.lanting.live",
+              "target": "cdk.lanting.live.eoacme0.com",
+              "ttl": 520
+            }
+          ],
+          "txt_count": 1,
+          "txt_ttls": [
+            60
+          ],
+          "soa_negative_cache": []
+        },
+        {
+          "name": "cdk.lanting.live.eoacme0.com",
+          "resolver": "8.8.8.8",
+          "type": "TXT",
+          "tcp": false,
+          "status": "NOERROR",
+          "authoritative": false,
+          "truncated": false,
+          "cname_records": [],
+          "txt_count": 1,
+          "txt_ttls": [
+            60
+          ],
+          "soa_negative_cache": []
+        },
+        {
+          "name": "_dnsauth.cdk.lanting.live",
+          "resolver": "119.29.29.29",
+          "type": "CNAME",
+          "tcp": false,
+          "status": "NOERROR",
+          "authoritative": false,
+          "truncated": false,
+          "cname_records": [
+            {
+              "owner": "_dnsauth.cdk.lanting.live",
+              "target": "cdk.lanting.live.eoacme0.com",
+              "ttl": 520
+            }
+          ],
+          "txt_count": 0,
+          "txt_ttls": [],
+          "soa_negative_cache": []
+        },
+        {
+          "name": "_dnsauth.cdk.lanting.live",
+          "resolver": "119.29.29.29",
+          "type": "CNAME",
+          "tcp": true,
+          "error": "ConnectionResetError"
+        },
+        {
+          "name": "_dnsauth.cdk.lanting.live",
+          "resolver": "119.29.29.29",
+          "type": "TXT",
+          "tcp": false,
+          "status": "NOERROR",
+          "authoritative": false,
+          "truncated": false,
+          "cname_records": [
+            {
+              "owner": "_dnsauth.cdk.lanting.live",
+              "target": "cdk.lanting.live.eoacme0.com",
+              "ttl": 600
+            }
+          ],
+          "txt_count": 1,
+          "txt_ttls": [
+            60
+          ],
+          "soa_negative_cache": []
+        },
+        {
+          "name": "cdk.lanting.live.eoacme0.com",
+          "resolver": "119.29.29.29",
+          "type": "TXT",
+          "tcp": false,
+          "status": "NOERROR",
+          "authoritative": false,
+          "truncated": false,
+          "cname_records": [],
+          "txt_count": 1,
+          "txt_ttls": [
+            60
+          ],
+          "soa_negative_cache": []
+        },
+        {
+          "name": "_dnsauth.cdk.lanting.live",
+          "resolver": "dns9.hichina.com",
+          "type": "CNAME",
+          "tcp": false,
+          "status": "NOERROR",
+          "authoritative": true,
+          "truncated": false,
+          "cname_records": [
+            {
+              "owner": "_dnsauth.cdk.lanting.live",
+              "target": "cdk.lanting.live.eoacme0.com",
+              "ttl": 600
+            }
+          ],
+          "txt_count": 0,
+          "txt_ttls": [],
+          "soa_negative_cache": []
+        },
+        {
+          "name": "_dnsauth.cdk.lanting.live",
+          "resolver": "dns10.hichina.com",
+          "type": "CNAME",
+          "tcp": false,
+          "status": "NOERROR",
+          "authoritative": true,
+          "truncated": false,
+          "cname_records": [
+            {
+              "owner": "_dnsauth.cdk.lanting.live",
+              "target": "cdk.lanting.live.eoacme0.com",
+              "ttl": 600
+            }
+          ],
+          "txt_count": 0,
+          "txt_ttls": [],
+          "soa_negative_cache": []
+        },
+        {
+          "name": "_dnsauth.cdk-admin.lanting.live",
+          "resolver": "100.100.2.136",
+          "type": "CNAME",
+          "tcp": false,
+          "status": "NOERROR",
+          "authoritative": false,
+          "truncated": false,
+          "cname_records": [
+            {
+              "owner": "_dnsauth.cdk-admin.lanting.live",
+              "target": "cdk-admin.lanting.live.eoacme0.com",
+              "ttl": 10
+            }
+          ],
+          "txt_count": 0,
+          "txt_ttls": [],
+          "soa_negative_cache": []
+        },
+        {
+          "name": "_dnsauth.cdk-admin.lanting.live",
+          "resolver": "100.100.2.136",
+          "type": "CNAME",
+          "tcp": true,
+          "status": "NOERROR",
+          "authoritative": false,
+          "truncated": false,
+          "cname_records": [
+            {
+              "owner": "_dnsauth.cdk-admin.lanting.live",
+              "target": "cdk-admin.lanting.live.eoacme0.com",
+              "ttl": 10
+            }
+          ],
+          "txt_count": 0,
+          "txt_ttls": [],
+          "soa_negative_cache": []
+        },
+        {
+          "name": "_dnsauth.cdk-admin.lanting.live",
+          "resolver": "100.100.2.136",
+          "type": "TXT",
+          "tcp": false,
+          "status": "NOERROR",
+          "authoritative": false,
+          "truncated": false,
+          "cname_records": [
+            {
+              "owner": "_dnsauth.cdk-admin.lanting.live",
+              "target": "cdk-admin.lanting.live.eoacme0.com",
+              "ttl": 10
+            }
+          ],
+          "txt_count": 1,
+          "txt_ttls": [
+            10
+          ],
+          "soa_negative_cache": []
+        },
+        {
+          "name": "cdk-admin.lanting.live.eoacme0.com",
+          "resolver": "100.100.2.136",
+          "type": "TXT",
+          "tcp": false,
+          "status": "NOERROR",
+          "authoritative": false,
+          "truncated": false,
+          "cname_records": [],
+          "txt_count": 1,
+          "txt_ttls": [
+            10
+          ],
+          "soa_negative_cache": []
+        },
+        {
+          "name": "_dnsauth.cdk-admin.lanting.live",
+          "resolver": "100.100.2.138",
+          "type": "CNAME",
+          "tcp": false,
+          "status": "NOERROR",
+          "authoritative": false,
+          "truncated": false,
+          "cname_records": [
+            {
+              "owner": "_dnsauth.cdk-admin.lanting.live",
+              "target": "cdk-admin.lanting.live.eoacme0.com",
+              "ttl": 10
+            }
+          ],
+          "txt_count": 0,
+          "txt_ttls": [],
+          "soa_negative_cache": []
+        },
+        {
+          "name": "_dnsauth.cdk-admin.lanting.live",
+          "resolver": "100.100.2.138",
+          "type": "CNAME",
+          "tcp": true,
+          "status": "NOERROR",
+          "authoritative": false,
+          "truncated": false,
+          "cname_records": [
+            {
+              "owner": "_dnsauth.cdk-admin.lanting.live",
+              "target": "cdk-admin.lanting.live.eoacme0.com",
+              "ttl": 10
+            }
+          ],
+          "txt_count": 0,
+          "txt_ttls": [],
+          "soa_negative_cache": []
+        },
+        {
+          "name": "_dnsauth.cdk-admin.lanting.live",
+          "resolver": "100.100.2.138",
+          "type": "TXT",
+          "tcp": false,
+          "status": "NOERROR",
+          "authoritative": false,
+          "truncated": false,
+          "cname_records": [
+            {
+              "owner": "_dnsauth.cdk-admin.lanting.live",
+              "target": "cdk-admin.lanting.live.eoacme0.com",
+              "ttl": 10
+            }
+          ],
+          "txt_count": 1,
+          "txt_ttls": [
+            10
+          ],
+          "soa_negative_cache": []
+        },
+        {
+          "name": "cdk-admin.lanting.live.eoacme0.com",
+          "resolver": "100.100.2.138",
+          "type": "TXT",
+          "tcp": false,
+          "status": "NOERROR",
+          "authoritative": false,
+          "truncated": false,
+          "cname_records": [],
+          "txt_count": 1,
+          "txt_ttls": [
+            10
+          ],
+          "soa_negative_cache": []
+        },
+        {
+          "name": "_dnsauth.cdk-admin.lanting.live",
+          "resolver": "1.1.1.1",
+          "type": "CNAME",
+          "tcp": false,
+          "status": "NOERROR",
+          "authoritative": false,
+          "truncated": false,
+          "cname_records": [
+            {
+              "owner": "_dnsauth.cdk-admin.lanting.live",
+              "target": "cdk-admin.lanting.live.eoacme0.com",
+              "ttl": 600
+            }
+          ],
+          "txt_count": 0,
+          "txt_ttls": [],
+          "soa_negative_cache": []
+        },
+        {
+          "name": "_dnsauth.cdk-admin.lanting.live",
+          "resolver": "1.1.1.1",
+          "type": "CNAME",
+          "tcp": true,
+          "status": "NOERROR",
+          "authoritative": false,
+          "truncated": false,
+          "cname_records": [
+            {
+              "owner": "_dnsauth.cdk-admin.lanting.live",
+              "target": "cdk-admin.lanting.live.eoacme0.com",
+              "ttl": 600
+            }
+          ],
+          "txt_count": 0,
+          "txt_ttls": [],
+          "soa_negative_cache": []
+        },
+        {
+          "name": "_dnsauth.cdk-admin.lanting.live",
+          "resolver": "1.1.1.1",
+          "type": "TXT",
+          "tcp": false,
+          "status": "NOERROR",
+          "authoritative": false,
+          "truncated": false,
+          "cname_records": [
+            {
+              "owner": "_dnsauth.cdk-admin.lanting.live",
+              "target": "cdk-admin.lanting.live.eoacme0.com",
+              "ttl": 600
+            }
+          ],
+          "txt_count": 1,
+          "txt_ttls": [
+            60
+          ],
+          "soa_negative_cache": []
+        },
+        {
+          "name": "cdk-admin.lanting.live.eoacme0.com",
+          "resolver": "1.1.1.1",
+          "type": "TXT",
+          "tcp": false,
+          "status": "NOERROR",
+          "authoritative": false,
+          "truncated": false,
+          "cname_records": [],
+          "txt_count": 1,
+          "txt_ttls": [
+            60
+          ],
+          "soa_negative_cache": []
+        },
+        {
+          "name": "_dnsauth.cdk-admin.lanting.live",
+          "resolver": "8.8.8.8",
+          "type": "CNAME",
+          "tcp": false,
+          "status": "NOERROR",
+          "authoritative": false,
+          "truncated": false,
+          "cname_records": [
+            {
+              "owner": "_dnsauth.cdk-admin.lanting.live",
+              "target": "cdk-admin.lanting.live.eoacme0.com",
+              "ttl": 520
+            }
+          ],
+          "txt_count": 0,
+          "txt_ttls": [],
+          "soa_negative_cache": []
+        },
+        {
+          "name": "_dnsauth.cdk-admin.lanting.live",
+          "resolver": "8.8.8.8",
+          "type": "CNAME",
+          "tcp": true,
+          "status": "NOERROR",
+          "authoritative": false,
+          "truncated": false,
+          "cname_records": [
+            {
+              "owner": "_dnsauth.cdk-admin.lanting.live",
+              "target": "cdk-admin.lanting.live.eoacme0.com",
+              "ttl": 520
+            }
+          ],
+          "txt_count": 0,
+          "txt_ttls": [],
+          "soa_negative_cache": []
+        },
+        {
+          "name": "_dnsauth.cdk-admin.lanting.live",
+          "resolver": "8.8.8.8",
+          "type": "TXT",
+          "tcp": false,
+          "status": "NOERROR",
+          "authoritative": false,
+          "truncated": false,
+          "cname_records": [
+            {
+              "owner": "_dnsauth.cdk-admin.lanting.live",
+              "target": "cdk-admin.lanting.live.eoacme0.com",
+              "ttl": 520
+            }
+          ],
+          "txt_count": 1,
+          "txt_ttls": [
+            60
+          ],
+          "soa_negative_cache": []
+        },
+        {
+          "name": "cdk-admin.lanting.live.eoacme0.com",
+          "resolver": "8.8.8.8",
+          "type": "TXT",
+          "tcp": false,
+          "status": "NOERROR",
+          "authoritative": false,
+          "truncated": false,
+          "cname_records": [],
+          "txt_count": 1,
+          "txt_ttls": [
+            60
+          ],
+          "soa_negative_cache": []
+        },
+        {
+          "name": "_dnsauth.cdk-admin.lanting.live",
+          "resolver": "119.29.29.29",
+          "type": "CNAME",
+          "tcp": false,
+          "status": "NOERROR",
+          "authoritative": false,
+          "truncated": false,
+          "cname_records": [
+            {
+              "owner": "_dnsauth.cdk-admin.lanting.live",
+              "target": "cdk-admin.lanting.live.eoacme0.com",
+              "ttl": 520
+            }
+          ],
+          "txt_count": 0,
+          "txt_ttls": [],
+          "soa_negative_cache": []
+        },
+        {
+          "name": "_dnsauth.cdk-admin.lanting.live",
+          "resolver": "119.29.29.29",
+          "type": "CNAME",
+          "tcp": true,
+          "error": "ConnectionResetError"
+        },
+        {
+          "name": "_dnsauth.cdk-admin.lanting.live",
+          "resolver": "119.29.29.29",
+          "type": "TXT",
+          "tcp": false,
+          "status": "NOERROR",
+          "authoritative": false,
+          "truncated": false,
+          "cname_records": [
+            {
+              "owner": "_dnsauth.cdk-admin.lanting.live",
+              "target": "cdk-admin.lanting.live.eoacme0.com",
+              "ttl": 600
+            }
+          ],
+          "txt_count": 1,
+          "txt_ttls": [
+            60
+          ],
+          "soa_negative_cache": []
+        },
+        {
+          "name": "cdk-admin.lanting.live.eoacme0.com",
+          "resolver": "119.29.29.29",
+          "type": "TXT",
+          "tcp": false,
+          "status": "NOERROR",
+          "authoritative": false,
+          "truncated": false,
+          "cname_records": [],
+          "txt_count": 1,
+          "txt_ttls": [
+            60
+          ],
+          "soa_negative_cache": []
+        },
+        {
+          "name": "_dnsauth.cdk-admin.lanting.live",
+          "resolver": "dns9.hichina.com",
+          "type": "CNAME",
+          "tcp": false,
+          "status": "NOERROR",
+          "authoritative": true,
+          "truncated": false,
+          "cname_records": [
+            {
+              "owner": "_dnsauth.cdk-admin.lanting.live",
+              "target": "cdk-admin.lanting.live.eoacme0.com",
+              "ttl": 600
+            }
+          ],
+          "txt_count": 0,
+          "txt_ttls": [],
+          "soa_negative_cache": []
+        },
+        {
+          "name": "_dnsauth.cdk-admin.lanting.live",
+          "resolver": "dns10.hichina.com",
+          "type": "CNAME",
+          "tcp": false,
+          "status": "NOERROR",
+          "authoritative": true,
+          "truncated": false,
+          "cname_records": [
+            {
+              "owner": "_dnsauth.cdk-admin.lanting.live",
+              "target": "cdk-admin.lanting.live.eoacme0.com",
+              "ttl": 600
+            }
+          ],
+          "txt_count": 0,
+          "txt_ttls": [],
+          "soa_negative_cache": []
+        }
+      ]
+    },
+    {
+      "host": "sg-prod",
+      "captured_at_utc": "2026-11-04T16:50:54.658437Z",
+      "checks": [
+        {
+          "name": "_dnsauth.cdk.lanting.live",
+          "resolver": "127.0.0.53",
+          "type": "CNAME",
+          "tcp": false,
+          "status": "NOERROR",
+          "authoritative": false,
+          "truncated": false,
+          "cname_records": [
+            {
+              "owner": "_dnsauth.cdk.lanting.live",
+              "target": "cdk.lanting.live.eoacme0.com",
+              "ttl": 600
+            }
+          ],
+          "txt_count": 0,
+          "txt_ttls": [],
+          "soa_negative_cache": []
+        },
+        {
+          "name": "_dnsauth.cdk.lanting.live",
+          "resolver": "127.0.0.53",
+          "type": "CNAME",
+          "tcp": true,
+          "status": "NOERROR",
+          "authoritative": false,
+          "truncated": false,
+          "cname_records": [
+            {
+              "owner": "_dnsauth.cdk.lanting.live",
+              "target": "cdk.lanting.live.eoacme0.com",
+              "ttl": 600
+            }
+          ],
+          "txt_count": 0,
+          "txt_ttls": [],
+          "soa_negative_cache": []
+        },
+        {
+          "name": "_dnsauth.cdk.lanting.live",
+          "resolver": "127.0.0.53",
+          "type": "TXT",
+          "tcp": false,
+          "status": "NOERROR",
+          "authoritative": false,
+          "truncated": false,
+          "cname_records": [
+            {
+              "owner": "_dnsauth.cdk.lanting.live",
+              "target": "cdk.lanting.live.eoacme0.com",
+              "ttl": 600
+            }
+          ],
+          "txt_count": 1,
+          "txt_ttls": [
+            60
+          ],
+          "soa_negative_cache": []
+        },
+        {
+          "name": "cdk.lanting.live.eoacme0.com",
+          "resolver": "127.0.0.53",
+          "type": "TXT",
+          "tcp": false,
+          "status": "NOERROR",
+          "authoritative": false,
+          "truncated": false,
+          "cname_records": [],
+          "txt_count": 1,
+          "txt_ttls": [
+            60
+          ],
+          "soa_negative_cache": []
+        },
+        {
+          "name": "_dnsauth.cdk.lanting.live",
+          "resolver": "1.1.1.1",
+          "type": "CNAME",
+          "tcp": false,
+          "status": "NOERROR",
+          "authoritative": false,
+          "truncated": false,
+          "cname_records": [
+            {
+              "owner": "_dnsauth.cdk.lanting.live",
+              "target": "cdk.lanting.live.eoacme0.com",
+              "ttl": 600
+            }
+          ],
+          "txt_count": 0,
+          "txt_ttls": [],
+          "soa_negative_cache": []
+        },
+        {
+          "name": "_dnsauth.cdk.lanting.live",
+          "resolver": "1.1.1.1",
+          "type": "CNAME",
+          "tcp": true,
+          "status": "NOERROR",
+          "authoritative": false,
+          "truncated": false,
+          "cname_records": [
+            {
+              "owner": "_dnsauth.cdk.lanting.live",
+              "target": "cdk.lanting.live.eoacme0.com",
+              "ttl": 600
+            }
+          ],
+          "txt_count": 0,
+          "txt_ttls": [],
+          "soa_negative_cache": []
+        },
+        {
+          "name": "_dnsauth.cdk.lanting.live",
+          "resolver": "1.1.1.1",
+          "type": "TXT",
+          "tcp": false,
+          "status": "NOERROR",
+          "authoritative": false,
+          "truncated": false,
+          "cname_records": [
+            {
+              "owner": "_dnsauth.cdk.lanting.live",
+              "target": "cdk.lanting.live.eoacme0.com",
+              "ttl": 600
+            }
+          ],
+          "txt_count": 1,
+          "txt_ttls": [
+            60
+          ],
+          "soa_negative_cache": []
+        },
+        {
+          "name": "cdk.lanting.live.eoacme0.com",
+          "resolver": "1.1.1.1",
+          "type": "TXT",
+          "tcp": false,
+          "status": "NOERROR",
+          "authoritative": false,
+          "truncated": false,
+          "cname_records": [],
+          "txt_count": 1,
+          "txt_ttls": [
+            60
+          ],
+          "soa_negative_cache": []
+        },
+        {
+          "name": "_dnsauth.cdk.lanting.live",
+          "resolver": "8.8.8.8",
+          "type": "CNAME",
+          "tcp": false,
+          "status": "NOERROR",
+          "authoritative": false,
+          "truncated": false,
+          "cname_records": [
+            {
+              "owner": "_dnsauth.cdk.lanting.live",
+              "target": "cdk.lanting.live.eoacme0.com",
+              "ttl": 600
+            }
+          ],
+          "txt_count": 0,
+          "txt_ttls": [],
+          "soa_negative_cache": []
+        },
+        {
+          "name": "_dnsauth.cdk.lanting.live",
+          "resolver": "8.8.8.8",
+          "type": "CNAME",
+          "tcp": true,
+          "status": "NOERROR",
+          "authoritative": false,
+          "truncated": false,
+          "cname_records": [
+            {
+              "owner": "_dnsauth.cdk.lanting.live",
+              "target": "cdk.lanting.live.eoacme0.com",
+              "ttl": 600
+            }
+          ],
+          "txt_count": 0,
+          "txt_ttls": [],
+          "soa_negative_cache": []
+        },
+        {
+          "name": "_dnsauth.cdk.lanting.live",
+          "resolver": "8.8.8.8",
+          "type": "TXT",
+          "tcp": false,
+          "status": "NOERROR",
+          "authoritative": false,
+          "truncated": false,
+          "cname_records": [
+            {
+              "owner": "_dnsauth.cdk.lanting.live",
+              "target": "cdk.lanting.live.eoacme0.com",
+              "ttl": 600
+            }
+          ],
+          "txt_count": 1,
+          "txt_ttls": [
+            60
+          ],
+          "soa_negative_cache": []
+        },
+        {
+          "name": "cdk.lanting.live.eoacme0.com",
+          "resolver": "8.8.8.8",
+          "type": "TXT",
+          "tcp": false,
+          "status": "NOERROR",
+          "authoritative": false,
+          "truncated": false,
+          "cname_records": [],
+          "txt_count": 1,
+          "txt_ttls": [
+            60
+          ],
+          "soa_negative_cache": []
+        },
+        {
+          "name": "_dnsauth.cdk.lanting.live",
+          "resolver": "119.29.29.29",
+          "type": "CNAME",
+          "tcp": false,
+          "status": "NOERROR",
+          "authoritative": false,
+          "truncated": false,
+          "cname_records": [
+            {
+              "owner": "_dnsauth.cdk.lanting.live",
+              "target": "cdk.lanting.live.eoacme0.com",
+              "ttl": 600
+            }
+          ],
+          "txt_count": 0,
+          "txt_ttls": [],
+          "soa_negative_cache": []
+        },
+        {
+          "name": "_dnsauth.cdk.lanting.live",
+          "resolver": "119.29.29.29",
+          "type": "CNAME",
+          "tcp": true,
+          "status": "NOERROR",
+          "authoritative": false,
+          "truncated": false,
+          "cname_records": [
+            {
+              "owner": "_dnsauth.cdk.lanting.live",
+              "target": "cdk.lanting.live.eoacme0.com",
+              "ttl": 600
+            }
+          ],
+          "txt_count": 0,
+          "txt_ttls": [],
+          "soa_negative_cache": []
+        },
+        {
+          "name": "_dnsauth.cdk.lanting.live",
+          "resolver": "119.29.29.29",
+          "type": "TXT",
+          "tcp": false,
+          "status": "NOERROR",
+          "authoritative": false,
+          "truncated": false,
+          "cname_records": [
+            {
+              "owner": "_dnsauth.cdk.lanting.live",
+              "target": "cdk.lanting.live.eoacme0.com",
+              "ttl": 600
+            }
+          ],
+          "txt_count": 1,
+          "txt_ttls": [
+            60
+          ],
+          "soa_negative_cache": []
+        },
+        {
+          "name": "cdk.lanting.live.eoacme0.com",
+          "resolver": "119.29.29.29",
+          "type": "TXT",
+          "tcp": false,
+          "status": "NOERROR",
+          "authoritative": false,
+          "truncated": false,
+          "cname_records": [],
+          "txt_count": 1,
+          "txt_ttls": [
+            60
+          ],
+          "soa_negative_cache": []
+        },
+        {
+          "name": "_dnsauth.cdk.lanting.live",
+          "resolver": "dns9.hichina.com",
+          "type": "CNAME",
+          "tcp": false,
+          "status": "NOERROR",
+          "authoritative": true,
+          "truncated": false,
+          "cname_records": [
+            {
+              "owner": "_dnsauth.cdk.lanting.live",
+              "target": "cdk.lanting.live.eoacme0.com",
+              "ttl": 600
+            }
+          ],
+          "txt_count": 0,
+          "txt_ttls": [],
+          "soa_negative_cache": []
+        },
+        {
+          "name": "_dnsauth.cdk.lanting.live",
+          "resolver": "dns10.hichina.com",
+          "type": "CNAME",
+          "tcp": false,
+          "status": "NOERROR",
+          "authoritative": true,
+          "truncated": false,
+          "cname_records": [
+            {
+              "owner": "_dnsauth.cdk.lanting.live",
+              "target": "cdk.lanting.live.eoacme0.com",
+              "ttl": 600
+            }
+          ],
+          "txt_count": 0,
+          "txt_ttls": [],
+          "soa_negative_cache": []
+        },
+        {
+          "name": "_dnsauth.cdk-admin.lanting.live",
+          "resolver": "127.0.0.53",
+          "type": "CNAME",
+          "tcp": false,
+          "status": "NOERROR",
+          "authoritative": false,
+          "truncated": false,
+          "cname_records": [
+            {
+              "owner": "_dnsauth.cdk-admin.lanting.live",
+              "target": "cdk-admin.lanting.live.eoacme0.com",
+              "ttl": 494
+            }
+          ],
+          "txt_count": 0,
+          "txt_ttls": [],
+          "soa_negative_cache": []
+        },
+        {
+          "name": "_dnsauth.cdk-admin.lanting.live",
+          "resolver": "127.0.0.53",
+          "type": "CNAME",
+          "tcp": true,
+          "status": "NOERROR",
+          "authoritative": false,
+          "truncated": false,
+          "cname_records": [
+            {
+              "owner": "_dnsauth.cdk-admin.lanting.live",
+              "target": "cdk-admin.lanting.live.eoacme0.com",
+              "ttl": 493
+            }
+          ],
+          "txt_count": 0,
+          "txt_ttls": [],
+          "soa_negative_cache": []
+        },
+        {
+          "name": "_dnsauth.cdk-admin.lanting.live",
+          "resolver": "127.0.0.53",
+          "type": "TXT",
+          "tcp": false,
+          "status": "NOERROR",
+          "authoritative": false,
+          "truncated": false,
+          "cname_records": [
+            {
+              "owner": "_dnsauth.cdk-admin.lanting.live",
+              "target": "cdk-admin.lanting.live.eoacme0.com",
+              "ttl": 493
+            }
+          ],
+          "txt_count": 1,
+          "txt_ttls": [
+            60
+          ],
+          "soa_negative_cache": []
+        },
+        {
+          "name": "cdk-admin.lanting.live.eoacme0.com",
+          "resolver": "127.0.0.53",
+          "type": "TXT",
+          "tcp": false,
+          "status": "NOERROR",
+          "authoritative": false,
+          "truncated": false,
+          "cname_records": [],
+          "txt_count": 1,
+          "txt_ttls": [
+            59
+          ],
+          "soa_negative_cache": []
+        },
+        {
+          "name": "_dnsauth.cdk-admin.lanting.live",
+          "resolver": "1.1.1.1",
+          "type": "CNAME",
+          "tcp": false,
+          "status": "NOERROR",
+          "authoritative": false,
+          "truncated": false,
+          "cname_records": [
+            {
+              "owner": "_dnsauth.cdk-admin.lanting.live",
+              "target": "cdk-admin.lanting.live.eoacme0.com",
+              "ttl": 600
+            }
+          ],
+          "txt_count": 0,
+          "txt_ttls": [],
+          "soa_negative_cache": []
+        },
+        {
+          "name": "_dnsauth.cdk-admin.lanting.live",
+          "resolver": "1.1.1.1",
+          "type": "CNAME",
+          "tcp": true,
+          "status": "NOERROR",
+          "authoritative": false,
+          "truncated": false,
+          "cname_records": [
+            {
+              "owner": "_dnsauth.cdk-admin.lanting.live",
+              "target": "cdk-admin.lanting.live.eoacme0.com",
+              "ttl": 600
+            }
+          ],
+          "txt_count": 0,
+          "txt_ttls": [],
+          "soa_negative_cache": []
+        },
+        {
+          "name": "_dnsauth.cdk-admin.lanting.live",
+          "resolver": "1.1.1.1",
+          "type": "TXT",
+          "tcp": false,
+          "status": "NOERROR",
+          "authoritative": false,
+          "truncated": false,
+          "cname_records": [
+            {
+              "owner": "_dnsauth.cdk-admin.lanting.live",
+              "target": "cdk-admin.lanting.live.eoacme0.com",
+              "ttl": 600
+            }
+          ],
+          "txt_count": 1,
+          "txt_ttls": [
+            60
+          ],
+          "soa_negative_cache": []
+        },
+        {
+          "name": "cdk-admin.lanting.live.eoacme0.com",
+          "resolver": "1.1.1.1",
+          "type": "TXT",
+          "tcp": false,
+          "status": "NOERROR",
+          "authoritative": false,
+          "truncated": false,
+          "cname_records": [],
+          "txt_count": 1,
+          "txt_ttls": [
+            60
+          ],
+          "soa_negative_cache": []
+        },
+        {
+          "name": "_dnsauth.cdk-admin.lanting.live",
+          "resolver": "8.8.8.8",
+          "type": "CNAME",
+          "tcp": false,
+          "status": "NOERROR",
+          "authoritative": false,
+          "truncated": false,
+          "cname_records": [
+            {
+              "owner": "_dnsauth.cdk-admin.lanting.live",
+              "target": "cdk-admin.lanting.live.eoacme0.com",
+              "ttl": 492
+            }
+          ],
+          "txt_count": 0,
+          "txt_ttls": [],
+          "soa_negative_cache": []
+        },
+        {
+          "name": "_dnsauth.cdk-admin.lanting.live",
+          "resolver": "8.8.8.8",
+          "type": "CNAME",
+          "tcp": true,
+          "status": "NOERROR",
+          "authoritative": false,
+          "truncated": false,
+          "cname_records": [
+            {
+              "owner": "_dnsauth.cdk-admin.lanting.live",
+              "target": "cdk-admin.lanting.live.eoacme0.com",
+              "ttl": 600
+            }
+          ],
+          "txt_count": 0,
+          "txt_ttls": [],
+          "soa_negative_cache": []
+        },
+        {
+          "name": "_dnsauth.cdk-admin.lanting.live",
+          "resolver": "8.8.8.8",
+          "type": "TXT",
+          "tcp": false,
+          "status": "NOERROR",
+          "authoritative": false,
+          "truncated": false,
+          "cname_records": [
+            {
+              "owner": "_dnsauth.cdk-admin.lanting.live",
+              "target": "cdk-admin.lanting.live.eoacme0.com",
+              "ttl": 600
+            }
+          ],
+          "txt_count": 1,
+          "txt_ttls": [
+            60
+          ],
+          "soa_negative_cache": []
+        },
+        {
+          "name": "cdk-admin.lanting.live.eoacme0.com",
+          "resolver": "8.8.8.8",
+          "type": "TXT",
+          "tcp": false,
+          "status": "NOERROR",
+          "authoritative": false,
+          "truncated": false,
+          "cname_records": [],
+          "txt_count": 1,
+          "txt_ttls": [
+            60
+          ],
+          "soa_negative_cache": []
+        },
+        {
+          "name": "_dnsauth.cdk-admin.lanting.live",
+          "resolver": "119.29.29.29",
+          "type": "CNAME",
+          "tcp": false,
+          "status": "NOERROR",
+          "authoritative": false,
+          "truncated": false,
+          "cname_records": [
+            {
+              "owner": "_dnsauth.cdk-admin.lanting.live",
+              "target": "cdk-admin.lanting.live.eoacme0.com",
+              "ttl": 600
+            }
+          ],
+          "txt_count": 0,
+          "txt_ttls": [],
+          "soa_negative_cache": []
+        },
+        {
+          "name": "_dnsauth.cdk-admin.lanting.live",
+          "resolver": "119.29.29.29",
+          "type": "CNAME",
+          "tcp": true,
+          "status": "NOERROR",
+          "authoritative": false,
+          "truncated": false,
+          "cname_records": [
+            {
+              "owner": "_dnsauth.cdk-admin.lanting.live",
+              "target": "cdk-admin.lanting.live.eoacme0.com",
+              "ttl": 600
+            }
+          ],
+          "txt_count": 0,
+          "txt_ttls": [],
+          "soa_negative_cache": []
+        },
+        {
+          "name": "_dnsauth.cdk-admin.lanting.live",
+          "resolver": "119.29.29.29",
+          "type": "TXT",
+          "tcp": false,
+          "status": "NOERROR",
+          "authoritative": false,
+          "truncated": false,
+          "cname_records": [
+            {
+              "owner": "_dnsauth.cdk-admin.lanting.live",
+              "target": "cdk-admin.lanting.live.eoacme0.com",
+              "ttl": 600
+            }
+          ],
+          "txt_count": 1,
+          "txt_ttls": [
+            60
+          ],
+          "soa_negative_cache": []
+        },
+        {
+          "name": "cdk-admin.lanting.live.eoacme0.com",
+          "resolver": "119.29.29.29",
+          "type": "TXT",
+          "tcp": false,
+          "status": "NOERROR",
+          "authoritative": false,
+          "truncated": false,
+          "cname_records": [],
+          "txt_count": 1,
+          "txt_ttls": [
+            60
+          ],
+          "soa_negative_cache": []
+        },
+        {
+          "name": "_dnsauth.cdk-admin.lanting.live",
+          "resolver": "dns9.hichina.com",
+          "type": "CNAME",
+          "tcp": false,
+          "status": "NOERROR",
+          "authoritative": true,
+          "truncated": false,
+          "cname_records": [
+            {
+              "owner": "_dnsauth.cdk-admin.lanting.live",
+              "target": "cdk-admin.lanting.live.eoacme0.com",
+              "ttl": 600
+            }
+          ],
+          "txt_count": 0,
+          "txt_ttls": [],
+          "soa_negative_cache": []
+        },
+        {
+          "name": "_dnsauth.cdk-admin.lanting.live",
+          "resolver": "dns10.hichina.com",
+          "type": "CNAME",
+          "tcp": false,
+          "status": "NOERROR",
+          "authoritative": true,
+          "truncated": false,
+          "cname_records": [
+            {
+              "owner": "_dnsauth.cdk-admin.lanting.live",
+              "target": "cdk-admin.lanting.live.eoacme0.com",
+              "ttl": 600
+            }
+          ],
+          "txt_count": 0,
+          "txt_ttls": [],
+          "soa_negative_cache": []
+        }
+      ]
+    }
+  ],
+  "conclusions": [
+    "Both authoritative DNS servers return the expected CNAME for both certificate delegation names.",
+    "Latest UDP recursive DNS checks from Ali and SG return the expected CNAME and one TXT record through the delegation chain.",
+    "An earlier SG default-resolver TCP CNAME lookup returned NXDOMAIN while TXT lookup already followed the expected CNAME; the latest snapshot no longer has this inconsistency.",
+    "TCP port 53 to 119.29.29.29 is reset from Ali in this snapshot, while UDP works and SG TCP works.",
+    "Authoritative delegation TTL is 600 seconds; observed target TXT TTL is 60 seconds.",
+    "CDK edge-pinned TLS/authentication verification is prepared but not run in this report; wait for certificate deployment confirmation."
+  ]
+}

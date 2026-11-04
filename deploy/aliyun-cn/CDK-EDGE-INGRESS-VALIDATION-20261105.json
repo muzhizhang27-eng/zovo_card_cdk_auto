@@ -1,0 +1,211 @@
+{
+  "schema_version": 1,
+  "purpose": "Read-only EdgeOne ingress validation after CDK certificate deployment",
+  "configuration_changes": false,
+  "real_business_posts": false,
+  "secret_values_in_report": false,
+  "log_values_exposed": false,
+  "attempts": [
+    {
+      "host": "cdk.lanting.live",
+      "origin": "aliyun-prod",
+      "edge_ip": "115.231.230.18",
+      "captured_at_utc": "2026-11-04T16:54:34.515169Z",
+      "probe": {
+        "path": "/__cdk_edge_verify_ec4532cc4a354e539079efdad73df7d9",
+        "curl_exit": 51,
+        "http_code": "000",
+        "ssl_verify_result": "1",
+        "ttfb": "0.000000",
+        "cache_control": [],
+        "age": [],
+        "content_type": [],
+        "content_encoding": [],
+        "vary": [],
+        "edge_cache_status": {},
+        "set_cookie_present": false,
+        "error_type": "curl_failed"
+      },
+      "log_matches": 0,
+      "client_ip_is_aliyun_egress": false,
+      "spoofed_ips_ignored": false,
+      "api_check": {
+        "path": "/api/v1/public/site",
+        "curl_exit": 51,
+        "http_code": "000",
+        "ssl_verify_result": "1",
+        "ttfb": "0.000000",
+        "cache_control": [],
+        "age": [],
+        "content_type": [],
+        "content_encoding": [],
+        "vary": [],
+        "edge_cache_status": {},
+        "set_cookie_present": false,
+        "error_type": "curl_failed"
+      },
+      "page": {
+        "path": "/recharge",
+        "curl_exit": 51,
+        "http_code": "000",
+        "ssl_verify_result": "1",
+        "ttfb": "0.000000",
+        "cache_control": [],
+        "age": [],
+        "content_type": [],
+        "content_encoding": [],
+        "vary": [],
+        "edge_cache_status": {},
+        "set_cookie_present": false,
+        "error_type": "curl_failed"
+      },
+      "static_asset_found": false
+    },
+    {
+      "host": "cdk.lanting.live",
+      "origin": "aliyun-prod",
+      "edge_ip": "115.231.230.18",
+      "captured_at_utc": "2026-11-04T16:55:27.385569Z",
+      "probe": {
+        "path": "/__cdk_edge_verify_bb2f54d1e88e4e2f83ae2378ca245e29",
+        "curl_exit": 0,
+        "http_code": "404",
+        "ssl_verify_result": "0",
+        "ttfb": "0.136771",
+        "cache_control": [
+          "no-store"
+        ],
+        "age": [],
+        "content_type": [
+          "text/html"
+        ],
+        "content_encoding": [],
+        "vary": [],
+        "edge_cache_status": {
+          "eo-cache-status": [
+            "MISS"
+          ]
+        },
+        "set_cookie_present": false
+      },
+      "log_matches": 1,
+      "client_ip_is_aliyun_egress": true,
+      "spoofed_ips_ignored": true,
+      "api_check": {
+        "path": "/api/v1/public/site",
+        "curl_exit": 0,
+        "http_code": "200",
+        "ssl_verify_result": "0",
+        "ttfb": "0.139668",
+        "cache_control": [
+          "no-store"
+        ],
+        "age": [],
+        "content_type": [
+          "application/json; charset=utf-8"
+        ],
+        "content_encoding": [],
+        "vary": [],
+        "edge_cache_status": {
+          "eo-cache-status": [
+            "MISS"
+          ]
+        },
+        "set_cookie_present": false
+      },
+      "page": {
+        "path": "/recharge",
+        "curl_exit": 0,
+        "http_code": "200",
+        "ssl_verify_result": "0",
+        "ttfb": "0.136533",
+        "cache_control": [
+          "no-store"
+        ],
+        "age": [],
+        "content_type": [
+          "text/html"
+        ],
+        "content_encoding": [],
+        "vary": [],
+        "edge_cache_status": {
+          "eo-cache-status": [
+            "MISS"
+          ]
+        },
+        "set_cookie_present": false
+      },
+      "static_asset": {
+        "path": "/assets/index-CZdOT2oL.js",
+        "curl_exit": 0,
+        "http_code": "200",
+        "ssl_verify_result": "0",
+        "ttfb": "0.112467",
+        "cache_control": [
+          "public, immutable, max-age=31536000"
+        ],
+        "age": [],
+        "content_type": [
+          "application/javascript"
+        ],
+        "content_encoding": [
+          "gzip"
+        ],
+        "vary": [
+          "Accept-Encoding"
+        ],
+        "edge_cache_status": {
+          "eo-cache-status": [
+            "MISS"
+          ]
+        },
+        "set_cookie_present": false
+      },
+      "static_asset_repeat": {
+        "path": "/assets/index-CZdOT2oL.js",
+        "curl_exit": 0,
+        "http_code": "200",
+        "ssl_verify_result": "0",
+        "ttfb": "0.049421",
+        "cache_control": [
+          "public, immutable, max-age=31536000"
+        ],
+        "age": [],
+        "content_type": [
+          "application/javascript"
+        ],
+        "content_encoding": [
+          "gzip"
+        ],
+        "vary": [
+          "Accept-Encoding"
+        ],
+        "edge_cache_status": {
+          "eo-cache-status": [
+            "HIT"
+          ]
+        },
+        "set_cookie_present": false
+      }
+    }
+  ],
+  "result": {
+    "tls_verified": true,
+    "origin_request_auth_and_client_ip_verified": true,
+    "forged_client_ip_ignored": true,
+    "public_page_status": 200,
+    "public_api_status": 200,
+    "dynamic_cache_control": "no-store",
+    "static_cache_control": "public, immutable, max-age=31536000",
+    "static_compression": "gzip",
+    "static_first_cache_status": "MISS",
+    "static_repeat_cache_status": "HIT",
+    "static_repeat_ttfb_seconds": 0.049421
+  },
+  "notes": [
+    "The first attempt failed TLS hostname verification during certificate propagation and did not reach origin; its false identity booleans indicate not executed, not an authentication failure.",
+    "The second attempt passed TLS and found exactly one unique probe in the Ali origin log; only booleans are recorded.",
+    "Requests used --resolve to pin the EdgeOne IP with the production hostname/SNI and retained TLS verification.",
+    "This report validates EdgeOne readiness, not public DNS cutover status."
+  ]
+}

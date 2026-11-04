@@ -1,0 +1,288 @@
+{
+  "schema": "cdk-sg-code-cleanup-v1",
+  "recorded_at": "2026-11-04T17:00:27.200189+00:00",
+  "source_preservation": {
+    "passed": true,
+    "manifest": "/Users/nan/Workhub/personal/backups/cdk-migration-20261105/cdk-migration-source-20261104T165629Z.manifest.json",
+    "manifest_sha256": "d352d093087ce0ec475d4be10d5d8636be03a17ced1047ce5fe8252cc7590a19",
+    "artifacts": {
+      "cdk-migration-source-20261104T165629Z.tgz": "390349582bcc93536c94014ce5b98d4d472a2427bc454d55399ecbbe9f922239",
+      "cdk-migration-source-20261104T165629Z.bundle": "f28e4015b9428a6cb44eef2e970603a21b45b82fc0759529869c08dc72fea161"
+    },
+    "archive_files_verified": 252,
+    "current_source_files_verified": 187,
+    "deployment_reports_are_preservation_time_snapshot": true
+  },
+  "acceptance_confirmed_by_operator": false,
+  "singapore": {
+    "mode": "preflight",
+    "preflight": {
+      "observed_at": "2026-11-04T17:00:26.278222+00:00",
+      "hostname": "VM-0-10-ubuntu",
+      "root": true,
+      "old_units": [
+        {
+          "MainPID": "0",
+          "Id": "cdk-recharge.service",
+          "LoadState": "masked",
+          "ActiveState": "inactive",
+          "FragmentPath": "/etc/systemd/system/cdk-recharge.service",
+          "query_exit": 0
+        },
+        {
+          "MainPID": "0",
+          "Id": "cdk-admin.service",
+          "LoadState": "masked",
+          "ActiveState": "inactive",
+          "FragmentPath": "/etc/systemd/system/cdk-admin.service",
+          "query_exit": 0
+        },
+        {
+          "MainPID": "0",
+          "Id": "cdk-lookup.service",
+          "LoadState": "masked",
+          "ActiveState": "inactive",
+          "FragmentPath": "/etc/systemd/system/cdk-lookup.service",
+          "query_exit": 0
+        }
+      ],
+      "required_units": [
+        {
+          "MainPID": "223747",
+          "Id": "cdk-gpt-connect.service",
+          "LoadState": "loaded",
+          "ActiveState": "active",
+          "FragmentPath": "/etc/systemd/system/cdk-gpt-connect.service",
+          "query_exit": 0
+        },
+        {
+          "MainPID": "197386",
+          "Id": "lanting-zovo-connect.service",
+          "LoadState": "loaded",
+          "ActiveState": "active",
+          "FragmentPath": "/etc/systemd/system/lanting-zovo-connect.service",
+          "query_exit": 0
+        },
+        {
+          "MainPID": "1007403",
+          "Id": "lanting-google-connect.service",
+          "LoadState": "loaded",
+          "ActiveState": "active",
+          "FragmentPath": "/etc/systemd/system/lanting-google-connect.service",
+          "query_exit": 0
+        },
+        {
+          "MainPID": "59754",
+          "Id": "nginx.service",
+          "LoadState": "loaded",
+          "ActiveState": "active",
+          "FragmentPath": "/usr/lib/systemd/system/nginx.service",
+          "query_exit": 0
+        },
+        {
+          "Id": "certbot.timer",
+          "LoadState": "loaded",
+          "ActiveState": "active",
+          "FragmentPath": "/usr/lib/systemd/system/certbot.timer",
+          "query_exit": 0
+        }
+      ],
+      "process_references": [],
+      "configuration_references": [],
+      "protected_paths": {
+        "/opt/cdk-gpt-egress": {
+          "exists": true,
+          "device": 64770,
+          "inode": 958979
+        },
+        "/opt/lanting-zovo-egress": {
+          "exists": true,
+          "device": 64770,
+          "inode": 958735
+        },
+        "/opt/lanting-google-egress": {
+          "exists": true,
+          "device": 64770,
+          "inode": 796353
+        },
+        "/var/lib/cdk-recharge": {
+          "exists": true,
+          "device": 64770,
+          "inode": 786443
+        },
+        "/var/lib/cdk-admin": {
+          "exists": true,
+          "device": 64770,
+          "inode": 796356
+        },
+        "/var/lib/cdk-tls-export": {
+          "exists": true,
+          "device": 64770,
+          "inode": 1061356
+        },
+        "/var/lib/cdk-admin-tls-export": {
+          "exists": true,
+          "device": 64770,
+          "inode": 1061394
+        },
+        "/var/lib/cdk-gpt-egress": {
+          "exists": true,
+          "device": 64770,
+          "inode": 1061400
+        },
+        "/etc/letsencrypt": {
+          "exists": true,
+          "device": 64770,
+          "inode": 655915
+        },
+        "/var/www/letsencrypt": {
+          "exists": true,
+          "device": 64770,
+          "inode": 786502
+        },
+        "/etc/nginx/cdk-private": {
+          "exists": true,
+          "device": 64770,
+          "inode": 959015
+        },
+        "/usr/local/libexec/cdk-tls-export.py": {
+          "exists": true,
+          "device": 64770,
+          "inode": 953858
+        },
+        "/usr/local/libexec/cdk-admin-tls-export.py": {
+          "exists": true,
+          "device": 64770,
+          "inode": 958756
+        },
+        "/var/backups/cdk-sg-compat": {
+          "exists": true,
+          "device": 64770,
+          "inode": 959000
+        },
+        "/var/backups/cdk-gpt-egress": {
+          "exists": true,
+          "device": 64770,
+          "inode": 958969
+        }
+      },
+      "paths": [
+        {
+          "path": "/opt/cdk-recharge",
+          "exists": true,
+          "symlink_components": [],
+          "device": 64770,
+          "inode": 786439,
+          "directory": true,
+          "allocated_kib": 89696
+        },
+        {
+          "path": "/opt/cdk-admin",
+          "exists": true,
+          "symlink_components": [],
+          "device": 64770,
+          "inode": 796361,
+          "directory": true,
+          "allocated_kib": 38252
+        },
+        {
+          "path": "/opt/cdk-lookup",
+          "exists": true,
+          "symlink_components": [],
+          "device": 64770,
+          "inode": 957778,
+          "directory": true,
+          "allocated_kib": 19188
+        },
+        {
+          "path": "/home/ubuntu/cdk-recharge-staging",
+          "exists": true,
+          "symlink_components": [],
+          "device": 64770,
+          "inode": 656429,
+          "directory": true,
+          "allocated_kib": 483024
+        },
+        {
+          "path": "/home/ubuntu/cdk-admin-staging",
+          "exists": true,
+          "symlink_components": [],
+          "device": 64770,
+          "inode": 786741,
+          "directory": true,
+          "allocated_kib": 38228
+        },
+        {
+          "path": "/home/ubuntu/cdk-cn-build-20261104",
+          "exists": true,
+          "symlink_components": [],
+          "device": 64770,
+          "inode": 958762,
+          "directory": true,
+          "allocated_kib": 28164
+        },
+        {
+          "path": "/var/tmp/cdk-cn-source-20261104.bundle",
+          "exists": true,
+          "symlink_components": [],
+          "device": 64770,
+          "inode": 11185,
+          "directory": false,
+          "allocated_kib": 1196
+        },
+        {
+          "path": "/var/tmp/cdk-cn-source-git-20261104",
+          "exists": true,
+          "symlink_components": [],
+          "device": 64770,
+          "inode": 1313826,
+          "directory": true,
+          "allocated_kib": 1376
+        },
+        {
+          "path": "/var/tmp/cdk-sg-compat-20261104",
+          "exists": true,
+          "symlink_components": [],
+          "device": 64770,
+          "inode": 959012,
+          "directory": true,
+          "allocated_kib": 16
+        },
+        {
+          "path": "/tmp/cdk-gpt-egress-20261104",
+          "exists": true,
+          "symlink_components": [],
+          "device": 64770,
+          "inode": 959409,
+          "directory": true,
+          "allocated_kib": 16
+        },
+        {
+          "path": "/tmp/cdk-sg-maintenance-20261104",
+          "exists": true,
+          "symlink_components": [],
+          "device": 64770,
+          "inode": 958995,
+          "directory": true,
+          "allocated_kib": 28
+        }
+      ],
+      "errors": [],
+      "nginx_test_passed": true,
+      "nginx_candidate_references": [],
+      "compat_vhosts": {
+        "cdk.lanting.live": true,
+        "cdk-admin.lanting.live": true
+      },
+      "safe_for_code_cleanup": true
+    },
+    "deleted_paths": [],
+    "already_absent_paths": [],
+    "postflight": null,
+    "allocated_kib_removed": 0,
+    "execution_error": null,
+    "filesystem_free_bytes_before": 48720613376,
+    "filesystem_free_bytes_after": 48720613376
+  },
+  "ssh_exit": 0
+}

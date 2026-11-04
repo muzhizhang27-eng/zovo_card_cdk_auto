@@ -1,0 +1,1447 @@
+{
+  "schema_version": 1,
+  "purpose": "Final read-only acceptance after both CDK business CNAME records were switched to EdgeOne",
+  "captured_through_utc": "2026-11-04T17:00:13.324792Z",
+  "outcome": "passed_with_recorded_transient_DNS_timeout_and_corrected_probe_expectation",
+  "safety": {
+    "configuration_changes": false,
+    "ca_renewal_attempted": false,
+    "real_business_posts": false,
+    "credentials_or_tokens_in_report": false,
+    "customer_log_values_in_report": false
+  },
+  "public_observations": [
+    {
+      "vantage": "aliyun-prod",
+      "captured_at_utc": "2026-11-04T16:58:34.194259Z",
+      "dns": [
+        {
+          "name": "cdk.lanting.live",
+          "resolver": "100.100.2.136",
+          "type": "CNAME",
+          "tcp": false,
+          "status": "NOERROR",
+          "authoritative": false,
+          "truncated": false,
+          "cname_records": [
+            {
+              "owner": "cdk.lanting.live",
+              "target": "cdk.lanting.live.eo.dnse1.com",
+              "ttl": 10
+            }
+          ],
+          "txt_count": 0,
+          "txt_ttls": [],
+          "soa_negative_cache": []
+        },
+        {
+          "name": "cdk.lanting.live",
+          "resolver": "100.100.2.138",
+          "type": "CNAME",
+          "tcp": false,
+          "status": "NOERROR",
+          "authoritative": false,
+          "truncated": false,
+          "cname_records": [
+            {
+              "owner": "cdk.lanting.live",
+              "target": "cdk.lanting.live.eo.dnse1.com",
+              "ttl": 10
+            }
+          ],
+          "txt_count": 0,
+          "txt_ttls": [],
+          "soa_negative_cache": []
+        },
+        {
+          "name": "cdk.lanting.live",
+          "resolver": "1.1.1.1",
+          "type": "CNAME",
+          "tcp": false,
+          "status": "NOERROR",
+          "authoritative": false,
+          "truncated": false,
+          "cname_records": [
+            {
+              "owner": "cdk.lanting.live",
+              "target": "cdk.lanting.live.eo.dnse1.com",
+              "ttl": 600
+            }
+          ],
+          "txt_count": 0,
+          "txt_ttls": [],
+          "soa_negative_cache": []
+        },
+        {
+          "name": "cdk.lanting.live",
+          "resolver": "8.8.8.8",
+          "type": "CNAME",
+          "tcp": false,
+          "status": "NOERROR",
+          "authoritative": false,
+          "truncated": false,
+          "cname_records": [
+            {
+              "owner": "cdk.lanting.live",
+              "target": "cdk.lanting.live.eo.dnse1.com",
+              "ttl": 600
+            }
+          ],
+          "txt_count": 0,
+          "txt_ttls": [],
+          "soa_negative_cache": []
+        },
+        {
+          "name": "cdk.lanting.live",
+          "resolver": "119.29.29.29",
+          "type": "CNAME",
+          "tcp": false,
+          "status": "NOERROR",
+          "authoritative": false,
+          "truncated": false,
+          "cname_records": [
+            {
+              "owner": "cdk.lanting.live",
+              "target": "cdk.lanting.live.eo.dnse1.com",
+              "ttl": 600
+            }
+          ],
+          "txt_count": 0,
+          "txt_ttls": [],
+          "soa_negative_cache": []
+        },
+        {
+          "name": "cdk.lanting.live",
+          "resolver": "dns9.hichina.com",
+          "type": "CNAME",
+          "tcp": false,
+          "status": "NOERROR",
+          "authoritative": true,
+          "truncated": false,
+          "cname_records": [
+            {
+              "owner": "cdk.lanting.live",
+              "target": "cdk.lanting.live.eo.dnse1.com",
+              "ttl": 600
+            }
+          ],
+          "txt_count": 0,
+          "txt_ttls": [],
+          "soa_negative_cache": []
+        },
+        {
+          "name": "cdk.lanting.live",
+          "resolver": "dns10.hichina.com",
+          "type": "CNAME",
+          "tcp": false,
+          "status": "NOERROR",
+          "authoritative": true,
+          "truncated": false,
+          "cname_records": [
+            {
+              "owner": "cdk.lanting.live",
+              "target": "cdk.lanting.live.eo.dnse1.com",
+              "ttl": 600
+            }
+          ],
+          "txt_count": 0,
+          "txt_ttls": [],
+          "soa_negative_cache": []
+        },
+        {
+          "name": "cdk-admin.lanting.live",
+          "resolver": "100.100.2.136",
+          "type": "CNAME",
+          "tcp": false,
+          "status": "NOERROR",
+          "authoritative": false,
+          "truncated": false,
+          "cname_records": [
+            {
+              "owner": "cdk-admin.lanting.live",
+              "target": "cdk-admin.lanting.live.eo.dnse1.com",
+              "ttl": 10
+            }
+          ],
+          "txt_count": 0,
+          "txt_ttls": [],
+          "soa_negative_cache": []
+        },
+        {
+          "name": "cdk-admin.lanting.live",
+          "resolver": "100.100.2.138",
+          "type": "CNAME",
+          "tcp": false,
+          "status": "NOERROR",
+          "authoritative": false,
+          "truncated": false,
+          "cname_records": [
+            {
+              "owner": "cdk-admin.lanting.live",
+              "target": "cdk-admin.lanting.live.eo.dnse1.com",
+              "ttl": 10
+            }
+          ],
+          "txt_count": 0,
+          "txt_ttls": [],
+          "soa_negative_cache": []
+        },
+        {
+          "name": "cdk-admin.lanting.live",
+          "resolver": "1.1.1.1",
+          "type": "CNAME",
+          "tcp": false,
+          "status": "NOERROR",
+          "authoritative": false,
+          "truncated": false,
+          "cname_records": [
+            {
+              "owner": "cdk-admin.lanting.live",
+              "target": "cdk-admin.lanting.live.eo.dnse1.com",
+              "ttl": 600
+            }
+          ],
+          "txt_count": 0,
+          "txt_ttls": [],
+          "soa_negative_cache": []
+        },
+        {
+          "name": "cdk-admin.lanting.live",
+          "resolver": "8.8.8.8",
+          "type": "CNAME",
+          "tcp": false,
+          "status": "NOERROR",
+          "authoritative": false,
+          "truncated": false,
+          "cname_records": [
+            {
+              "owner": "cdk-admin.lanting.live",
+              "target": "cdk-admin.lanting.live.eo.dnse1.com",
+              "ttl": 600
+            }
+          ],
+          "txt_count": 0,
+          "txt_ttls": [],
+          "soa_negative_cache": []
+        },
+        {
+          "name": "cdk-admin.lanting.live",
+          "resolver": "119.29.29.29",
+          "type": "CNAME",
+          "tcp": false,
+          "status": "NOERROR",
+          "authoritative": false,
+          "truncated": false,
+          "cname_records": [
+            {
+              "owner": "cdk-admin.lanting.live",
+              "target": "cdk-admin.lanting.live.eo.dnse1.com",
+              "ttl": 600
+            }
+          ],
+          "txt_count": 0,
+          "txt_ttls": [],
+          "soa_negative_cache": []
+        },
+        {
+          "name": "cdk-admin.lanting.live",
+          "resolver": "dns9.hichina.com",
+          "type": "CNAME",
+          "tcp": false,
+          "status": "NOERROR",
+          "authoritative": true,
+          "truncated": false,
+          "cname_records": [
+            {
+              "owner": "cdk-admin.lanting.live",
+              "target": "cdk-admin.lanting.live.eo.dnse1.com",
+              "ttl": 600
+            }
+          ],
+          "txt_count": 0,
+          "txt_ttls": [],
+          "soa_negative_cache": []
+        },
+        {
+          "name": "cdk-admin.lanting.live",
+          "resolver": "dns10.hichina.com",
+          "type": "CNAME",
+          "tcp": false,
+          "status": "NOERROR",
+          "authoritative": true,
+          "truncated": false,
+          "cname_records": [
+            {
+              "owner": "cdk-admin.lanting.live",
+              "target": "cdk-admin.lanting.live.eo.dnse1.com",
+              "ttl": 600
+            }
+          ],
+          "txt_count": 0,
+          "txt_ttls": [],
+          "soa_negative_cache": []
+        }
+      ],
+      "https": [
+        {
+          "host": "cdk.lanting.live",
+          "requests": [
+            {
+              "path": "/recharge",
+              "curl_exit": 0,
+              "http_code": "200",
+              "tls_verify": "0",
+              "ttfb": "0.206846",
+              "remote_ip": "27.21.228.39",
+              "legacy_sg_entry": false,
+              "direct_ali_entry": false,
+              "cache_control": [
+                "no-store"
+              ],
+              "content_encoding": [],
+              "edge_cache_status": [
+                "MISS"
+              ],
+              "age": [],
+              "expected_status": "200",
+              "passed": true
+            },
+            {
+              "path": "/api/v1/public/site",
+              "curl_exit": 0,
+              "http_code": "200",
+              "tls_verify": "0",
+              "ttfb": "0.242280",
+              "remote_ip": "27.21.228.39",
+              "legacy_sg_entry": false,
+              "direct_ali_entry": false,
+              "cache_control": [
+                "no-store"
+              ],
+              "content_encoding": [],
+              "edge_cache_status": [
+                "MISS"
+              ],
+              "age": [],
+              "expected_status": "200",
+              "passed": true
+            },
+            {
+              "path": "/api/v1/auth/admin/me",
+              "curl_exit": 0,
+              "http_code": "404",
+              "tls_verify": "0",
+              "ttfb": "0.210976",
+              "remote_ip": "27.21.228.39",
+              "legacy_sg_entry": false,
+              "direct_ali_entry": false,
+              "cache_control": [
+                "no-store"
+              ],
+              "content_encoding": [],
+              "edge_cache_status": [
+                "MISS"
+              ],
+              "age": [],
+              "expected_status": "404",
+              "passed": true
+            },
+            {
+              "path": "/api/v1/admin/cdkeys",
+              "curl_exit": 0,
+              "http_code": "404",
+              "tls_verify": "0",
+              "ttfb": "0.228115",
+              "remote_ip": "27.21.228.39",
+              "legacy_sg_entry": false,
+              "direct_ali_entry": false,
+              "cache_control": [
+                "no-store"
+              ],
+              "content_encoding": [],
+              "edge_cache_status": [
+                "MISS"
+              ],
+              "age": [],
+              "expected_status": "404",
+              "passed": true
+            },
+            {
+              "path": "/assets/index-CZdOT2oL.js",
+              "curl_exit": 0,
+              "http_code": "200",
+              "tls_verify": "0",
+              "ttfb": "0.177653",
+              "remote_ip": "27.21.228.39",
+              "legacy_sg_entry": false,
+              "direct_ali_entry": false,
+              "cache_control": [
+                "public, immutable, max-age=31536000"
+              ],
+              "content_encoding": [
+                "gzip"
+              ],
+              "edge_cache_status": [
+                "HIT"
+              ],
+              "age": [],
+              "expected_status": "200",
+              "passed": true
+            },
+            {
+              "path": "/assets/index-CZdOT2oL.js",
+              "curl_exit": 0,
+              "http_code": "200",
+              "tls_verify": "0",
+              "ttfb": "0.093493",
+              "remote_ip": "27.21.228.39",
+              "legacy_sg_entry": false,
+              "direct_ali_entry": false,
+              "cache_control": [
+                "public, immutable, max-age=31536000"
+              ],
+              "content_encoding": [
+                "gzip"
+              ],
+              "edge_cache_status": [
+                "HIT"
+              ],
+              "age": [],
+              "expected_status": "200",
+              "passed": true
+            }
+          ],
+          "passed": true
+        },
+        {
+          "host": "cdk-admin.lanting.live",
+          "requests": [
+            {
+              "path": "/ops/login",
+              "curl_exit": 0,
+              "http_code": "200",
+              "tls_verify": "0",
+              "ttfb": "0.148338",
+              "remote_ip": "115.231.230.18",
+              "legacy_sg_entry": false,
+              "direct_ali_entry": false,
+              "cache_control": [
+                "no-store"
+              ],
+              "content_encoding": [],
+              "edge_cache_status": [
+                "MISS"
+              ],
+              "age": [],
+              "expected_status": "200",
+              "passed": true
+            },
+            {
+              "path": "/api/v1/auth/admin/me",
+              "curl_exit": 0,
+              "http_code": "401",
+              "tls_verify": "0",
+              "ttfb": "0.135892",
+              "remote_ip": "115.231.230.18",
+              "legacy_sg_entry": false,
+              "direct_ali_entry": false,
+              "cache_control": [
+                "no-store"
+              ],
+              "content_encoding": [],
+              "edge_cache_status": [
+                "MISS"
+              ],
+              "age": [],
+              "expected_status": "401",
+              "passed": true
+            },
+            {
+              "path": "/api/v1/admin/cdkeys",
+              "curl_exit": 0,
+              "http_code": "404",
+              "tls_verify": "0",
+              "ttfb": "0.136639",
+              "remote_ip": "115.231.230.18",
+              "legacy_sg_entry": false,
+              "direct_ali_entry": false,
+              "cache_control": [
+                "no-store"
+              ],
+              "content_encoding": [],
+              "edge_cache_status": [
+                "MISS"
+              ],
+              "age": [],
+              "expected_status": "404",
+              "passed": true,
+              "initial_expected_status": "401",
+              "expectation_correction": "This path is not registered in backend/internal/server/http.go. It correctly returns 404; the real /api/v1/admin/system/version route is checked separately for 401."
+            },
+            {
+              "path": "/api/v1/admin/system/update",
+              "curl_exit": 0,
+              "http_code": "404",
+              "tls_verify": "0",
+              "ttfb": "0.113479",
+              "remote_ip": "115.231.230.18",
+              "legacy_sg_entry": false,
+              "direct_ali_entry": false,
+              "cache_control": [
+                "no-store"
+              ],
+              "content_encoding": [],
+              "edge_cache_status": [
+                "MISS"
+              ],
+              "age": [],
+              "expected_status": "404",
+              "passed": true
+            },
+            {
+              "path": "/assets/index-CZdOT2oL.js",
+              "curl_exit": 0,
+              "http_code": "200",
+              "tls_verify": "0",
+              "ttfb": "0.151384",
+              "remote_ip": "115.231.230.18",
+              "legacy_sg_entry": false,
+              "direct_ali_entry": false,
+              "cache_control": [
+                "public, immutable, max-age=31536000"
+              ],
+              "content_encoding": [
+                "gzip"
+              ],
+              "edge_cache_status": [
+                "MISS"
+              ],
+              "age": [],
+              "expected_status": "200",
+              "passed": true
+            },
+            {
+              "path": "/assets/index-CZdOT2oL.js",
+              "curl_exit": 0,
+              "http_code": "200",
+              "tls_verify": "0",
+              "ttfb": "0.042293",
+              "remote_ip": "115.231.230.18",
+              "legacy_sg_entry": false,
+              "direct_ali_entry": false,
+              "cache_control": [
+                "public, immutable, max-age=31536000"
+              ],
+              "content_encoding": [
+                "gzip"
+              ],
+              "edge_cache_status": [
+                "HIT"
+              ],
+              "age": [],
+              "expected_status": "200",
+              "passed": true
+            }
+          ],
+          "passed": true
+        }
+      ]
+    },
+    {
+      "vantage": "sg-prod",
+      "captured_at_utc": "2026-11-04T16:58:51.839685Z",
+      "dns": [
+        {
+          "name": "cdk.lanting.live",
+          "resolver": "127.0.0.53",
+          "type": "CNAME",
+          "tcp": false,
+          "status": "NOERROR",
+          "authoritative": false,
+          "truncated": false,
+          "cname_records": [
+            {
+              "owner": "cdk.lanting.live",
+              "target": "cdk.lanting.live.eo.dnse1.com",
+              "ttl": 600
+            }
+          ],
+          "txt_count": 0,
+          "txt_ttls": [],
+          "soa_negative_cache": []
+        },
+        {
+          "name": "cdk.lanting.live",
+          "resolver": "1.1.1.1",
+          "type": "CNAME",
+          "tcp": false,
+          "status": "NOERROR",
+          "authoritative": false,
+          "truncated": false,
+          "cname_records": [
+            {
+              "owner": "cdk.lanting.live",
+              "target": "cdk.lanting.live.eo.dnse1.com",
+              "ttl": 600
+            }
+          ],
+          "txt_count": 0,
+          "txt_ttls": [],
+          "soa_negative_cache": []
+        },
+        {
+          "name": "cdk.lanting.live",
+          "resolver": "8.8.8.8",
+          "type": "CNAME",
+          "tcp": false,
+          "status": "NOERROR",
+          "authoritative": false,
+          "truncated": false,
+          "cname_records": [
+            {
+              "owner": "cdk.lanting.live",
+              "target": "cdk.lanting.live.eo.dnse1.com",
+              "ttl": 600
+            }
+          ],
+          "txt_count": 0,
+          "txt_ttls": [],
+          "soa_negative_cache": []
+        },
+        {
+          "name": "cdk.lanting.live",
+          "resolver": "119.29.29.29",
+          "type": "CNAME",
+          "tcp": false,
+          "status": "NOERROR",
+          "authoritative": false,
+          "truncated": false,
+          "cname_records": [
+            {
+              "owner": "cdk.lanting.live",
+              "target": "cdk.lanting.live.eo.dnse1.com",
+              "ttl": 600
+            }
+          ],
+          "txt_count": 0,
+          "txt_ttls": [],
+          "soa_negative_cache": []
+        },
+        {
+          "name": "cdk.lanting.live",
+          "resolver": "dns9.hichina.com",
+          "type": "CNAME",
+          "tcp": false,
+          "status": "NOERROR",
+          "authoritative": true,
+          "truncated": false,
+          "cname_records": [
+            {
+              "owner": "cdk.lanting.live",
+              "target": "cdk.lanting.live.eo.dnse1.com",
+              "ttl": 600
+            }
+          ],
+          "txt_count": 0,
+          "txt_ttls": [],
+          "soa_negative_cache": []
+        },
+        {
+          "name": "cdk.lanting.live",
+          "resolver": "dns10.hichina.com",
+          "type": "CNAME",
+          "tcp": false,
+          "status": "NOERROR",
+          "authoritative": true,
+          "truncated": false,
+          "cname_records": [
+            {
+              "owner": "cdk.lanting.live",
+              "target": "cdk.lanting.live.eo.dnse1.com",
+              "ttl": 600
+            }
+          ],
+          "txt_count": 0,
+          "txt_ttls": [],
+          "soa_negative_cache": []
+        },
+        {
+          "name": "cdk-admin.lanting.live",
+          "resolver": "127.0.0.53",
+          "type": "CNAME",
+          "tcp": false,
+          "status": "NOERROR",
+          "authoritative": false,
+          "truncated": false,
+          "cname_records": [
+            {
+              "owner": "cdk-admin.lanting.live",
+              "target": "cdk-admin.lanting.live.eo.dnse1.com",
+              "ttl": 600
+            }
+          ],
+          "txt_count": 0,
+          "txt_ttls": [],
+          "soa_negative_cache": []
+        },
+        {
+          "name": "cdk-admin.lanting.live",
+          "resolver": "1.1.1.1",
+          "type": "CNAME",
+          "tcp": false,
+          "status": "NOERROR",
+          "authoritative": false,
+          "truncated": false,
+          "cname_records": [
+            {
+              "owner": "cdk-admin.lanting.live",
+              "target": "cdk-admin.lanting.live.eo.dnse1.com",
+              "ttl": 600
+            }
+          ],
+          "txt_count": 0,
+          "txt_ttls": [],
+          "soa_negative_cache": []
+        },
+        {
+          "name": "cdk-admin.lanting.live",
+          "resolver": "8.8.8.8",
+          "type": "CNAME",
+          "tcp": false,
+          "status": "NOERROR",
+          "authoritative": false,
+          "truncated": false,
+          "cname_records": [
+            {
+              "owner": "cdk-admin.lanting.live",
+              "target": "cdk-admin.lanting.live.eo.dnse1.com",
+              "ttl": 600
+            }
+          ],
+          "txt_count": 0,
+          "txt_ttls": [],
+          "soa_negative_cache": []
+        },
+        {
+          "name": "cdk-admin.lanting.live",
+          "resolver": "119.29.29.29",
+          "type": "CNAME",
+          "tcp": false,
+          "status": "NOERROR",
+          "authoritative": false,
+          "truncated": false,
+          "cname_records": [
+            {
+              "owner": "cdk-admin.lanting.live",
+              "target": "cdk-admin.lanting.live.eo.dnse1.com",
+              "ttl": 600
+            }
+          ],
+          "txt_count": 0,
+          "txt_ttls": [],
+          "soa_negative_cache": []
+        },
+        {
+          "name": "cdk-admin.lanting.live",
+          "resolver": "dns9.hichina.com",
+          "type": "CNAME",
+          "tcp": false,
+          "status": "NOERROR",
+          "authoritative": true,
+          "truncated": false,
+          "cname_records": [
+            {
+              "owner": "cdk-admin.lanting.live",
+              "target": "cdk-admin.lanting.live.eo.dnse1.com",
+              "ttl": 600
+            }
+          ],
+          "txt_count": 0,
+          "txt_ttls": [],
+          "soa_negative_cache": []
+        },
+        {
+          "name": "cdk-admin.lanting.live",
+          "resolver": "dns10.hichina.com",
+          "type": "CNAME",
+          "tcp": false,
+          "error": "TimeoutError"
+        }
+      ],
+      "https": [
+        {
+          "host": "cdk.lanting.live",
+          "requests": [
+            {
+              "path": "/recharge",
+              "curl_exit": 0,
+              "http_code": "200",
+              "tls_verify": "0",
+              "ttfb": "1.439363",
+              "remote_ip": "43.159.99.83",
+              "legacy_sg_entry": false,
+              "direct_ali_entry": false,
+              "cache_control": [
+                "no-store"
+              ],
+              "content_encoding": [],
+              "edge_cache_status": [
+                "MISS"
+              ],
+              "age": [],
+              "expected_status": "200",
+              "passed": true
+            },
+            {
+              "path": "/api/v1/public/site",
+              "curl_exit": 0,
+              "http_code": "200",
+              "tls_verify": "0",
+              "ttfb": "1.294075",
+              "remote_ip": "43.159.98.80",
+              "legacy_sg_entry": false,
+              "direct_ali_entry": false,
+              "cache_control": [
+                "no-store"
+              ],
+              "content_encoding": [],
+              "edge_cache_status": [
+                "MISS"
+              ],
+              "age": [],
+              "expected_status": "200",
+              "passed": true
+            },
+            {
+              "path": "/api/v1/auth/admin/me",
+              "curl_exit": 0,
+              "http_code": "404",
+              "tls_verify": "0",
+              "ttfb": "1.432532",
+              "remote_ip": "43.159.98.80",
+              "legacy_sg_entry": false,
+              "direct_ali_entry": false,
+              "cache_control": [
+                "no-store"
+              ],
+              "content_encoding": [],
+              "edge_cache_status": [
+                "MISS"
+              ],
+              "age": [],
+              "expected_status": "404",
+              "passed": true
+            },
+            {
+              "path": "/api/v1/admin/cdkeys",
+              "curl_exit": 0,
+              "http_code": "404",
+              "tls_verify": "0",
+              "ttfb": "1.423714",
+              "remote_ip": "43.159.98.80",
+              "legacy_sg_entry": false,
+              "direct_ali_entry": false,
+              "cache_control": [
+                "no-store"
+              ],
+              "content_encoding": [],
+              "edge_cache_status": [
+                "MISS"
+              ],
+              "age": [],
+              "expected_status": "404",
+              "passed": true
+            },
+            {
+              "path": "/assets/index-CZdOT2oL.js",
+              "curl_exit": 0,
+              "http_code": "200",
+              "tls_verify": "0",
+              "ttfb": "1.613092",
+              "remote_ip": "43.159.98.80",
+              "legacy_sg_entry": false,
+              "direct_ali_entry": false,
+              "cache_control": [
+                "public, immutable, max-age=31536000"
+              ],
+              "content_encoding": [
+                "gzip"
+              ],
+              "edge_cache_status": [
+                "MISS"
+              ],
+              "age": [],
+              "expected_status": "200",
+              "passed": true
+            },
+            {
+              "path": "/assets/index-CZdOT2oL.js",
+              "curl_exit": 0,
+              "http_code": "200",
+              "tls_verify": "0",
+              "ttfb": "0.105618",
+              "remote_ip": "43.159.98.80",
+              "legacy_sg_entry": false,
+              "direct_ali_entry": false,
+              "cache_control": [
+                "public, immutable, max-age=31536000"
+              ],
+              "content_encoding": [
+                "gzip"
+              ],
+              "edge_cache_status": [
+                "HIT"
+              ],
+              "age": [],
+              "expected_status": "200",
+              "passed": true
+            }
+          ],
+          "passed": true
+        },
+        {
+          "host": "cdk-admin.lanting.live",
+          "requests": [
+            {
+              "path": "/ops/login",
+              "curl_exit": 0,
+              "http_code": "200",
+              "tls_verify": "0",
+              "ttfb": "1.502849",
+              "remote_ip": "43.159.98.80",
+              "legacy_sg_entry": false,
+              "direct_ali_entry": false,
+              "cache_control": [
+                "no-store"
+              ],
+              "content_encoding": [],
+              "edge_cache_status": [
+                "MISS"
+              ],
+              "age": [],
+              "expected_status": "200",
+              "passed": true
+            },
+            {
+              "path": "/api/v1/auth/admin/me",
+              "curl_exit": 0,
+              "http_code": "401",
+              "tls_verify": "0",
+              "ttfb": "1.314213",
+              "remote_ip": "43.159.99.83",
+              "legacy_sg_entry": false,
+              "direct_ali_entry": false,
+              "cache_control": [
+                "no-store"
+              ],
+              "content_encoding": [],
+              "edge_cache_status": [
+                "MISS"
+              ],
+              "age": [],
+              "expected_status": "401",
+              "passed": true
+            },
+            {
+              "path": "/api/v1/admin/cdkeys",
+              "curl_exit": 0,
+              "http_code": "404",
+              "tls_verify": "0",
+              "ttfb": "1.600927",
+              "remote_ip": "43.159.98.80",
+              "legacy_sg_entry": false,
+              "direct_ali_entry": false,
+              "cache_control": [
+                "no-store"
+              ],
+              "content_encoding": [],
+              "edge_cache_status": [
+                "MISS"
+              ],
+              "age": [],
+              "expected_status": "404",
+              "passed": true,
+              "initial_expected_status": "401",
+              "expectation_correction": "This path is not registered in backend/internal/server/http.go. It correctly returns 404; the real /api/v1/admin/system/version route is checked separately for 401."
+            },
+            {
+              "path": "/api/v1/admin/system/update",
+              "curl_exit": 0,
+              "http_code": "404",
+              "tls_verify": "0",
+              "ttfb": "1.307462",
+              "remote_ip": "43.159.98.80",
+              "legacy_sg_entry": false,
+              "direct_ali_entry": false,
+              "cache_control": [
+                "no-store"
+              ],
+              "content_encoding": [],
+              "edge_cache_status": [
+                "MISS"
+              ],
+              "age": [],
+              "expected_status": "404",
+              "passed": true
+            },
+            {
+              "path": "/assets/index-CZdOT2oL.js",
+              "curl_exit": 0,
+              "http_code": "200",
+              "tls_verify": "0",
+              "ttfb": "1.604663",
+              "remote_ip": "43.159.98.80",
+              "legacy_sg_entry": false,
+              "direct_ali_entry": false,
+              "cache_control": [
+                "public, immutable, max-age=31536000"
+              ],
+              "content_encoding": [
+                "gzip"
+              ],
+              "edge_cache_status": [
+                "MISS"
+              ],
+              "age": [],
+              "expected_status": "200",
+              "passed": true
+            },
+            {
+              "path": "/assets/index-CZdOT2oL.js",
+              "curl_exit": 0,
+              "http_code": "200",
+              "tls_verify": "0",
+              "ttfb": "0.041556",
+              "remote_ip": "43.159.99.83",
+              "legacy_sg_entry": false,
+              "direct_ali_entry": false,
+              "cache_control": [
+                "public, immutable, max-age=31536000"
+              ],
+              "content_encoding": [
+                "gzip"
+              ],
+              "edge_cache_status": [
+                "HIT"
+              ],
+              "age": [],
+              "expected_status": "200",
+              "passed": true
+            }
+          ],
+          "passed": true
+        }
+      ]
+    }
+  ],
+  "focused_rechecks": [
+    {
+      "vantage": "aliyun-prod",
+      "captured_at_utc": "2026-11-04T17:00:06.296444Z",
+      "dns_retry": {
+        "name": "cdk-admin.lanting.live",
+        "resolver": "dns10.hichina.com",
+        "type": "CNAME",
+        "tcp": false,
+        "status": "NOERROR",
+        "authoritative": true,
+        "truncated": false,
+        "cname_records": [
+          {
+            "owner": "cdk-admin.lanting.live",
+            "target": "cdk-admin.lanting.live.eo.dnse1.com",
+            "ttl": 600
+          }
+        ],
+        "txt_count": 0,
+        "txt_ttls": [],
+        "soa_negative_cache": []
+      },
+      "route_auth_checks": [
+        {
+          "host": "cdk-admin.lanting.live",
+          "path": "/api/v1/admin/system/version",
+          "expected_status": "401",
+          "http_code": "401",
+          "tls_verify": "0",
+          "ttfb": "0.157970",
+          "remote_ip": "115.231.230.18",
+          "curl_exit": 0,
+          "passed": true
+        },
+        {
+          "host": "cdk.lanting.live",
+          "path": "/api/v1/admin/system/version",
+          "expected_status": "404",
+          "http_code": "404",
+          "tls_verify": "0",
+          "ttfb": "0.195750",
+          "remote_ip": "27.21.228.39",
+          "curl_exit": 0,
+          "passed": true
+        }
+      ],
+      "business_process_counts": {
+        "cdk-recharge": 1,
+        "cdk-admin": 1,
+        "cdk-lookup": 1
+      },
+      "tunnel_listeners": [
+        {
+          "port": 18783,
+          "tcp_connect": true
+        },
+        {
+          "port": 18784,
+          "tcp_connect": true
+        },
+        {
+          "port": 18785,
+          "tcp_connect": true
+        }
+      ]
+    },
+    {
+      "vantage": "sg-prod",
+      "captured_at_utc": "2026-11-04T17:00:13.324792Z",
+      "dns_retry": {
+        "name": "cdk-admin.lanting.live",
+        "resolver": "dns10.hichina.com",
+        "type": "CNAME",
+        "tcp": false,
+        "status": "NOERROR",
+        "authoritative": true,
+        "truncated": false,
+        "cname_records": [
+          {
+            "owner": "cdk-admin.lanting.live",
+            "target": "cdk-admin.lanting.live.eo.dnse1.com",
+            "ttl": 600
+          }
+        ],
+        "txt_count": 0,
+        "txt_ttls": [],
+        "soa_negative_cache": []
+      },
+      "route_auth_checks": [
+        {
+          "host": "cdk-admin.lanting.live",
+          "path": "/api/v1/admin/system/version",
+          "expected_status": "401",
+          "http_code": "401",
+          "tls_verify": "0",
+          "ttfb": "1.505614",
+          "remote_ip": "43.159.99.83",
+          "curl_exit": 0,
+          "passed": true
+        },
+        {
+          "host": "cdk.lanting.live",
+          "path": "/api/v1/admin/system/version",
+          "expected_status": "404",
+          "http_code": "404",
+          "tls_verify": "0",
+          "ttfb": "1.376750",
+          "remote_ip": "43.159.99.83",
+          "curl_exit": 0,
+          "passed": true
+        }
+      ],
+      "business_process_counts": {
+        "cdk-recharge": 0,
+        "cdk-admin": 0,
+        "cdk-lookup": 0
+      }
+    }
+  ],
+  "runtime_units": {
+    "aliyun_prod": [
+      {
+        "MainPID": "35450",
+        "Result": "success",
+        "NRestarts": "0",
+        "ExecMainStatus": "0",
+        "Id": "cdk-recharge.service",
+        "LoadState": "loaded",
+        "ActiveState": "active",
+        "SubState": "running",
+        "UnitFileState": "enabled"
+      },
+      {
+        "MainPID": "35448",
+        "Result": "success",
+        "NRestarts": "0",
+        "ExecMainStatus": "0",
+        "Id": "cdk-admin.service",
+        "LoadState": "loaded",
+        "ActiveState": "active",
+        "SubState": "running",
+        "UnitFileState": "enabled"
+      },
+      {
+        "MainPID": "35449",
+        "Result": "success",
+        "NRestarts": "0",
+        "ExecMainStatus": "0",
+        "Id": "cdk-lookup.service",
+        "LoadState": "loaded",
+        "ActiveState": "active",
+        "SubState": "running",
+        "UnitFileState": "enabled"
+      },
+      {
+        "MainPID": "30462",
+        "Result": "success",
+        "NRestarts": "0",
+        "ExecMainStatus": "0",
+        "Id": "cdk-gpt-tunnel.service",
+        "LoadState": "loaded",
+        "ActiveState": "active",
+        "SubState": "running",
+        "UnitFileState": "enabled"
+      },
+      {
+        "MainPID": "25150",
+        "Result": "success",
+        "NRestarts": "0",
+        "ExecMainStatus": "0",
+        "Id": "lanting-zovo-tunnel.service",
+        "LoadState": "loaded",
+        "ActiveState": "active",
+        "SubState": "running",
+        "UnitFileState": "enabled"
+      },
+      {
+        "MainPID": "25146",
+        "Result": "success",
+        "NRestarts": "0",
+        "ExecMainStatus": "0",
+        "Id": "lanting-google-tunnel.service",
+        "LoadState": "loaded",
+        "ActiveState": "active",
+        "SubState": "running",
+        "UnitFileState": "enabled"
+      },
+      {
+        "Result": "success",
+        "Id": "cdk-tls-sync.timer",
+        "LoadState": "loaded",
+        "ActiveState": "active",
+        "SubState": "waiting",
+        "UnitFileState": "enabled"
+      },
+      {
+        "Result": "success",
+        "Id": "cdk-admin-tls-sync.timer",
+        "LoadState": "loaded",
+        "ActiveState": "active",
+        "SubState": "waiting",
+        "UnitFileState": "enabled"
+      },
+      {
+        "MainPID": "0",
+        "Result": "success",
+        "NRestarts": "0",
+        "ExecMainStatus": "0",
+        "Id": "cdk-tls-sync.service",
+        "LoadState": "loaded",
+        "ActiveState": "inactive",
+        "SubState": "dead",
+        "UnitFileState": "static"
+      },
+      {
+        "MainPID": "0",
+        "Result": "success",
+        "NRestarts": "0",
+        "ExecMainStatus": "0",
+        "Id": "cdk-admin-tls-sync.service",
+        "LoadState": "loaded",
+        "ActiveState": "inactive",
+        "SubState": "dead",
+        "UnitFileState": "static"
+      }
+    ],
+    "sg_prod": [
+      {
+        "MainPID": "0",
+        "Result": "success",
+        "NRestarts": "0",
+        "ExecMainStatus": "0",
+        "Id": "cdk-recharge.service",
+        "LoadState": "masked",
+        "ActiveState": "inactive",
+        "SubState": "dead",
+        "UnitFileState": "masked"
+      },
+      {
+        "MainPID": "0",
+        "Result": "success",
+        "NRestarts": "0",
+        "ExecMainStatus": "0",
+        "Id": "cdk-admin.service",
+        "LoadState": "masked",
+        "ActiveState": "inactive",
+        "SubState": "dead",
+        "UnitFileState": "masked"
+      },
+      {
+        "MainPID": "0",
+        "Result": "success",
+        "NRestarts": "0",
+        "ExecMainStatus": "0",
+        "Id": "cdk-lookup.service",
+        "LoadState": "masked",
+        "ActiveState": "inactive",
+        "SubState": "dead",
+        "UnitFileState": "masked"
+      },
+      {
+        "MainPID": "223747",
+        "Result": "success",
+        "NRestarts": "0",
+        "ExecMainStatus": "0",
+        "Id": "cdk-gpt-connect.service",
+        "LoadState": "loaded",
+        "ActiveState": "active",
+        "SubState": "running",
+        "UnitFileState": "enabled"
+      },
+      {
+        "MainPID": "197386",
+        "Result": "success",
+        "NRestarts": "0",
+        "ExecMainStatus": "0",
+        "Id": "lanting-zovo-connect.service",
+        "LoadState": "loaded",
+        "ActiveState": "active",
+        "SubState": "running",
+        "UnitFileState": "enabled"
+      },
+      {
+        "MainPID": "1007403",
+        "Result": "success",
+        "NRestarts": "0",
+        "ExecMainStatus": "0",
+        "Id": "lanting-google-connect.service",
+        "LoadState": "loaded",
+        "ActiveState": "active",
+        "SubState": "running",
+        "UnitFileState": "enabled"
+      }
+    ]
+  },
+  "acme_and_main_site": {
+    "vantage": "aliyun-prod",
+    "captured_at_utc": "2026-11-04T16:58:59.848594Z",
+    "acme_missing_path_checks": [
+      {
+        "host": "cdk.lanting.live",
+        "origin_ip": "121.40.64.63",
+        "scheme": "http",
+        "curl_exit": 0,
+        "http_code": "404",
+        "tls_verify": "0",
+        "redirects": "0",
+        "ttfb": "0.876848",
+        "passed": true
+      },
+      {
+        "host": "cdk.lanting.live",
+        "origin_ip": "121.40.64.63",
+        "scheme": "https",
+        "curl_exit": 0,
+        "http_code": "404",
+        "tls_verify": "0",
+        "redirects": "0",
+        "ttfb": "0.916860",
+        "passed": true
+      },
+      {
+        "host": "cdk.lanting.live",
+        "origin_ip": "43.156.235.208",
+        "scheme": "http",
+        "curl_exit": 0,
+        "http_code": "404",
+        "tls_verify": "0",
+        "redirects": "0",
+        "ttfb": "0.854039",
+        "passed": true
+      },
+      {
+        "host": "cdk.lanting.live",
+        "origin_ip": "43.156.235.208",
+        "scheme": "https",
+        "curl_exit": 0,
+        "http_code": "404",
+        "tls_verify": "0",
+        "redirects": "0",
+        "ttfb": "1.311384",
+        "passed": true
+      },
+      {
+        "host": "cdk-admin.lanting.live",
+        "origin_ip": "121.40.64.63",
+        "scheme": "http",
+        "curl_exit": 0,
+        "http_code": "404",
+        "tls_verify": "0",
+        "redirects": "0",
+        "ttfb": "4.204830",
+        "passed": true
+      },
+      {
+        "host": "cdk-admin.lanting.live",
+        "origin_ip": "121.40.64.63",
+        "scheme": "https",
+        "curl_exit": 0,
+        "http_code": "404",
+        "tls_verify": "0",
+        "redirects": "0",
+        "ttfb": "0.896478",
+        "passed": true
+      },
+      {
+        "host": "cdk-admin.lanting.live",
+        "origin_ip": "43.156.235.208",
+        "scheme": "http",
+        "curl_exit": 0,
+        "http_code": "404",
+        "tls_verify": "0",
+        "redirects": "0",
+        "ttfb": "0.854205",
+        "passed": true
+      },
+      {
+        "host": "cdk-admin.lanting.live",
+        "origin_ip": "43.156.235.208",
+        "scheme": "https",
+        "curl_exit": 0,
+        "http_code": "404",
+        "tls_verify": "0",
+        "redirects": "0",
+        "ttfb": "1.306924",
+        "passed": true
+      }
+    ],
+    "main_ai": {
+      "exit": 0,
+      "metrics": "200 0 0.213266"
+    },
+    "no_challenge_created": true,
+    "ca_renewal_not_attempted": true
+  },
+  "conclusions": [
+    "Both business names resolve through their expected EdgeOne CNAME from both vantages and public resolvers.",
+    "A single SG query to dns10.hichina.com timed out; the focused recheck returned authoritative NOERROR and the expected CNAME with TTL 600.",
+    "Unpinned public HTTPS requests from both vantages reached EdgeOne addresses, not the legacy SG entry or Ali origin IP; TLS verification passed.",
+    "Public pages return 200; unauthenticated admin me and actual admin system/version APIs return 401. Public CDK blocks admin APIs with 404; disabled system update remains 404.",
+    "An initial probe incorrectly expected 401 from nonexistent /api/v1/admin/cdkeys. Source inspection confirmed that 404 is correct; the real protected system/version endpoint was then verified as 401.",
+    "HTML and dynamic APIs remain no-store; the static hashed JS has public immutable max-age=31536000, gzip and confirmed edge HIT.",
+    "Ali has exactly one process for each of the three CDK services; all three are enabled/active with zero restarts. SG has zero such business processes and the three units are masked/inactive.",
+    "Ali Zovo/ChatGPT/Google tunnels and SG corresponding CONNECT relays are enabled/active with zero restarts; Ali loopback ports 18783/18784/18785 accept TCP connections.",
+    "Both CDK TLS synchronization timers are enabled/active/waiting; their oneshot services are normally inactive after successful completion (Result success, ExecMainStatus 0).",
+    "All eight missing ACME challenge path checks across two names, two origins and HTTP/HTTPS returned 404 with zero redirects. No challenge was created and this does not prove a new CA issuance/renewal.",
+    "Main lanting.live/ai returns 200 with verified TLS.",
+    "These server-vantage timings are not a browser end-user benchmark; SG uncached requests still traverse an overseas edge to the Hangzhou origin."
+  ]
+}

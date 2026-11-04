@@ -3,12 +3,16 @@ package handler
 import (
 	"sync"
 	"time"
+
+	"github.com/tuzi/cdk-recharge-system/internal/auth"
 )
 
-// 简单的内存级登录限流：同一 key（客户端IP+用户名）在窗口期内失败超过阈值即锁定。
+// 登录限流同时限制单 IP 和 IP+用户名，尝试在执行密码校验前计入窗口。
 const (
-	loginMaxAttempts = 5
-	loginLockWindow  = 15 * time.Minute
+	loginMaxAttempts   = 5
+	loginMaxIPAttempts = 20
+	loginMaxEntries    = 4096
+	loginLockWindow    = 15 * time.Minute
 )
 
 type loginAttempt struct {
@@ -18,50 +22,56 @@ type loginAttempt struct {
 }
 
 var (
-	loginMu       sync.Mutex
-	loginAttempts = make(map[string]*loginAttempt)
+	loginMu        sync.Mutex
+	loginAttempts  = make(map[string]*loginAttempt)
+	loginLastPrune time.Time
 )
 
 // loginAllowed 返回是否允许尝试登录，以及若被锁定还需等待多久。
-func loginAllowed(key string) (bool, time.Duration) {
+func loginAllowed(ip, username string) (bool, time.Duration) {
 	loginMu.Lock()
 	defer loginMu.Unlock()
-
-	a := loginAttempts[key]
-	if a == nil {
-		return true, 0
-	}
 	now := time.Now()
-	if now.Before(a.lockedUntil) {
-		return false, time.Until(a.lockedUntil)
+	if now.Sub(loginLastPrune) >= time.Minute || len(loginAttempts) >= loginMaxEntries-2 {
+		for key, attempt := range loginAttempts {
+			if now.Sub(attempt.windowStart) >= loginLockWindow {
+				delete(loginAttempts, key)
+			}
+		}
+		loginLastPrune = now
 	}
-	// 锁已过期 / 窗口已过：重置
-	if !a.lockedUntil.IsZero() && now.After(a.lockedUntil) {
-		delete(loginAttempts, key)
+	keys := []string{"ip:" + auth.SecretDigest(ip), "pair:" + auth.SecretDigest(ip+"|"+username)}
+	limits := []int{loginMaxIPAttempts, loginMaxAttempts}
+	missing := 0
+	for i, key := range keys {
+		a := loginAttempts[key]
+		if a != nil && now.Sub(a.windowStart) >= loginLockWindow {
+			delete(loginAttempts, key)
+			a = nil
+		}
+		if a == nil {
+			missing++
+		} else if a.failures >= limits[i] {
+			return false, a.windowStart.Add(loginLockWindow).Sub(now)
+		}
+	}
+	if len(loginAttempts)+missing > loginMaxEntries {
+		return false, time.Minute
+	}
+	// Reserve attempts before password work, so simultaneous requests cannot
+	// all pass the limit while earlier bcrypt checks are still running.
+	for _, key := range keys {
+		if loginAttempts[key] == nil {
+			loginAttempts[key] = &loginAttempt{windowStart: now}
+		}
+		loginAttempts[key].failures++
 	}
 	return true, 0
 }
 
-// loginFailed 记一次失败，达到阈值则锁定。
-func loginFailed(key string) {
+// loginSucceeded 清除该账号的尝试计数，保留 IP 总预算以限制轮换用户名。
+func loginSucceeded(ip, username string) {
 	loginMu.Lock()
 	defer loginMu.Unlock()
-
-	now := time.Now()
-	a := loginAttempts[key]
-	if a == nil || now.Sub(a.windowStart) > loginLockWindow {
-		a = &loginAttempt{windowStart: now}
-		loginAttempts[key] = a
-	}
-	a.failures++
-	if a.failures >= loginMaxAttempts {
-		a.lockedUntil = now.Add(loginLockWindow)
-	}
-}
-
-// loginSucceeded 登录成功后清除该 key 的失败计数。
-func loginSucceeded(key string) {
-	loginMu.Lock()
-	defer loginMu.Unlock()
-	delete(loginAttempts, key)
+	delete(loginAttempts, "pair:"+auth.SecretDigest(ip+"|"+username))
 }

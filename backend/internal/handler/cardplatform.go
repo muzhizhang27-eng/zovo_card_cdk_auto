@@ -3,6 +3,7 @@ package handler
 import (
 	"io"
 	"net/http"
+	"os"
 	"strings"
 	"time"
 
@@ -16,12 +17,16 @@ import (
 func CardPlatformPing(c *gin.Context) {
 	cfg := cardplatform.LoadConfig()
 	base := cfg.SiteBase
+	if err := cardplatform.ValidateBase(base); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"ok": false, "error": err.Error()})
+		return
+	}
 	if strings.TrimSpace(base) == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"ok": false, "error": "card_api_base not configured"})
 		return
 	}
 
-	client := &http.Client{Timeout: 8 * time.Second}
+	client := cardplatform.NewHTTPClient(8 * time.Second)
 	candidates := []string{
 		cfg.OpenAPIBase() + "/balance", // 若无 key 可能 401，仍说明可达
 		base + "/health",
@@ -59,17 +64,24 @@ func CardPlatformPing(c *gin.Context) {
 
 	egressIP, egressSrc, _ := detectEgressIP(c.Request.Context())
 	keyCfg, _ := db.GetSetting("card_api_key")
+	proxyEnabled := strings.TrimSpace(os.Getenv("CARD_API_PROXY_URL")) != ""
+	egressNote := ""
+	if proxyEnabled {
+		egressNote = "下方出口 IP 是 Web 服务器出口；卡台请求经专用代理，白名单应核对新加坡代理服务器的出口 IP。"
+	}
 
 	if probed == "" {
 		c.JSON(http.StatusBadGateway, gin.H{
-			"ok":              false,
-			"error":           "unreachable",
-			"detail":          lastErr,
-			"site_base":       cfg.SiteBase,
-			"openapi_base":    cfg.OpenAPIBase(),
-			"public_cdk_base": cfg.PublicCDKBase(),
-			"egress_ip":       egressIP,
-			"egress_source":   egressSrc,
+			"ok":                     false,
+			"error":                  "unreachable",
+			"detail":                 lastErr,
+			"site_base":              cfg.SiteBase,
+			"openapi_base":           cfg.OpenAPIBase(),
+			"public_cdk_base":        cfg.PublicCDKBase(),
+			"egress_ip":              egressIP,
+			"egress_source":          egressSrc,
+			"card_api_proxy_enabled": proxyEnabled,
+			"egress_note":            egressNote,
 		})
 		return
 	}
@@ -79,18 +91,26 @@ func CardPlatformPing(c *gin.Context) {
 		msg = "主机可达；API Key 无效或未配置（HTTP 401）"
 	} else if status == 403 {
 		msg = "主机可达；可能 IP 不在白名单（HTTP 403）— 请把下方出口 IP 加入卡台白名单"
+		if proxyEnabled {
+			msg = "主机可达；可能新加坡代理出口 IP 不在白名单（HTTP 403）"
+		}
+	}
+	if proxyEnabled {
+		msg += "；" + egressNote
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"ok":                 true,
-		"message":            msg,
-		"probed":             probed,
-		"status":             status,
-		"api_key_configured": strings.TrimSpace(keyCfg) != "",
-		"site_base":          cfg.SiteBase,
-		"openapi_base":       cfg.OpenAPIBase(),
-		"public_cdk_base":    cfg.PublicCDKBase(),
-		"egress_ip":          egressIP,
-		"egress_source":      egressSrc,
+		"ok":                     true,
+		"message":                msg,
+		"probed":                 probed,
+		"status":                 status,
+		"api_key_configured":     strings.TrimSpace(keyCfg) != "",
+		"site_base":              cfg.SiteBase,
+		"openapi_base":           cfg.OpenAPIBase(),
+		"public_cdk_base":        cfg.PublicCDKBase(),
+		"egress_ip":              egressIP,
+		"egress_source":          egressSrc,
+		"card_api_proxy_enabled": proxyEnabled,
+		"egress_note":            egressNote,
 	})
 }

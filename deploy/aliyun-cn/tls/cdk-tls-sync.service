@@ -1,0 +1,21 @@
+[Unit]
+Description=Synchronize cdk.lanting.live origin certificate from Singapore
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/libexec/cdk-tls-sync.py
+User=root
+Group=root
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=true
+ReadWritePaths=/etc/cdk-tls /var/lib/cdk-tls-sync
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+MemoryLimit=64M
+CPUQuota=10%
+TasksMax=16
+TimeoutStartSec=120

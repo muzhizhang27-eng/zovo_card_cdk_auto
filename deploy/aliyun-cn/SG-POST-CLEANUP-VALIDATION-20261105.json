@@ -1,0 +1,116 @@
+{
+  "schema": "cdk-post-cleanup-verification-v1",
+  "recorded_at": "2026-11-04T17:04:36.784177+00:00",
+  "scope": "Checks performed after the reviewed 11-path SG obsolete-code cleanup; no real billing/redemption and no CA renewal",
+  "execution_report": "SG-CLEANUP-EXECUTION-20261105.json",
+  "deleted_path_count": 11,
+  "deleted_paths": [
+    "/opt/cdk-recharge",
+    "/opt/cdk-admin",
+    "/opt/cdk-lookup",
+    "/home/ubuntu/cdk-recharge-staging",
+    "/home/ubuntu/cdk-admin-staging",
+    "/home/ubuntu/cdk-cn-build-20261104",
+    "/var/tmp/cdk-cn-source-20261104.bundle",
+    "/var/tmp/cdk-cn-source-git-20261104",
+    "/var/tmp/cdk-sg-compat-20261104",
+    "/tmp/cdk-gpt-egress-20261104",
+    "/tmp/cdk-sg-maintenance-20261104"
+  ],
+  "allocated_kib_removed": 699184,
+  "filesystem_free_bytes_before": 48720449536,
+  "filesystem_free_bytes_after": 49436405760,
+  "filesystem_free_bytes_change": 715956224,
+  "disk_delta_note": "Free-space delta includes concurrent filesystem activity; deleted allocated size comes from preflight du -sx",
+  "preflight_passed": true,
+  "postflight_passed": true,
+  "sg_progress_journal": "/var/backups/cdk-sg-compat/cleanup-20261104T170145Z-259651.json",
+  "sg_progress_journal_mode": "0600",
+  "all_11_paths_confirmed_absent": true,
+  "old_units_remain_masked_inactive": true,
+  "protected_path_identities_unchanged": true,
+  "public_http_checks": [
+    {
+      "url": "https://lanting.live/ai",
+      "http_status": 200,
+      "tls_verified": true,
+      "ttfb_seconds": 0.259793
+    },
+    {
+      "url": "https://cdk.lanting.live/recharge",
+      "http_status": 200,
+      "tls_verified": true,
+      "ttfb_seconds": 0.217247
+    },
+    {
+      "url": "https://cdk-admin.lanting.live/ops/login",
+      "http_status": 200,
+      "tls_verified": true,
+      "ttfb_seconds": 0.254588
+    },
+    {
+      "url": "https://cdk-admin.lanting.live/api/v1/auth/admin/me",
+      "http_status": 401,
+      "tls_verified": true,
+      "ttfb_seconds": 0.260617
+    }
+  ],
+  "ali_services": {
+    "active_zero_restarts": [
+      "cdk-recharge.service",
+      "cdk-admin.service",
+      "cdk-lookup.service",
+      "cdk-gpt-tunnel.service",
+      "lanting-zovo-tunnel.service",
+      "lanting-google-tunnel.service"
+    ],
+    "active_tls_timers": [
+      "cdk-tls-sync.timer",
+      "cdk-admin-tls-sync.timer"
+    ],
+    "last_tls_sync_result": "success",
+    "last_tls_sync_exit_status": 0,
+    "nginx_test_passed": true
+  },
+  "relay_tls_checks": [
+    {
+      "ali_loopback_port": 18783,
+      "target": "oauth2.googleapis.com",
+      "connect_status": 200,
+      "tls_verified": true,
+      "tls_version": "TLSv1.3"
+    },
+    {
+      "ali_loopback_port": 18784,
+      "target": "zovocard.com",
+      "connect_status": 200,
+      "tls_verified": true,
+      "tls_version": "TLSv1.3"
+    },
+    {
+      "ali_loopback_port": 18785,
+      "target": "chatgpt.com",
+      "connect_status": 200,
+      "tls_verified": true,
+      "tls_version": "TLSv1.3"
+    }
+  ],
+  "sg_origin_certificate_expiries": {
+    "cdk.lanting.live": "2027-01-20T15:01:21Z",
+    "cdk-admin.lanting.live": "2027-01-22T08:44:28Z"
+  },
+  "acme_report": "SG-CLEANUP-ACME-VALIDATION-20261105.json",
+  "acme_all_passed": true,
+  "synthetic_acme_files_removed": true,
+  "retained": [
+    "Zovo/Google/ChatGPT relays and SSH identities",
+    "Certbot/ACME state and challenge root",
+    "CDK and main-site TLS export/sync identities and scripts",
+    "SG compatibility Nginx and source-auth headers",
+    "Old CDK unit masks",
+    "Old databases and backups",
+    "Main-site code and shared Go caches"
+  ],
+  "all_checks_passed": true,
+  "no_git_commit_performed_by_cleanup_agent": true
+}

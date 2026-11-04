@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/tuzi/cdk-recharge-system/internal/background"
 	"github.com/tuzi/cdk-recharge-system/internal/cardplatform"
 	"github.com/tuzi/cdk-recharge-system/internal/db"
 )
@@ -21,7 +22,7 @@ type SyncResult struct {
 
 // Start 启动后台产品状态同步（goroutine；ctx.Done() 时优雅退出）。
 func Start(ctx context.Context) {
-	go run(ctx)
+	background.Go(func() { run(ctx) })
 }
 
 func run(ctx context.Context) {

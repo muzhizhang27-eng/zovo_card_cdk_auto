@@ -267,6 +267,9 @@ func createTables() error {
 	}
 
 	log.Println("✓ 数据表已准备就绪")
+	if err := MigrateAdminSessions(); err != nil {
+		return err
+	}
 	if err := migrateCDKPlanTypes(); err != nil {
 		return err
 	}
@@ -347,23 +350,40 @@ func VerifyAdminPassword(stored, plain string) (bool, string) {
 }
 
 // SetAdminPassword 更新指定管理员的密码（bcrypt）。
-func SetAdminPassword(username, newPlain string) error {
+func SetAdminPassword(username, newPlain string, expectedHash ...string) error {
 	hash, err := HashAdminPassword(newPlain)
 	if err != nil {
 		return err
 	}
-	_, err = DB.Exec(`UPDATE admin_users SET password_hash = ?, updated_at = CURRENT_TIMESTAMP WHERE username = ?`, hash, username)
-	return err
+	query := `UPDATE admin_users SET password_hash = ?, updated_at = CURRENT_TIMESTAMP WHERE username = ?`
+	args := []any{hash, username}
+	if len(expectedHash) > 0 {
+		query += ` AND password_hash = ? AND is_active = 1`
+		args = append(args, expectedHash[0])
+	}
+	result, err := DB.Exec(query, args...)
+	if err != nil {
+		return err
+	}
+	if n, err := result.RowsAffected(); err != nil || n != 1 {
+		return fmt.Errorf("admin password changed or unavailable")
+	}
+	return nil
 }
 
 // UpgradeAdminHash 把登录时升级出来的 bcrypt 哈希写回数据库。
-func UpgradeAdminHash(username, newHash string) {
+func UpgradeAdminHash(username, oldHash, newHash string) error {
 	if newHash == "" {
-		return
+		return nil
 	}
-	if _, err := DB.Exec(`UPDATE admin_users SET password_hash = ? WHERE username = ?`, newHash, username); err != nil {
-		log.Printf("升级管理员密码哈希失败: %v", err)
+	result, err := DB.Exec(`UPDATE admin_users SET password_hash = ? WHERE username = ? AND password_hash = ? AND is_active = 1`, newHash, username, oldHash)
+	if err != nil {
+		return err
 	}
+	if n, err := result.RowsAffected(); err != nil || n != 1 {
+		return fmt.Errorf("admin password changed or unavailable")
+	}
+	return nil
 }
 
 func randomPassword(n int) string {

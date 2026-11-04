@@ -33,17 +33,17 @@ func TestXIssueInfersProductWithoutQueryParameter(t *testing.T) {
 			if r.URL.Query().Get("product") != "x" {
 				t.Error("X issue fetched GPT catalogue")
 			}
-			w.Write([]byte(`{"code":0,"data":{"version":1,"plans":{"x_basic_monthly":{"enabled":true,"currency":"JPY"}},"registry":[{"key":"basic_monthly","label":"X Basic"}]}}`))
+			w.Write([]byte(`{"code":0,"data":{"version":1,"plans":{"x_plus_monthly":{"enabled":true,"currency":"USD"}},"registry":[{"key":"plus_monthly","label":"X Plus"}]}}`))
 		case "/openapi/v1/gpt-direct/cdks":
 			var b map[string]any
 			if err := json.NewDecoder(r.Body).Decode(&b); err != nil {
 				t.Error(err)
 			}
-			if b["plan"] != "basic_monthly" || b["payment_country"] != "JP" {
+			if b["plan"] != "plus_monthly" || b["payment_country"] != "US" {
 				t.Error("wrong X issue parameters")
 			}
 			issued++
-			w.Write([]byte(`{"code":0,"data":{"requested":1,"issued":[{"id":1,"code":"ZC-FAKE-TEST-X-CODE","plan":"basic_monthly","payment_country":"JP"}]}}`))
+			w.Write([]byte(`{"code":0,"data":{"requested":1,"issued":[{"id":1,"code":"ZC-FAKE-TEST-X-CODE","plan":"plus_monthly","payment_country":"US"}]}}`))
 		default:
 			t.Errorf("unexpected endpoint %s", r.URL.Path)
 			w.WriteHeader(404)
@@ -59,7 +59,7 @@ func TestXIssueInfersProductWithoutQueryParameter(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	r := gin.New()
 	r.POST("/issue", CardPlatformIssueCDKs)
-	req := httptest.NewRequest("POST", "/issue", strings.NewReader(`{"plan":"basic_monthly","count":1,"funding_confirmed":true}`))
+	req := httptest.NewRequest("POST", "/issue", strings.NewReader(`{"plan":"plus_monthly","count":1,"funding_confirmed":true}`))
 	req.Header.Set("Content-Type", "application/json")
 	w := httptest.NewRecorder()
 	r.ServeHTTP(w, req)

@@ -1,0 +1,34 @@
+[Unit]
+Description=CDK redemption service
+After=network-online.target lanting-zovo-tunnel.service cdk-gpt-tunnel.service
+Wants=network-online.target lanting-zovo-tunnel.service cdk-gpt-tunnel.service
+
+[Service]
+Type=simple
+Slice=cdk.slice
+User=cdk-recharge
+Group=cdk-recharge
+WorkingDirectory=/var/lib/cdk-recharge
+EnvironmentFile=/etc/cdk-recharge/app.env
+ExecStart=/usr/bin/env GOMAXPROCS=1 GOMEMLIMIT=144MiB CARD_API_PROXY_URL=http://127.0.0.1:18784 GPTCHECK_PROXY_URL=http://127.0.0.1:18785 /opt/cdk-recharge/current/cdk-recharge
+Restart=on-failure
+RestartSec=3
+TimeoutStopSec=330s
+CPUAccounting=true
+CPUQuota=50%
+CPUWeight=25
+CPUShares=256
+MemoryAccounting=true
+MemoryMax=192M
+UMask=0077
+StateDirectory=cdk-recharge
+StateDirectoryMode=0700
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectHome=true
+ProtectSystem=strict
+ReadWritePaths=/var/lib/cdk-recharge
+LimitNOFILE=65535
+
+[Install]
+WantedBy=multi-user.target

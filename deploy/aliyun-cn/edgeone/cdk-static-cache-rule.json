@@ -1,0 +1,32 @@
+{
+  "FormatVersion": "1.0",
+  "Rules": [
+    {
+      "RuleName": "CDK 版本化静态资源缓存",
+      "Branches": [
+        {
+          "Condition": "${http.request.host} in ['cdk.lanting.live','cdk-admin.lanting.live'] and ${http.request.uri.path} matches '^/assets/[A-Za-z0-9_.-]+-[A-Za-z0-9_-]{8}[.](js|css)$'",
+          "Actions": [
+            {
+              "Name": "Cache",
+              "CacheParameters": {
+                "FollowOrigin": {
+                  "Switch": "on",
+                  "DefaultCache": "off",
+                  "DefaultCacheStrategy": "off",
+                  "DefaultCacheTime": 0
+                }
+              }
+            },
+            {
+              "Name": "MaxAge",
+              "MaxAgeParameters": {
+                "FollowOrigin": "on"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

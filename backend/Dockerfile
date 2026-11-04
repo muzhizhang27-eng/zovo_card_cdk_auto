@@ -1,5 +1,5 @@
 # ===== build stage (CGO needed for mattn/go-sqlite3) =====
-FROM golang:1.24-bookworm AS builder
+FROM golang:1.27.3-bookworm AS builder
 WORKDIR /src
 COPY go.mod go.sum ./
 RUN go mod download

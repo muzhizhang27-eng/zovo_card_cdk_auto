@@ -1,0 +1,387 @@
+{
+  "schema": "cdk-static-cache-candidate-validation-v1",
+  "deploymentPerformed": false,
+  "stage": "/var/tmp/cdk-static-review-1bTAVcfb",
+  "tests": [
+    {
+      "test": "verify_static_cache.py",
+      "exit": 0,
+      "stderr": "nginx: the configuration file /var/tmp/cdk-cache-review-llj7f4wn/nginx.conf syntax is ok\nnginx: configuration file /var/tmp/cdk-cache-review-llj7f4wn/nginx.conf test is successful",
+      "stagingDirectory": "/var/tmp/cdk-static-review-1bTAVcfb",
+      "result": {
+        "candidateCacheSyntax": "pass",
+        "checks": [
+          {
+            "host": "cdk.lanting.live",
+            "method": "GET",
+            "path": "/assets/app-A1b2C3_d.js",
+            "status": 200,
+            "cacheControl": [
+              "public, max-age=31536000, immutable"
+            ],
+            "securityHeadersVerified": true
+          },
+          {
+            "host": "cdk.lanting.live",
+            "method": "HEAD",
+            "path": "/assets/app-A1b2C3_d.js",
+            "status": 200,
+            "cacheControl": [
+              "public, max-age=31536000, immutable"
+            ],
+            "securityHeadersVerified": true
+          },
+          {
+            "host": "cdk.lanting.live",
+            "method": "GET",
+            "path": "/assets/app-A1b2C3_d.js",
+            "status": 206,
+            "cacheControl": [
+              "public, max-age=31536000, immutable"
+            ],
+            "securityHeadersVerified": true
+          },
+          {
+            "host": "cdk.lanting.live",
+            "method": "GET",
+            "path": "/assets/app-A1b2C3_d.js",
+            "status": 304,
+            "cacheControl": [
+              "public, max-age=31536000, immutable"
+            ],
+            "securityHeadersVerified": true
+          },
+          {
+            "host": "cdk.lanting.live",
+            "method": "GET",
+            "path": "/assets/app-A1b2C3_d.js",
+            "status": 200,
+            "cacheControl": [
+              "public, max-age=31536000, immutable"
+            ],
+            "securityHeadersVerified": true,
+            "gzipDecodedBytesMatch": true,
+            "uncompressedBytes": 27136,
+            "compressedBytes": 166
+          },
+          {
+            "host": "cdk.lanting.live",
+            "method": "GET",
+            "path": "/assets/style-Abc_12-3.css",
+            "status": 200,
+            "cacheControl": [
+              "public, max-age=31536000, immutable"
+            ],
+            "securityHeadersVerified": true,
+            "gzipDecodedBytesMatch": true,
+            "uncompressedBytes": 27136,
+            "compressedBytes": 166
+          },
+          {
+            "host": "cdk.lanting.live",
+            "method": "GET",
+            "path": "/assets/missing-A1b2C3_d.js",
+            "status": 404,
+            "cacheControl": [
+              "no-store"
+            ],
+            "securityHeadersVerified": true
+          },
+          {
+            "host": "cdk.lanting.live",
+            "method": "POST",
+            "path": "/assets/app-A1b2C3_d.js",
+            "status": 405,
+            "cacheControl": [
+              "no-store"
+            ],
+            "securityHeadersVerified": true
+          },
+          {
+            "host": "cdk.lanting.live",
+            "method": "GET",
+            "path": "/assets/plain.js",
+            "status": 200,
+            "cacheControl": [
+              "no-store"
+            ],
+            "securityHeadersVerified": true
+          },
+          {
+            "host": "cdk.lanting.live",
+            "method": "GET",
+            "path": "/assets/short-Abc1234.js",
+            "status": 200,
+            "cacheControl": [
+              "no-store"
+            ],
+            "securityHeadersVerified": true
+          },
+          {
+            "host": "cdk.lanting.live",
+            "method": "GET",
+            "path": "/assets/long-Abc123456.js",
+            "status": 200,
+            "cacheControl": [
+              "no-store"
+            ],
+            "securityHeadersVerified": true
+          },
+          {
+            "host": "cdk.lanting.live",
+            "method": "GET",
+            "path": "/recharge",
+            "status": 200,
+            "cacheControl": [
+              "no-store"
+            ],
+            "securityHeadersVerified": true
+          },
+          {
+            "host": "cdk.lanting.live",
+            "method": "GET",
+            "path": "/api/v1/public/site",
+            "status": 200,
+            "cacheControl": [
+              "no-store",
+              "no-store"
+            ],
+            "securityHeadersVerified": true
+          },
+          {
+            "host": "cdk.lanting.live",
+            "method": "GET",
+            "path": "/assets/app-A1b2C3_d.js",
+            "status": 308,
+            "cacheControl": [
+              "no-store"
+            ],
+            "securityHeadersVerified": false
+          },
+          {
+            "host": "cdk.lanting.live",
+            "method": "GET",
+            "path": "/assets/app-A1b2C3_d.js",
+            "status": 503,
+            "cacheControl": [
+              "no-store"
+            ],
+            "securityHeadersVerified": true
+          },
+          {
+            "host": "cdk-admin.lanting.live",
+            "method": "GET",
+            "path": "/assets/app-A1b2C3_d.js",
+            "status": 200,
+            "cacheControl": [
+              "public, max-age=31536000, immutable"
+            ],
+            "securityHeadersVerified": true
+          },
+          {
+            "host": "cdk-admin.lanting.live",
+            "method": "HEAD",
+            "path": "/assets/app-A1b2C3_d.js",
+            "status": 200,
+            "cacheControl": [
+              "public, max-age=31536000, immutable"
+            ],
+            "securityHeadersVerified": true
+          },
+          {
+            "host": "cdk-admin.lanting.live",
+            "method": "GET",
+            "path": "/assets/app-A1b2C3_d.js",
+            "status": 206,
+            "cacheControl": [
+              "public, max-age=31536000, immutable"
+            ],
+            "securityHeadersVerified": true
+          },
+          {
+            "host": "cdk-admin.lanting.live",
+            "method": "GET",
+            "path": "/assets/app-A1b2C3_d.js",
+            "status": 304,
+            "cacheControl": [
+              "public, max-age=31536000, immutable"
+            ],
+            "securityHeadersVerified": true
+          },
+          {
+            "host": "cdk-admin.lanting.live",
+            "method": "GET",
+            "path": "/assets/app-A1b2C3_d.js",
+            "status": 200,
+            "cacheControl": [
+              "public, max-age=31536000, immutable"
+            ],
+            "securityHeadersVerified": true,
+            "gzipDecodedBytesMatch": true,
+            "uncompressedBytes": 27136,
+            "compressedBytes": 166
+          },
+          {
+            "host": "cdk-admin.lanting.live",
+            "method": "GET",
+            "path": "/assets/style-Abc_12-3.css",
+            "status": 200,
+            "cacheControl": [
+              "public, max-age=31536000, immutable"
+            ],
+            "securityHeadersVerified": true,
+            "gzipDecodedBytesMatch": true,
+            "uncompressedBytes": 27136,
+            "compressedBytes": 166
+          },
+          {
+            "host": "cdk-admin.lanting.live",
+            "method": "GET",
+            "path": "/assets/missing-A1b2C3_d.js",
+            "status": 404,
+            "cacheControl": [
+              "no-store"
+            ],
+            "securityHeadersVerified": true
+          },
+          {
+            "host": "cdk-admin.lanting.live",
+            "method": "POST",
+            "path": "/assets/app-A1b2C3_d.js",
+            "status": 405,
+            "cacheControl": [
+              "no-store"
+            ],
+            "securityHeadersVerified": true
+          },
+          {
+            "host": "cdk-admin.lanting.live",
+            "method": "GET",
+            "path": "/assets/plain.js",
+            "status": 200,
+            "cacheControl": [
+              "no-store"
+            ],
+            "securityHeadersVerified": true
+          },
+          {
+            "host": "cdk-admin.lanting.live",
+            "method": "GET",
+            "path": "/assets/short-Abc1234.js",
+            "status": 200,
+            "cacheControl": [
+              "no-store"
+            ],
+            "securityHeadersVerified": true
+          },
+          {
+            "host": "cdk-admin.lanting.live",
+            "method": "GET",
+            "path": "/assets/long-Abc123456.js",
+            "status": 200,
+            "cacheControl": [
+              "no-store"
+            ],
+            "securityHeadersVerified": true
+          },
+          {
+            "host": "cdk-admin.lanting.live",
+            "method": "GET",
+            "path": "/ops/login",
+            "status": 200,
+            "cacheControl": [
+              "no-store"
+            ],
+            "securityHeadersVerified": true
+          },
+          {
+            "host": "cdk-admin.lanting.live",
+            "method": "GET",
+            "path": "/api/v1/public/site",
+            "status": 200,
+            "cacheControl": [
+              "no-store",
+              "no-store"
+            ],
+            "securityHeadersVerified": true
+          },
+          {
+            "host": "cdk-admin.lanting.live",
+            "method": "GET",
+            "path": "/assets/app-A1b2C3_d.js",
+            "status": 308,
+            "cacheControl": [
+              "no-store"
+            ],
+            "securityHeadersVerified": false
+          },
+          {
+            "host": "cdk-admin.lanting.live",
+            "method": "GET",
+            "path": "/assets/app-A1b2C3_d.js",
+            "status": 503,
+            "cacheControl": [
+              "no-store"
+            ],
+            "securityHeadersVerified": true
+          },
+          {
+            "host": "unrelated.example.test",
+            "method": "GET",
+            "path": "/assets/app-A1b2C3_d.js",
+            "status": 200,
+            "cacheControl": [
+              "no-store"
+            ],
+            "securityHeadersVerified": false
+          }
+        ],
+        "checkCount": 31,
+        "productionConfigChanged": false,
+        "productionApplicationRequests": false,
+        "realProviderRequests": false,
+        "allAssertionsPassed": true
+      }
+    },
+    {
+      "test": "verify_candidates.py",
+      "exit": 0,
+      "stderr": "nginx: the configuration file /var/tmp/cdk-nginx-review-vmjleuvh/full-nginx.conf syntax is ok\nnginx: configuration file /var/tmp/cdk-nginx-review-vmjleuvh/full-nginx.conf test is successful\nConfiguration file /etc/systemd/system/cloudmonitor.service is marked executable. Please remove executable permission bits. Proceeding anyway.",
+      "stagingDirectory": "/var/tmp/cdk-static-review-1bTAVcfb",
+      "result": {
+        "candidateNginxSyntax": "pass",
+        "unitDirectiveSyntax": "pass",
+        "clientIpAndHeaderCases": 19,
+        "maintenanceAndAcmeCases": 3,
+        "liveConfigChanged": false,
+        "cdkApplicationsStarted": false
+      }
+    }
+  ],
+  "initialHarnessCorrections": [
+    "Made synthetic web directories/files worker-readable under the root account's restrictive umask.",
+    "Removed macOS AppleDouble ._ archive metadata from the temporary staging tree before unit verification."
+  ],
+  "knownWarnings": [
+    "systemd-analyze verify reported the pre-existing cloudmonitor.service executable-bit warning; verification exit code was 0."
+  ],
+  "productionConfigChanged": false,
+  "productionApplicationsStarted": false,
+  "realProviderRequests": false,
+  "reportCreatedAt": "2026-11-04T16:45:28.316126+00:00",
+  "configurationFiles": {
+    "00-cdk-static-cache.conf": {
+      "candidateSha256": "82411fbb6fcb5e12027de572c7682af722b407eca7e32ddf4b472ea43bfec138",
+      "productionBeforeSha256": null
+    },
+    "cdk.lanting.live.conf": {
+      "candidateSha256": "e8c11b50b58acf803fbc590b3d061fad2224c854ccdc85f4294835bba37f2ffc",
+      "productionBeforeSha256": "e3146d10876001903b7eef5fa0b60201c1d8e41f0d43019d74099ce296394e51"
+    },
+    "cdk-admin.lanting.live.conf": {
+      "candidateSha256": "8421cda6d7021d08840e80a885424049dfaa05f86acbb781e191e8d7a82cf658",
+      "productionBeforeSha256": "c308362dc6d8bac1f5a6500cbb584870e2891b7034781288925e38db8df31b33"
+    }
+  },
+  "productionVhostsStillOriginalAtReview": true
+}

@@ -1,0 +1,76 @@
+--- /dev/null
++++ /etc/nginx/conf.d/00-cdk-static-cache.conf
+@@ -0,0 +1,7 @@
++# Only successful versioned static assets are reusable across visitors.
++# The status is evaluated by add_header at response time; errors stay no-store.
++# Quoting the regex is required because its exact hash length contains braces.
++map "$host:$request_method:$uri:$status" $cdk_response_cache_control {
++    default "no-store";
++    "~^(cdk|cdk-admin)\.lanting\.live:(GET|HEAD):/assets/[A-Za-z0-9_.-]+-[A-Za-z0-9_-]{8}\.(js|css):(200|206|304)$" "public, max-age=31536000, immutable";
++}
+--- /etc/nginx/conf.d/cdk.lanting.live.conf
++++ /etc/nginx/conf.d/cdk.lanting.live.conf
+@@ -6,7 +6,7 @@
+     listen 80;
+     listen [::]:80;
+     server_name cdk.lanting.live;
+-    add_header Cache-Control "no-store" always;
++    add_header Cache-Control $cdk_response_cache_control always;
+     include /etc/nginx/snippets/cdk-maintenance-gate.conf;
+     access_log /var/log/nginx/cdk-redemption-access.log cdk_redemption_json;
+     error_log /dev/null crit;
+@@ -21,7 +21,7 @@
+     listen 443 ssl http2;
+     listen [::]:443 ssl http2;
+     server_name cdk.lanting.live;
+-    add_header Cache-Control "no-store" always;
++    add_header Cache-Control $cdk_response_cache_control always;
+     include /etc/nginx/snippets/cdk-maintenance-gate.conf;
+     ssl_certificate /etc/cdk-tls/current/fullchain.pem;
+     ssl_certificate_key /etc/cdk-tls/current/privkey.pem;
+@@ -54,6 +54,12 @@
+         if ($request_method !~ ^(GET|HEAD)$) { return 405; }
+         try_files $uri =404;
+         access_log off;
++        gzip on;
++        gzip_vary on;
++        gzip_min_length 1024;
++        gzip_comp_level 5;
++        gzip_types application/javascript text/css;
++        gzip_proxied any;
+     }
+     location = /api/v1/public/site {
+         if ($request_method !~ ^(GET|HEAD)$) { return 405; }
+--- /etc/nginx/conf.d/cdk-admin.lanting.live.conf
++++ /etc/nginx/conf.d/cdk-admin.lanting.live.conf
+@@ -9,7 +9,7 @@
+     listen 80;
+     listen [::]:80;
+     server_name cdk-admin.lanting.live;
+-    add_header Cache-Control "no-store" always;
++    add_header Cache-Control $cdk_response_cache_control always;
+     include /etc/nginx/snippets/cdk-maintenance-gate.conf;
+     server_tokens off;
+     access_log off;
+@@ -22,7 +22,7 @@
+     listen 443 ssl http2;
+     listen [::]:443 ssl http2;
+     server_name cdk-admin.lanting.live;
+-    add_header Cache-Control "no-store" always;
++    add_header Cache-Control $cdk_response_cache_control always;
+     include /etc/nginx/snippets/cdk-maintenance-gate.conf;
+     ssl_certificate /etc/cdk-admin-tls/current/fullchain.pem;
+     ssl_certificate_key /etc/cdk-admin-tls/current/privkey.pem;
+@@ -61,6 +61,12 @@
+         if ($request_method !~ ^(GET|HEAD)$) { return 405; }
+         try_files $uri =404;
+         access_log off;
++        gzip on;
++        gzip_vary on;
++        gzip_min_length 1024;
++        gzip_comp_level 5;
++        gzip_types application/javascript text/css;
++        gzip_proxied any;
+     }
+     location = /api/v1/auth/admin/login {
+         if ($request_method != POST) { return 405; }

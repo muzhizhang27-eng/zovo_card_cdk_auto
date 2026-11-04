@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/tuzi/cdk-recharge-system/internal/background"
 	"github.com/tuzi/cdk-recharge-system/internal/cardplatform"
 	"github.com/tuzi/cdk-recharge-system/internal/db"
 )
@@ -18,10 +19,10 @@ const cardHealthPolicyKey = "card_health_policy"
 
 // CardFailVerdict 失败归因结论。
 const (
-	verdictNeedMore      = "need_more"       // 未达失败次数
-	verdictEmailSuspect  = "email_suspect"   // 同邮箱反复失败 → 更像号/邮箱问题
-	verdictCardSuspect   = "card_suspect"    // 多邮箱失败 → 更像卡问题
-	verdictUnknownEmails = "unknown_emails"  // 缺邮箱，暂不判卡
+	verdictNeedMore       = "need_more"      // 未达失败次数
+	verdictEmailSuspect   = "email_suspect"  // 同邮箱反复失败 → 更像号/邮箱问题
+	verdictCardSuspect    = "card_suspect"   // 多邮箱失败 → 更像卡问题
+	verdictUnknownEmails  = "unknown_emails" // 缺邮箱，暂不判卡
 	verdictAlreadyBlocked = "already_blocked"
 )
 
@@ -293,7 +294,7 @@ func observeFromWebhookPayload(payload map[string]interface{}) {
 		errCode = strAny(payload["last_error_code"])
 	}
 
-	go func() {
+	background.Go(func() {
 		ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 		defer cancel()
 		res := ObserveCardOrderOutcome(ctx, CardOrderObservation{
@@ -311,7 +312,11 @@ func observeFromWebhookPayload(payload map[string]interface{}) {
 			log.Printf("[card-health] webhook order=%d card=%d verdict=%s blocked=%v freeze=%s",
 				orderID, cardID, res.Verdict, res.Blocked, res.FreezeStatus)
 		}
-	}()
+	})
+}
+
+func startPublicObservation(payload map[string]any, cdkCode string) {
+	background.Go(func() { observeFromPublicResult(context.Background(), payload, cdkCode) })
 }
 
 // observeFromPublicResult 兑换 result 轮询时补充观察（webhook 未配也能学）。
@@ -446,9 +451,9 @@ func AdminListCardHealth(c *gin.Context) {
 // AdminUnblockCard POST /api/v1/admin/card-health/unblock
 func AdminUnblockCard(c *gin.Context) {
 	var body struct {
-		CardID      int64  `json:"card_id"`
-		Unfreeze    bool   `json:"unfreeze"`
-		Notes       string `json:"notes"`
+		CardID   int64  `json:"card_id"`
+		Unfreeze bool   `json:"unfreeze"`
+		Notes    string `json:"notes"`
 	}
 	if err := c.ShouldBindJSON(&body); err != nil || body.CardID <= 0 {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "card_id required"})
