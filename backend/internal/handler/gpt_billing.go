@@ -13,6 +13,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/tuzi/cdk-recharge-system/internal/cardplatform"
+	"github.com/tuzi/cdk-recharge-system/internal/cdklookup"
 	"github.com/tuzi/cdk-recharge-system/internal/db"
 )
 
@@ -150,7 +151,13 @@ func SessionBillingCheck(c *gin.Context) {
 		}
 	}
 
-	res, err := cardplatform.NewFromSettings().CheckSubscription(c.Request.Context(), raw)
+	var res *cardplatform.SubscriptionCheckResult
+	var err error
+	if socket := strings.TrimSpace(os.Getenv("CDK_LOOKUP_SOCKET")); socket != "" {
+		res, err = cdklookup.CheckSubscription(c.Request.Context(), socket, raw)
+	} else {
+		res, err = cardplatform.NewFromSettings().CheckSubscription(c.Request.Context(), raw)
+	}
 	if err != nil {
 		c.JSON(http.StatusBadGateway, gin.H{"error": billingErrMessage(err), "auth_source": "cardplatform"})
 		return

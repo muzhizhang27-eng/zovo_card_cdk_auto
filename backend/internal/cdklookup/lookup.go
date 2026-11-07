@@ -1,4 +1,4 @@
-// Package cdklookup exposes only exact-code, read-only CDK status lookups.
+// Package cdklookup exposes restricted, read-only CDK and billing queries.
 // The Unix socket keeps the owner's API key in the administration service's
 // security boundary; the public web process never receives that key.
 package cdklookup
@@ -112,6 +112,10 @@ func Handler(upstream Upstream) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.Header().Set("Cache-Control", "no-store")
+		if r.Method == http.MethodPost && r.URL.Path == "/billing-check" {
+			serveBilling(w, r, upstream, workers)
+			return
+		}
 		if r.Method != http.MethodPost || r.URL.Path != "/lookup" {
 			w.WriteHeader(http.StatusNotFound)
 			return

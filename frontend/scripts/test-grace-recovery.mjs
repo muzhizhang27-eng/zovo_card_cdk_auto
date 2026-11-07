@@ -23,6 +23,7 @@ const mocks={
  '../../components/LanguageToggle.vue':'export default {}',
  '../../components/ThemeToggle.vue':'export default {}',
  '../../components/RedeemModeTabs.vue':'export default {}',
+ '../../components/UserPageHeader.vue':'export default {}',
 }
 const {descriptor}=parse(readFileSync(resolve(root,'src/views/user/RechargeView.vue'),'utf8'))
 const compiled=compileScript(descriptor,{id:'grace-test'})
