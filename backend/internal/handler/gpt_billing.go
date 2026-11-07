@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -11,8 +12,8 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/tuzi/cdk-recharge-system/internal/cardplatform"
 	"github.com/tuzi/cdk-recharge-system/internal/db"
-	"github.com/tuzi/cdk-recharge-system/internal/gptcheck"
 )
 
 func accounthubBaseURL() string {
@@ -100,7 +101,6 @@ func SessionBillingCheck(c *gin.Context) {
 		cdk = strings.TrimSpace(req.Code)
 	}
 
-	source := "session"
 	if raw == "" && cdk != "" {
 		sess, err := db.GetSessionByCDK(cdk)
 		if err != nil {
@@ -114,7 +114,6 @@ func SessionBillingCheck(c *gin.Context) {
 			return
 		}
 		raw = sess
-		source = "cdk"
 	}
 
 	if raw == "" {
@@ -122,49 +121,56 @@ func SessionBillingCheck(c *gin.Context) {
 		return
 	}
 
-	// CDK 模式优先走 accounthub：用内部刷新过的 session 查账单
-	if source == "cdk" && accounthubBaseURL() != "" {
-		email := extractEmailFromSession(raw)
-		if email != "" {
+	// 账单查询分流:
+	//  1) 配了 ACCOUNTHUB_BASE_URL 的部署(如 gptcdk.ai@208,本机就有 ACC)→ 优先走 ACC
+	//     按邮箱查:本地、快、★不依赖卡台★。这是存量部署一直在用、能用的路径。
+	//  2) 自托管发卡站(无 ACC)→ 走卡台开放 API subscription-check 服务端代查。
+	//     ★为什么不本机直查★:自托管服务器 IP 直连 chatgpt.com 会被 Cloudflare 挡成
+	//     401/403,账单永远查不到(工单 #2174);卡台用共享出口代查可避开。
+	//  raw 可能是卡密绑定的 session,也可能是用户直接粘贴的 session/accessToken。
+	if strings.TrimSpace(os.Getenv("ACCOUNTHUB_BASE_URL")) != "" {
+		if email := extractEmailFromSession(raw); email != "" {
 			if inv, err := queryAccounthubInvoices(email); err == nil {
-				summary := map[string]interface{}{
-					"email": email,
-				}
 				invoices := inv.Invoices
 				if invoices == nil && inv.InvoiceURL != "" {
-					invoices = []map[string]interface{}{
-						{"hosted_invoice_url": inv.InvoiceURL},
-					}
+					invoices = []map[string]interface{}{{"hosted_invoice_url": inv.InvoiceURL}}
 				}
 				if invoices == nil {
 					invoices = []map[string]interface{}{}
 				}
 				c.JSON(http.StatusOK, gin.H{
-					"summary":     summary,
+					"summary":     map[string]interface{}{"email": email},
 					"invoices":    invoices,
 					"invoice_url": inv.InvoiceURL,
 					"auth_source": "accounthub",
 				})
 				return
 			}
+			// ACC 配了但没查到(邮箱无账单 / ACC 暂不可用)→ 回退卡台
 		}
 	}
 
-	// 回退：直接用 session/accessToken 查
-	res, err := gptcheck.Check(raw)
+	res, err := cardplatform.NewFromSettings().CheckSubscription(c.Request.Context(), raw)
 	if err != nil {
-		status := http.StatusBadRequest
-		code := gptcheck.ErrorCode(err)
-		if code == "upstream_unavailable" {
-			status = http.StatusBadGateway
-		}
-		c.JSON(status, gin.H{"error": err.Error(), "error_code": code, "can_retry_with_session": true})
+		c.JSON(http.StatusBadGateway, gin.H{"error": billingErrMessage(err), "auth_source": "cardplatform"})
 		return
+	}
+	invoices := res.Invoices
+	if invoices == nil {
+		invoices = []map[string]any{}
 	}
 	c.JSON(http.StatusOK, gin.H{
 		"summary":     res.Summary,
-		"invoices":    res.Invoices,
-		"auth_source": source,
-		"warnings":    res.Warnings,
+		"invoices":    invoices,
+		"auth_source": "cardplatform",
 	})
+}
+
+// billingErrMessage 把卡台返回的业务错误转成对用户友好的提示（token 失效等）。
+func billingErrMessage(err error) string {
+	var apiErr *cardplatform.APIError
+	if errors.As(err, &apiErr) && strings.TrimSpace(apiErr.Msg) != "" {
+		return apiErr.Msg
+	}
+	return "账单查询失败：" + err.Error()
 }
