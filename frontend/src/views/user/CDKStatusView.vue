@@ -235,6 +235,7 @@ import RedeemModeTabs from '../../components/RedeemModeTabs.vue'
 import { parseCdks } from '../../lib/batch-session'
 import { copyToClipboard } from '../../lib/clipboard'
 import { toast } from '../../lib/ui'
+import { cdkDevice } from '../../lib/cdk-device'
 
 const { t } = useI18n({ useScope: 'global' })
 const router = useRouter()
@@ -301,7 +302,9 @@ async function query() {
   error.value = ''
   result.value = null
   try {
-    const r = await fetch(`/api/v1/lookup/cdk?code=${encodeURIComponent(code)}`)
+    const r = await fetch(`/api/v1/lookup/cdk?code=${encodeURIComponent(code)}`, {
+      headers: { 'X-Redemption-Device': cdkDevice() },
+    })
     const data = await r.json().catch(() => ({}))
     if (!r.ok) {
       error.value = data.error || data.message || t('cdkLookup.errNotFound')
@@ -327,7 +330,7 @@ async function queryBatch() {
   try {
     const r = await fetch('/api/v1/lookup/cdk/batch', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'X-Redemption-Device': cdkDevice() },
       body: JSON.stringify({ codes }),
     })
     const data = await r.json().catch(() => ({}))

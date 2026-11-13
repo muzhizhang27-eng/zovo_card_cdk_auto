@@ -33,7 +33,7 @@
             <router-link to="/ops/integration" class="btn-secondary">卡台接入</router-link>
             <router-link to="/ops/webhooks" class="btn-secondary">Webhook</router-link>
             <router-link to="/ops/appearance" class="btn-secondary">外观</router-link>
-            <router-link to="/billing" class="btn-secondary">Session 账单</router-link>
+            <a :href="publicSiteUrl('/billing')" class="btn-secondary" target="_blank" rel="noopener noreferrer">Session 账单</a>
           </div>
         </section>
         <section class="card space-y-3">
@@ -108,16 +108,16 @@
               {{ updating ? '更新中…' : '一键无痕更新' }}
             </el-button>
             <a
-              v-if="versionInfo.release_url"
+              v-if="safeExternalUrl(versionInfo.release_url)"
               class="btn-secondary !px-4 !py-2 text-sm"
-              :href="versionInfo.release_url"
+              :href="safeExternalUrl(versionInfo.release_url)"
               target="_blank"
               rel="noopener noreferrer"
             >打开 Release</a>
             <a
-              v-if="versionInfo.tags_url"
+              v-if="safeExternalUrl(versionInfo.tags_url)"
               class="btn-secondary !px-4 !py-2 text-sm"
-              :href="versionInfo.tags_url"
+              :href="safeExternalUrl(versionInfo.tags_url)"
               target="_blank"
               rel="noopener noreferrer"
             >查看 Tags</a>
@@ -163,6 +163,7 @@
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref } from 'vue'
 import { authFetch } from '../../lib/api'
+import { publicSiteUrl, safeExternalUrl } from '../../lib/url-safety'
 
 const stats = ref<any>({})
 const statsError = ref('')
@@ -396,6 +397,8 @@ async function submitPwd() {
       return
     }
     pwdModal.value = false
+    pwdForm.old_password = ''; pwdForm.new_password = ''; pwdForm.confirm = ''
+    window.location.assign('/ops/login')
   } finally {
     pwdLoading.value = false
   }

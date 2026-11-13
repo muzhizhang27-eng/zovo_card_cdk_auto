@@ -7,7 +7,7 @@
     <div class="w-full max-w-md animate-slideInUp">
       <div class="card space-y-6 !p-7">
         <div class="text-center">
-          <router-link to="/" class="text-sm app-link">{{ t('common.backHome') }}</router-link>
+          <a :href="publicSiteUrl('/')" class="text-sm app-link">{{ t('common.backHome') }}</a>
           <h1 class="mt-4 text-3xl font-bold text-ink">{{ t('login.title') }}</h1>
           <p class="mt-2 text-sm text-muted">{{ t('login.subtitle') }}</p>
         </div>
@@ -40,6 +40,7 @@ import { reactive, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useAuthStore } from '../../stores/auth'
+import { publicSiteUrl, safeAdminRedirect } from '../../lib/url-safety'
 import ThemeToggle from '../../components/ThemeToggle.vue'
 import LanguageToggle from '../../components/LanguageToggle.vue'
 
@@ -49,20 +50,21 @@ const route = useRoute()
 const authStore = useAuthStore()
 
 const form = reactive({
-  username: sessionStorage.getItem('post_setup_user') || '',
-  password: sessionStorage.getItem('post_setup_pass') || '',
+  username: '',
+  password: '',
 })
 
 const loading = ref(false)
 const errorMessage = ref('')
 
 // 安装向导写过临时凭据时预填一次后清掉，避免长期留在 sessionStorage
-if (form.username || form.password) {
+try {
   sessionStorage.removeItem('post_setup_user')
   sessionStorage.removeItem('post_setup_pass')
-}
+} catch { /* Storage may be disabled. */ }
 
 const submit = async () => {
+  if (loading.value) return
   loading.value = true
   errorMessage.value = ''
 
@@ -73,7 +75,8 @@ const submit = async () => {
     }
     const response = await fetch('/api/v1/auth/admin/login', {
       method: 'POST',
-      credentials: 'include',
+      credentials: 'same-origin',
+      redirect: 'error',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     })
@@ -89,15 +92,12 @@ const submit = async () => {
       username: data.username,
       name: data.name,
       expiresAt: data.expires_at,
-      token: data.token,
     })
 
-    const redirect = typeof route.query.redirect === 'string' ? route.query.redirect : '/ops'
-    router.push(redirect)
+    form.password = ''
+    await router.push(safeAdminRedirect(route.query.redirect))
   } catch (error) {
     errorMessage.value = t('login.errNetwork')
-  }
-
-  loading.value = false
+  } finally { loading.value = false }
 }
 </script>

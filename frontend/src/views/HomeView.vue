@@ -10,7 +10,14 @@
           :to="svc.to"
           class="card card-hover group svc-card"
         >
-          <span class="grid h-12 w-12 place-items-center rounded-2xl" style="background: var(--primary-soft); color: var(--primary)" v-html="svc.icon" />
+          <span class="grid h-12 w-12 place-items-center rounded-2xl" style="background: var(--primary-soft); color: var(--primary)" >
+            <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <template v-if="svc.to === '/recharge'"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 14l2 2 4-4"/></template>
+              <template v-else-if="svc.to === '/batch'"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></template>
+              <template v-else-if="svc.to === '/history'"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></template>
+              <template v-else><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></template>
+            </svg>
+          </span>
           <h3 class="mt-4 text-xl font-bold text-ink">{{ svc.title }}</h3>
           <p class="mt-1 text-sm text-subtle">{{ svc.en }}</p>
           <div class="mt-5 space-y-2 text-sm text-muted">
@@ -55,7 +62,6 @@ const services = computed(() => [
     title: t('home.services.recharge.title'),
     en: t('home.services.recharge.en'),
     cta: t('home.services.recharge.cta'),
-    icon: '<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 14l2 2 4-4"/></svg>',
     points: [t('home.services.recharge.p1'), t('home.services.recharge.p2'), t('home.services.recharge.p3')],
   },
   {
@@ -63,7 +69,6 @@ const services = computed(() => [
     title: t('home.services.batch.title'),
     en: t('home.services.batch.en'),
     cta: t('home.services.batch.cta'),
-    icon: '<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>',
     points: [t('home.services.batch.p1'), t('home.services.batch.p2'), t('home.services.batch.p3')],
   },
   {
@@ -71,7 +76,6 @@ const services = computed(() => [
     title: t('home.services.lookup.title'),
     en: t('home.services.lookup.en'),
     cta: t('home.services.lookup.cta'),
-    icon: '<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>',
     points: [t('home.services.lookup.p1'), t('home.services.lookup.p2'), t('home.services.lookup.p3')],
   },
   {
@@ -79,7 +83,6 @@ const services = computed(() => [
     title: t('home.services.billing.title'),
     en: t('home.services.billing.en'),
     cta: t('home.services.billing.cta'),
-    icon: '<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>',
     points: [t('home.services.billing.p1'), t('home.services.billing.p2'), t('home.services.billing.p3')],
   },
 ])

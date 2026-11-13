@@ -32,8 +32,7 @@ const routes: RouteRecordRaw[] = [
   },
   {
     path: '/dashboard',
-    name: 'Dashboard',
-    component: () => import('../views/user/DashboardView.vue'),
+    redirect: '/billing',
   },
   {
     path: '/billing',
@@ -133,16 +132,17 @@ router.beforeEach(async (to) => {
     return `${OPS_BASE}/login`
   }
 
-  if (to.meta.requiresAdmin && !authStore.isLoggedIn) {
+  if (to.meta.requiresAdmin && !await authStore.verifySession()) {
     return {
       path: `${OPS_BASE}/login`,
       query: { redirect: to.fullPath },
     }
   }
 
-  if ((to.path === `${OPS_BASE}/login` || to.path === '/auth/login') && authStore.isLoggedIn) {
+  if ((to.path === `${OPS_BASE}/login` || to.path === '/auth/login') && authStore.isLoggedIn && await authStore.verifySession()) {
     return OPS_BASE
   }
+  return true
 })
 
 export default router

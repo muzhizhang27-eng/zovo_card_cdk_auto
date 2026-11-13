@@ -12,7 +12,7 @@ export default defineConfig({
     port: 5173,
     proxy: {
       '/api': {
-        target: 'http://localhost:8080',
+        target: process.env.VITE_API_TARGET || 'http://127.0.0.1:8080',
         changeOrigin: true,
       },
     },
@@ -30,6 +30,7 @@ export default defineConfig({
           if (id.includes('chart.js') || id.includes('vue-chartjs')) return 'vendor-chart'
           if (id.includes('xlsx')) return 'vendor-xlsx'
           if (/[\\/]node_modules[\\/](vue|@vue|vue-router|pinia|vue-i18n|@intlify)[\\/]/.test(id)) return 'vendor-vue'
+          return undefined
         },
       },
     },
