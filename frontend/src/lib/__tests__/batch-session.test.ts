@@ -17,6 +17,7 @@ describe('格式化多行 Session JSON 容错', () => {
     const s = extractCdkSession(raw)
     expect(s).not.toBe('')
     expect(() => JSON.parse(s)).not.toThrow() // 回传给后端的必须是严格合法 JSON
+    expect(s).toBe(JSON.stringify(JSON.parse(raw)))
   })
 
   it('带尾逗号的多行 JSON 现在能解析(原来 JSON.parse 直接抛→误报)', () => {
@@ -30,6 +31,7 @@ describe('格式化多行 Session JSON 容错', () => {
     const obj = JSON.parse(s)
     expect(obj.sessionToken).toBe(JWE)
     expect(checkSessionForCdk(raw).ok).toBe(true)
+    expect(s).not.toMatch(/[\r\n]/)
   })
 
   it('数组/嵌套对象的尾逗号也清理', () => {
@@ -64,5 +66,51 @@ describe('格式化多行 Session JSON 容错', () => {
   it('彻底非法 JSON 返回 null / 空', () => {
     expect(parseSessionJsonLenient('{ not json at all ')).toBeNull()
     expect(extractCdkSession('{ nope')).toBe('')
+  })
+})
+
+describe('提交前压缩 Session JSON', () => {
+  it('完整保留大型格式化导出中的凭证及附加字段', () => {
+    const value = {
+      sessionToken: `eyJ0..iv.${'a'.repeat(4002)}.tag`,
+      accessToken: `eyJ0.${'b'.repeat(1900)}.sig`,
+      user: { email: 'fixture@example.invalid', name: '测试账号' },
+      marketingEligibility: {
+        events: Array.from({ length: 800 }, (_, i) => ({ name: `synthetic-event-${i}`, eligible: true })),
+      },
+    }
+    const raw = JSON.stringify(value, null, 4)
+    expect(new TextEncoder().encode(raw).length).toBeGreaterThan(65536)
+    const compact = extractCdkSession(raw)
+    expect(compact).toBe(JSON.stringify(value))
+    expect(JSON.parse(compact)).toEqual(value)
+    expect(new TextEncoder().encode(compact).length).toBeLessThan(65536)
+    expect(checkSessionForCdk(raw).ok).toBe(true)
+  })
+
+  it('保留字符串里的空格、换行转义、引号与反斜杠', () => {
+    const value = { sessionToken: JWE, note: '  引号 " 和 \\ 路径\t换行\n  ', punctuation: ', }] {' }
+    const raw = JSON.stringify(value, null, '\t')
+    const compact = parseSessionJsonLenient(raw)!.canonical
+    expect(compact).toBe(JSON.stringify(value))
+    expect(JSON.parse(compact)).toEqual(value)
+  })
+
+  it('压缩时不改写大整数、负零或指数数字字面量', () => {
+    const raw = `{
+      "sessionToken": "${JWE}",
+      "largeId": 9007199254740993,
+      "negativeZero": -0,
+      "exponent": 1.2300e+04
+    }`
+    expect(parseSessionJsonLenient(raw)!.canonical).toBe(
+      `{"sessionToken":"${JWE}","largeId":9007199254740993,"negativeZero":-0,"exponent":1.2300e+04}`,
+    )
+  })
+
+  it('紧凑 JSON 重复处理保持不变', () => {
+    const compact = `{"sessionToken":"${JWE}","note":"a b"}`
+    expect(parseSessionJsonLenient(compact)!.canonical).toBe(compact)
+    expect(extractCdkSession(compact)).toBe(compact)
   })
 })

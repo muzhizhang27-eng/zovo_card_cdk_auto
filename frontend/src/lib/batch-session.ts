@@ -331,10 +331,32 @@ function stripJsonTrailingCommas(src: string): string {
   return out
 }
 
+/** Remove formatting whitespace only; preserve strings and numeric literals exactly. */
+function compactJson(src: string): string {
+  let out = ''
+  let inString = false
+  let escaped = false
+  for (const ch of src) {
+    if (inString) {
+      out += ch
+      if (escaped) escaped = false
+      else if (ch === '\\') escaped = true
+      else if (ch === '"') inString = false
+    } else if (ch === '"') {
+      inString = true
+      out += ch
+    } else if (!/[ \t\r\n]/.test(ch)) {
+      out += ch
+    }
+  }
+  return out
+}
+
 /**
- * 容错解析 session JSON（以 `{` 开头）：严格 JSON.parse 优先（保持原串不变）；失败时字符串感知地
- * 去尾逗号后再 parse。返回 { obj, canonical }，canonical 为**严格合法**的 JSON 串（供回传后端）；
- * 非对象/两次都失败返回 null。只放行更多、绝不改变原本就能解析的行为。
+ * 容错解析 session JSON（以 `{` 开头）：严格 JSON.parse 优先，失败时去尾逗号再 parse。
+ * canonical 为提交给后端的紧凑合法 JSON，避免格式化导出的大段缩进/换行被上游拒绝。
+ * 只删除字符串外的空白，保留全部字段、字符串及数字字面量；不通过 stringify 改写大整数。
+ * 非对象/两次都失败返回 null。
  */
 export function parseSessionJsonLenient(
   raw: string,
@@ -342,13 +364,13 @@ export function parseSessionJsonLenient(
   const s = String(raw ?? '').trim()
   if (!s.startsWith('{')) return null
   try {
-    return { obj: JSON.parse(s) as Record<string, unknown>, canonical: s }
+    return { obj: JSON.parse(s) as Record<string, unknown>, canonical: compactJson(s) }
   } catch {
     /* 尝试容错 */
   }
   try {
     const cleaned = stripJsonTrailingCommas(s)
-    return { obj: JSON.parse(cleaned) as Record<string, unknown>, canonical: cleaned }
+    return { obj: JSON.parse(cleaned) as Record<string, unknown>, canonical: compactJson(cleaned) }
   } catch {
     return null
   }

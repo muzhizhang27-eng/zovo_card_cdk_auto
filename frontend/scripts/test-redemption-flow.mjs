@@ -104,6 +104,41 @@ const redeemCalls = () => calls.filter(c => c.path.endsWith('/redeem'))
 
 try {
   const single = await compile('RechargeView'), batch = await compile('BatchRedeemView')
+  const largeSession = {
+    sessionToken: `eyJ0..iv.${'a'.repeat(4002)}.tag`,
+    accessToken: `eyJ0.${'b'.repeat(1900)}.sig`,
+    user: { email: 'test@example.invalid', note: '保留 空格、引号 "、反斜杠 \\ 和换行\n' },
+    marketingEligibility: {
+      events: Array.from({ length: 800 }, (_, i) => ({ name: `synthetic-event-${i}`, eligible: true })),
+    },
+  }
+  const prettySession = JSON.stringify(largeSession, null, 4)
+  const compactSession = JSON.stringify(largeSession)
+  assert.ok(Buffer.byteLength(prettySession) > 65536)
+  for (const raw of [prettySession, prettySession.replace(/\n}$/, ',\n}')]) {
+    fresh()
+    {
+      const page = mount(single), vm = page.vm
+      vm.code.value = 'SXC-SYNTHETIC-FORMATTED'
+      await vm.doPreview()
+      vm.sessionRaw.value = raw
+      await vm.doPreflight()
+      assert.equal(calls.find(c => c.path.endsWith('/preflight')).body.credential.session, compactSession)
+      assert.equal(vm.step.value, 3)
+      assert.equal(redeemCalls().length, 0)
+      page.close()
+    }
+    fresh()
+    {
+      const page = mount(batch), vm = page.vm
+      await readyBatch(vm, 1); scenario = 'preflight-offline'
+      await vm.submitOne(vm.items.value[0], { mode: 'session', session: raw })
+      assert.equal(calls.find(c => c.path.endsWith('/preflight')).body.credential.session, compactSession)
+      assert.equal(redeemCalls().length, 0)
+      page.close()
+    }
+  }
+  console.log('PASS single and batch submit compact full Session JSON, including trailing-comma exports')
   fresh()
   {
     let page = mount(single), vm = page.vm
