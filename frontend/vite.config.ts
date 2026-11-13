@@ -3,6 +3,11 @@ import vue from '@vitejs/plugin-vue'
 
 export default defineConfig({
   plugins: [vue()],
+  define: {
+    // vue-i18n v9 defaults to new Function; JIT keeps translations compatible with the admin CSP.
+    __INTLIFY_JIT_COMPILATION__: true,
+    __INTLIFY_DROP_MESSAGE_COMPILER__: false,
+  },
   server: {
     port: 5173,
     proxy: {
