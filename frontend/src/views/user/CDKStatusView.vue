@@ -151,6 +151,13 @@
         </div>
       </div>
 
+      <SessionRetryUpload
+        v-if="mode === 'single'"
+        class="mt-8"
+        :initial-code="(result && result.cdk_code) || cdkCode"
+        :start-open="forceUpload || !!(result && result.status === 'failed')"
+      />
+
       <div v-if="mode === 'batch' && batchResults.length" class="mt-8 card animate-slideInUp space-y-4">
         <div class="flex flex-wrap items-center justify-between gap-3">
           <h2 class="text-xl font-bold text-ink">{{ t('cdkLookup.resultTitle') }}</h2>
@@ -205,6 +212,12 @@
                 <td class="px-3 py-2 text-muted whitespace-nowrap">{{ row.used_at || t('cdkLookup.emailEmpty') }}</td>
                 <td class="px-3 py-2 text-right whitespace-nowrap">
                   <button
+                    v-if="row.status === 'failed'"
+                    type="button"
+                    class="btn-secondary !py-1 !px-3 text-xs"
+                    @click="prepareUpload(row.cdk_code)"
+                  >{{ t('sessionRetry.action') }}</button>
+                  <button
                     v-if="row.can_resubmit"
                     type="button"
                     class="btn-primary !py-1 !px-3 text-xs"
@@ -232,6 +245,7 @@ import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import UserPageHeader from '../../components/UserPageHeader.vue'
 import RedeemModeTabs from '../../components/RedeemModeTabs.vue'
+import SessionRetryUpload from '../../components/SessionRetryUpload.vue'
 import { parseCdks } from '../../lib/batch-session'
 import { copyToClipboard } from '../../lib/clipboard'
 import { toast } from '../../lib/ui'
@@ -256,6 +270,7 @@ interface CDKStatusResult {
 
 const mode = ref<'single' | 'batch'>('single')
 const cdkCode = ref('')
+const forceUpload = ref(false)
 const batchText = ref('')
 const querying = ref(false)
 const error = ref('')
@@ -295,12 +310,19 @@ function goRedeem(code: string) {
   router.push({ path: '/recharge', query: { cdk: code } })
 }
 
+function prepareUpload(code: string) {
+  mode.value = 'single'
+  cdkCode.value = code
+  forceUpload.value = true
+}
+
 async function query() {
   const code = cdkCode.value.trim()
   if (!code) return
   querying.value = true
   error.value = ''
   result.value = null
+  forceUpload.value = false
   try {
     const r = await fetch(`/api/v1/lookup/cdk?code=${encodeURIComponent(code)}`, {
       headers: { 'X-Redemption-Device': cdkDevice() },

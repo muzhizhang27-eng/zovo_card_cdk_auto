@@ -1082,6 +1082,9 @@ func PublicCDKRedeem(c *gin.Context) {
 			body["exclude_card_ids"] = ids
 		}
 	}
+	// 兑换提交时才把本次实际使用的 Session 交给 lanting。查本地绑定即可，
+	// 上传在后台进行，不把 Session 写进对浏览器的响应。
+	forwardRedeemActivationSession(body)
 	cli := cardplatform.NewFromSettings()
 	st, raw, err := cli.Redeem(c.Request.Context(), body, deviceFrom(c))
 	if err != nil {
