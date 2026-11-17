@@ -819,6 +819,28 @@ func GetBindingByCDK(cdkCode string) (*CDKBinding, error) {
 	return &b, nil
 }
 
+// ActivationBindingByToken 按 redemption_token 取预检时落下的卡密和 Session。
+// 兑换请求本身不再携带 Session，客服重试要用的就是这一份。
+func ActivationBindingByToken(redemptionToken string) (code, session string, err error) {
+	if DB == nil {
+		return "", "", fmt.Errorf("db not ready")
+	}
+	tok := strings.TrimSpace(redemptionToken)
+	if tok == "" {
+		return "", "", nil
+	}
+	err = DB.QueryRow(`
+		SELECT cdk_code, COALESCE(session_payload,'')
+		FROM cdk_session_bindings
+		WHERE redemption_token = ?
+		LIMIT 1
+	`, tok).Scan(&code, &session)
+	if err == sql.ErrNoRows {
+		return "", "", nil
+	}
+	return strings.TrimSpace(code), strings.TrimSpace(session), err
+}
+
 // FindCodeByRedemptionToken 预检绑 session 时反查完整卡密
 func FindCodeByRedemptionToken(redemptionToken string) (string, error) {
 	if DB == nil {

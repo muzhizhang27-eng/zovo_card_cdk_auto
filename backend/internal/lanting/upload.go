@@ -107,9 +107,9 @@ func logDisabled(reason string) {
 	})
 }
 
-// Schedule forwards the session without waiting. always is set for a successful
-// preflight. A redeem schedules only when this process has not already forwarded
-// the same session for the code or redemption token.
+// Schedule forwards the session without waiting. always uploads even when this
+// process already forwarded the same session. Redeem passes always so each
+// submission is saved; a caller that passes false skips an unchanged session.
 func Schedule(code, redemptionToken, session string, always bool) {
 	client := FromEnv()
 	if !client.Enabled() {

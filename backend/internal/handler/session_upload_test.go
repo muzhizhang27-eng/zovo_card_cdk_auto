@@ -175,12 +175,14 @@ func TestPreflightAndRedeemIsolateLantingFailures(t *testing.T) {
 	t.Cleanup(stop)
 	var calls atomic.Int32
 	var sawTokenInURL atomic.Bool
+	var uploaded atomic.Value
 	lantingServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		calls.Add(1)
 		if r.URL.RawQuery != "" || strings.Contains(r.URL.RequestURI(), "synthetic-session") {
 			sawTokenInURL.Store(true)
 		}
-		_, _ = io.ReadAll(r.Body)
+		body, _ := io.ReadAll(r.Body)
+		uploaded.Store(string(body))
 		<-release
 		w.Header().Set("Content-Type", "application/json")
 		_, _ = io.WriteString(w, `{"accepted":true,"session":"synthetic-session-token-value-0001"}`)
@@ -215,54 +217,111 @@ func TestPreflightAndRedeemIsolateLantingFailures(t *testing.T) {
 	if strings.Contains(response.Body.String(), "synthetic-session-token-value-0001") {
 		t.Fatal("preflight response contained the session")
 	}
-	stop()
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 	if err := lanting.Wait(ctx); err != nil {
+		t.Fatal(err)
+	}
+	if calls.Load() != 0 {
+		t.Fatalf("preflight uploaded to lanting, calls=%d", calls.Load())
+	}
+
+	// The web redeem body has no Session and no CDK. Both come from the preflight binding.
+	// A different credential on this request must not replace the session the preflight used.
+	other := strings.Replace(uploadSession, "0001", "0002", 1)
+	redeemStarted := time.Now()
+	redeem := postJSON(router, "/redeem", "192.0.2.90:1000", map[string]any{
+		"redemption_token":  "synthetic-redemption-token",
+		"preflight_token":   "synthetic-preflight",
+		"client_request_id": "synthetic-request",
+		"credential":        map[string]string{"mode": "session", "session": other},
+	})
+	if time.Since(redeemStarted) > 1500*time.Millisecond {
+		t.Fatalf("redeem waited for lanting: %s", time.Since(redeemStarted))
+	}
+	if redeem.Code != http.StatusOK || !strings.Contains(redeem.Body.String(), `"status":"pending"`) {
+		t.Fatalf("redeem status=%d body=%s", redeem.Code, redeem.Body.String())
+	}
+	if strings.Contains(redeem.Body.String(), "synthetic-session") {
+		t.Fatal("redeem response contained the session")
+	}
+	stop()
+	ctx2, cancel2 := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel2()
+	if err := lanting.Wait(ctx2); err != nil {
 		t.Fatal(err)
 	}
 	if calls.Load() != 1 || sawTokenInURL.Load() {
 		t.Fatalf("calls=%d token_in_url=%t", calls.Load(), sawTokenInURL.Load())
 	}
-
-	redeem := postJSON(router, "/redeem", "192.0.2.90:1000", map[string]any{
-		"code":              uploadCode,
-		"redemption_token":  "synthetic-redemption-token",
-		"preflight_token":   "synthetic-preflight",
-		"client_request_id": "synthetic-request",
-		"credential":        map[string]string{"mode": "session", "session": uploadSession},
-	})
-	if redeem.Code != http.StatusOK || !strings.Contains(redeem.Body.String(), `"status":"pending"`) {
-		t.Fatalf("redeem status=%d body=%s", redeem.Code, redeem.Body.String())
+	sent, _ := uploaded.Load().(string)
+	if !strings.Contains(sent, uploadCode) || !strings.Contains(sent, "synthetic-session-token-value-0001") || strings.Contains(sent, "synthetic-session-token-value-0002") {
+		t.Fatalf("forwarded the wrong session: %s", sent)
 	}
+}
+
+func TestRedeemWithoutPreflightUsesSubmittedSession(t *testing.T) {
+	newBillingTestDB(t)
+	gin.SetMode(gin.TestMode)
+	card := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		_, _ = io.WriteString(w, `{"code":0,"data":{"status":"pending"}}`)
+	}))
+	t.Cleanup(card.Close)
+	var calls atomic.Int32
+	var uploaded atomic.Value
+	lantingServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		calls.Add(1)
+		body, _ := io.ReadAll(r.Body)
+		uploaded.Store(string(body))
+		w.WriteHeader(http.StatusOK)
+	}))
+	t.Cleanup(lantingServer.Close)
+	t.Setenv("CARD_API_BASE", card.URL)
+	t.Setenv("LANTING_TOKEN_UPLOAD_URL", lantingServer.URL)
+	t.Setenv("LANTING_CDK_TOKEN_HMAC_SECRET", uploadSecret)
+	router := gin.New()
+	router.POST("/redeem", PublicCDKRedeem)
+
+	grok := postJSON(router, "/redeem", "192.0.2.93:1000", map[string]any{
+		"code":       "SXC-SYNTHETIC-0004",
+		"credential": map[string]string{"mode": "session", "session": "sso=" + strings.Repeat("a", 40)},
+	})
+	if grok.Code != http.StatusOK {
+		t.Fatalf("grok redeem status=%d", grok.Code)
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
 	if err := lanting.Wait(ctx); err != nil {
 		t.Fatal(err)
 	}
-	if calls.Load() != 1 {
-		t.Fatalf("unchanged session was uploaded again, calls=%d", calls.Load())
+	if calls.Load() != 0 {
+		t.Fatal("grok credential was uploaded")
 	}
 
-	changed := strings.Replace(uploadSession, "0001", "0002", 1)
-	again := postJSON(router, "/redeem", "192.0.2.91:1000", map[string]any{
-		"code":              uploadCode,
-		"redemption_token":  "synthetic-redemption-token",
-		"preflight_token":   "synthetic-preflight",
-		"client_request_id": "synthetic-request-2",
-		"credential":        map[string]string{"mode": "session", "session": changed},
+	card2 := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		_, _ = io.WriteString(w, `{"code":0,"data":{"status":"pending"}}`)
+	}))
+	t.Cleanup(card2.Close)
+	t.Setenv("CARD_API_BASE", card2.URL)
+	redeem := postJSON(router, "/redeem", "192.0.2.94:1000", map[string]any{
+		"code":             "SXC-SYNTHETIC-0005",
+		"redemption_token": "synthetic-redemption-token-2",
+		"credential":       map[string]string{"mode": "session", "session": uploadSession},
 	})
-	if again.Code != http.StatusOK {
-		t.Fatalf("changed redeem status=%d body=%s", again.Code, again.Body.String())
-	}
-	if time.Since(started) > 0 && again.Body.Len() == 0 {
-		t.Fatal("empty redeem response")
+	if redeem.Code != http.StatusOK || strings.Contains(redeem.Body.String(), "synthetic-session") {
+		t.Fatalf("redeem status=%d body=%s", redeem.Code, redeem.Body.String())
 	}
 	ctx2, cancel2 := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel2()
 	if err := lanting.Wait(ctx2); err != nil {
 		t.Fatal(err)
 	}
-	if calls.Load() != 2 {
-		t.Fatalf("changed session calls=%d", calls.Load())
+	if calls.Load() != 1 {
+		t.Fatalf("calls=%d", calls.Load())
+	}
+	sent, _ := uploaded.Load().(string)
+	if !strings.Contains(sent, "SXC-SYNTHETIC-0005") || !strings.Contains(sent, "synthetic-session-token-value-0001") {
+		t.Fatalf("forwarded body = %s", sent)
 	}
 }
 

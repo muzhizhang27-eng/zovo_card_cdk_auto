@@ -144,25 +144,56 @@ func PublicCDKRetrySession(c *gin.Context) {
 	c.JSON(http.StatusBadGateway, gin.H{"error": "upload_failed"})
 }
 
-func maybeForwardActivationSession(body map[string]any, status int, raw json.RawMessage, preflight bool) {
-	session := activationSession(body["credential"])
-	if session == "" {
-		return
-	}
-	if preflight && !preflightAccepted(status, raw) {
-		return
-	}
+// forwardRedeemActivationSession runs when the customer submits redeem.
+// The web client does not send the Session again. With a preflight token, the
+// session that was bound for that redemption is the one the card platform uses.
+// A redeem that carries its own ChatGPT session and no preflight token uses that
+// session. The value is never written back to the HTTP response.
+func forwardRedeemActivationSession(body map[string]any) {
+	token := str(body["redemption_token"])
 	code := str(body["code"])
 	if code == "" {
 		code = str(body["cdk_code"])
 	}
-	token := str(body["redemption_token"])
-	if code == "" && token != "" && db.DB != nil {
-		if found, err := db.FindCodeByRedemptionToken(token); err == nil {
-			code = strings.TrimSpace(found)
+	bodySession := activationSession(body["credential"])
+	boundSession, boundCode := boundActivationSession(token, code)
+	if code == "" {
+		code = boundCode
+	}
+	session := ""
+	if str(body["preflight_token"]) != "" {
+		session = boundSession
+		if session == "" {
+			session = bodySession
+		}
+	} else if bodySession != "" {
+		session = bodySession
+	} else {
+		session = boundSession
+	}
+	if session == "" || code == "" {
+		return
+	}
+	lanting.Schedule(code, token, session, true)
+}
+
+func boundActivationSession(redemptionToken, code string) (session, boundCode string) {
+	if db.DB == nil {
+		return "", ""
+	}
+	if redemptionToken != "" {
+		cdk, raw, err := db.ActivationBindingByToken(redemptionToken)
+		if err == nil {
+			boundCode = strings.TrimSpace(cdk)
+			session = lanting.AcceptActivationSession(raw)
 		}
 	}
-	lanting.Schedule(code, token, session, preflight)
+	if session == "" && code != "" {
+		if raw, err := db.GetSessionByCDK(code); err == nil {
+			session = lanting.AcceptActivationSession(raw)
+		}
+	}
+	return session, boundCode
 }
 
 func activationSession(cred any) string {
@@ -171,26 +202,4 @@ func activationSession(cred any) string {
 		return ""
 	}
 	return lanting.AcceptActivationSession(str(m["session"]))
-}
-
-func preflightAccepted(status int, raw json.RawMessage) bool {
-	if status < 200 || status >= 300 || len(raw) == 0 {
-		return false
-	}
-	var payload map[string]any
-	if json.Unmarshal(raw, &payload) != nil {
-		return false
-	}
-	if code, ok := payload["code"].(float64); ok && code != 0 {
-		return false
-	}
-	if token, _ := payload["preflight_token"].(string); strings.TrimSpace(token) != "" {
-		return true
-	}
-	data, _ := payload["data"].(map[string]any)
-	if data == nil {
-		return false
-	}
-	token, _ := data["preflight_token"].(string)
-	return strings.TrimSpace(token) != ""
 }

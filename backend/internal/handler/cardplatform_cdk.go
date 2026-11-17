@@ -1049,7 +1049,6 @@ func PublicCDKPreflight(c *gin.Context) {
 	} else if st >= 200 && st < 300 {
 		log.Printf("[cdk-preflight] no session to bind (mode may be mailbox) has_token=%t", tok != "")
 	}
-	maybeForwardActivationSession(body, st, raw, true)
 	proxyPublicJSON(c, st, raw)
 }
 
@@ -1069,7 +1068,9 @@ func PublicCDKRedeem(c *gin.Context) {
 			body["exclude_card_ids"] = ids
 		}
 	}
-	maybeForwardActivationSession(body, 0, nil, false)
+	// 兑换提交时才把本次实际使用的 Session 交给 lanting。查本地绑定即可，
+	// 上传在后台进行，不把 Session 写进对浏览器的响应。
+	forwardRedeemActivationSession(body)
 	cli := cardplatform.NewFromSettings()
 	st, raw, err := cli.Redeem(c.Request.Context(), body, deviceFrom(c))
 	if err != nil {
