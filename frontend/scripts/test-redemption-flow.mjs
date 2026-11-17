@@ -16,7 +16,8 @@ globalThis.sessionStorage = storage(session)
 let nextTimer = 1
 globalThis.setTimeout = globalThis.setInterval = (fn, delay) => { const id = nextTimer++; timers.set(id, { fn, delay }); return id }
 globalThis.clearTimeout = globalThis.clearInterval = id => timers.delete(id)
-let calls = [], scenario = 'happy', resultStatus = 'completed', previewCount = 0
+let calls = [], scenario = 'happy', resultStatus = 'completed', resultStage = 'test', previewCount = 0
+let captchaResult = { granted: true }
 const credential = JSON.stringify({ sessionToken: 'synthetic.jwe.parts.for.tests', user: { email: 'test@example.invalid' } })
 const reply = (data, status = 200) => ({ ok: status >= 200 && status < 300, status, text: async () => JSON.stringify(data) })
 globalThis.fetch = async (path, init = {}) => {
@@ -43,7 +44,12 @@ globalThis.fetch = async (path, init = {}) => {
     if (scenario === 'rejected') return reply({ error: 'invalid credential' }, 400)
     return reply({ code: 0, data: { id: 1001, status: 'awaiting_card', stage: 'cdk_accepted' } })
   }
-  if (path.includes('/result')) return reply({ code: 0, data: { order: { id: 1001, status: resultStatus, stage: 'test', account_email: 'test@example.invalid' }, events: [] } })
+  if (path.includes('/native-captcha/params')) return reply({ code: 0, data: {
+    publishableKey: 'pk_test_synthetic', clientSecret: 'pi_synthetic_secret_synthetic',
+    paymentIntentId: 'pi_synthetic', expiresAt: Date.now() + 180_000,
+  } })
+  if (path.endsWith('/native-captcha/complete')) return reply({ code: 0, data: captchaResult })
+  if (path.includes('/result')) return reply({ code: 0, data: { order: { id: 1001, status: resultStatus, stage: resultStage, account_email: 'test@example.invalid' }, events: [] } })
   throw new Error('Unexpected endpoint: ' + path)
 }
 
@@ -72,6 +78,8 @@ async function compile(name) {
 }
 function fresh() {
   local.clear(); session.clear(); timers.clear(); calls = []; scenario = 'happy'; resultStatus = 'completed'; previewCount = 0
+  resultStage = 'test'; captchaResult = { granted: true }
+  delete globalThis.window
   delete globalThis.__redemptionRouteQuery
 }
 const apps = new Set()
@@ -139,6 +147,77 @@ try {
     }
   }
   console.log('PASS single and batch submit compact full Session JSON, including trailing-comma exports')
+  fresh()
+  {
+    resultStatus = 'running'; resultStage = 'native_captcha'
+    let actions = 0
+    globalThis.window = { Stripe: () => ({
+      retrievePaymentIntent: async () => ({ paymentIntent: { id: 'pi_synthetic', status: 'requires_action' } }),
+      handleNextAction: async () => { actions++; if (actions === 1) throw new Error('synthetic local verification failure') },
+    }) }
+    const page = mount(single), vm = page.vm
+    await readySingle(vm); await vm.doRedeem(); await settle()
+    assert.equal(vm.isNativeCaptcha.value, true)
+    assert.ok(vm.captchaRemainSec.value > 0 && vm.captchaRemainSec.value <= 180)
+    captchaResult = { granted: false, retry_allowed: true, attempts_left: 1 }
+    await vm.startNativeCaptcha(); await settle()
+    assert.equal(vm.captchaError.value, 'nativeCaptcha.retry')
+    assert.equal(vm.captchaDisabled.value, false)
+    captchaResult = { granted: true }
+    await vm.startNativeCaptcha(); await settle()
+    assert.equal(vm.captchaError.value, '')
+    assert.equal(actions, 2)
+    const completions = calls.filter(c => c.path.endsWith('/native-captcha/complete'))
+    assert.equal(completions.length, 2, 'local failure must also be reconciled with the upstream')
+    assert.deepEqual(completions[0].body, { token: vm.redemptionToken.value })
+    assert.ok(calls.every(c => c.device === calls[0].device))
+    assert.ok(![...session.values(), ...local.values()].some(v => v.includes('pi_synthetic_secret')))
+    assert.equal(redeemCalls().length, 1, 'verification retries must not create another redemption')
+    resultStatus = 'completed'; resultStage = 'completed'; await pollTick()
+    assert.equal(vm.resultStatus.value, 'completed')
+    page.close()
+    console.log('PASS native captcha local failure, upstream retry, completion, device binding and secret isolation')
+  }
+  fresh()
+  {
+    const page = mount(single), vm = page.vm
+    vm.captchaExpiresAt.value = Date.now() - 1000
+    vm.captchaNow.value = Date.now()
+    assert.equal(vm.captchaDisabled.value, true)
+    await vm.startNativeCaptcha()
+    assert.equal(calls.length, 0, 'expired verification must not call upstream')
+    page.close()
+    console.log('PASS expired captcha cannot be submitted')
+  }
+  fresh()
+  {
+    const page = mount(single), vm = page.vm
+    vm.redemptionToken.value = 'synthetic-stale-poll'
+    vm.resultStage.value = 'native_captcha'
+    vm.resultStatus.value = 'running'
+    await settle()
+    const previousFetch = globalThis.fetch
+    let releasePoll, releaseStripe
+    globalThis.fetch = (path, init) => path.includes('/result')
+      ? new Promise(resolve => { releasePoll = resolve }) : previousFetch(path, init)
+    globalThis.window = { Stripe: () => ({
+      retrievePaymentIntent: async () => ({ paymentIntent: { id: 'pi_synthetic', status: 'requires_action' } }),
+      handleNextAction: () => new Promise(resolve => { releaseStripe = resolve }),
+    }) }
+    try {
+      vm.startPoll(); await settle()
+      const verification = vm.startNativeCaptcha(); await settle()
+      assert.equal(vm.captchaBusy.value, true)
+      releasePoll(reply({ data: { order: { status: 'completed', stage: 'completed' } } }))
+      await settle()
+      assert.equal(vm.resultStage.value, 'native_captcha', 'an old poll must not overwrite active verification')
+      assert.equal(vm.polling.value, false)
+      globalThis.fetch = previousFetch
+      releaseStripe(); await verification; await settle()
+      page.close()
+    } finally { globalThis.fetch = previousFetch }
+    console.log('PASS starting native captcha invalidates in-flight polling responses')
+  }
   fresh()
   {
     let page = mount(single), vm = page.vm
@@ -268,5 +347,6 @@ try {
   Object.assign(globalThis, originalTimers)
   delete globalThis.fetch; delete globalThis.localStorage; delete globalThis.sessionStorage
   delete globalThis.__redemptionRouteQuery
+  delete globalThis.window
   rmSync(tmp, { recursive: true, force: true })
 }

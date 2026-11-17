@@ -6,7 +6,7 @@
 
 基线为 SG `/etc/nginx/conf.d/cdk.lanting.live.conf`、`cdk-admin.lanting.live.conf` 和 `/etc/nginx/snippets/cdk-admin-proxy.conf`。原文副本在本机 `/tmp/cdk-cn-nginx-review-20261104/sg-cdk.conf`、`sg-cdk-admin.conf`、`sg-proxy-and-units.txt`。
 
-- 兑换站保留 4 个页面路由、限定静态扩展名、11 个精确 API 路由及原 GET/HEAD/POST 方法限制，其余路径 404。
+- 兑换站保留 4 个页面路由、限定静态扩展名及精确 API 路由的方法限制，其余路径 404。v1.4.36 新增 `/api/v1/public/cdk/native-captcha/params`（GET/HEAD）和 `/api/v1/public/cdk/native-captcha/complete`（POST）；升级时需一并更新 Nginx 配置。
 - 管理站保留页面/API allowlist、登录仅 POST/16k 请求体、禁用在线更新路由、完整 CSP（含原 inline script 哈希）和所有安全响应头。
 - 管理站保留登录 5r/m、burst=5；API 10r/s、burst=30/10；每客户端最多 20 个连接，超限状态 429。仅将限流键从物理连接 IP 改为下述经过认证和格式校验的有效 IP，最大 45 字符。
 - 原代理超时、禁用上游重试/缓存/store/缓冲、请求体大小限制均保留。初次迁移时所有响应均为 `Cache-Control: no-store`；下述静态性能候选仅对版本化 JS/CSS 的成功响应开放缓存。
