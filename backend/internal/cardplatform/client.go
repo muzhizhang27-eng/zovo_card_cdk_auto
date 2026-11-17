@@ -899,7 +899,9 @@ func (c *Client) FreezeCard(ctx context.Context, cardID int64, freeze bool) erro
 
 // ---- 公开兑换（无需 API Key）----
 
-func (c *Client) doPublicCDK(ctx context.Context, method, path string, body any, device string) (int, json.RawMessage, error) {
+func (c *Client) doPublicCDK(ctx context.Context, method, path string, body any, device string) (status int, result json.RawMessage, callErr error) {
+	timing := startPublicCallTiming(ctx, path)
+	defer func() { timing.finish(status, callErr) }()
 	if err := ValidateBase(c.cfg.SiteBase); err != nil {
 		return 0, nil, err
 	}
@@ -917,11 +919,18 @@ func (c *Client) doPublicCDK(ctx context.Context, method, path string, body any,
 	}
 	base := c.cfg.PublicCDKBase()
 	for attempt := 0; ; attempt++ {
+		measurement := timing.attempt()
+		queueStarted := time.Now()
 		if err := limiter.wait(ctx, base, path); err != nil {
+			measurement.queued(queueStarted)
+			measurement.finish(0, nil, err)
 			return 0, nil, err
 		}
-		req, err := http.NewRequestWithContext(ctx, method, base+path, bytes.NewReader(payload))
+		measurement.queued(queueStarted)
+		requestContext := measurement.requestContext(ctx, strings.TrimSpace(os.Getenv("CARD_API_PROXY_URL")) != "")
+		req, err := http.NewRequestWithContext(requestContext, method, base+path, bytes.NewReader(payload))
 		if err != nil {
+			measurement.finish(0, nil, err)
 			return 0, nil, err
 		}
 		req.Header.Set("Accept", "application/json")
@@ -933,11 +942,14 @@ func (c *Client) doPublicCDK(ctx context.Context, method, path string, body any,
 		}
 		resp, err := c.client.Do(req)
 		if err != nil {
+			measurement.finish(0, nil, err)
 			// A lost response may already have created an order. Never retry it here.
 			return 0, nil, err
 		}
+		measurement.responseHeaders()
 		raw, readErr := io.ReadAll(io.LimitReader(resp.Body, 2<<20))
 		_ = resp.Body.Close()
+		measurement.finish(resp.StatusCode, raw, readErr)
 		if resp.StatusCode >= 300 && resp.StatusCode < 400 {
 			return 0, nil, fmt.Errorf("card platform redirect refused")
 		}

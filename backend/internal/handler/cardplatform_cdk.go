@@ -991,14 +991,21 @@ func proxyPublicJSON(c *gin.Context, status int, raw json.RawMessage) {
 
 // PublicCDKPreview POST /api/v1/public/cdk/preview
 func PublicCDKPreview(c *gin.Context) {
+	ctx, timing := cardplatform.StartPublicHandlerTiming(c.Request.Context(), "/preview")
+	c.Header("X-CDK-Trace-ID", timing.ID)
+	defer func() { timing.Finish(c.Writer.Status()) }()
 	var body map[string]any
-	if err := c.ShouldBindJSON(&body); err != nil {
+	err := c.ShouldBindJSON(&body)
+	timing.Decoded()
+	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
 		return
 	}
 	code := str(body["code"])
 	cli := cardplatform.NewFromSettings()
-	st, raw, err := cli.Preview(c.Request.Context(), code, deviceFrom(c))
+	timing.CallStarted()
+	st, raw, err := cli.Preview(ctx, code, deviceFrom(c))
+	timing.CallFinished()
 	if err != nil {
 		c.JSON(http.StatusBadGateway, gin.H{"error": err.Error()})
 		return
@@ -1018,13 +1025,20 @@ func PublicCDKPreview(c *gin.Context) {
 
 // PublicCDKPreflight POST /api/v1/public/cdk/preflight
 func PublicCDKPreflight(c *gin.Context) {
+	ctx, timing := cardplatform.StartPublicHandlerTiming(c.Request.Context(), "/preflight")
+	c.Header("X-CDK-Trace-ID", timing.ID)
+	defer func() { timing.Finish(c.Writer.Status()) }()
 	var body map[string]any
-	if err := c.ShouldBindJSON(&body); err != nil {
+	err := c.ShouldBindJSON(&body)
+	timing.Decoded()
+	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
 		return
 	}
 	cli := cardplatform.NewFromSettings()
-	st, raw, err := cli.Preflight(c.Request.Context(), body, deviceFrom(c))
+	timing.CallStarted()
+	st, raw, err := cli.Preflight(ctx, body, deviceFrom(c))
+	timing.CallFinished()
 	if err != nil {
 		c.JSON(http.StatusBadGateway, gin.H{"error": err.Error()})
 		return
