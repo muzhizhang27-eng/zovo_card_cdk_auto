@@ -202,6 +202,21 @@ export default {
       unknown: 'Unknown',
     },
   },
+  sessionRetry: {
+    action: 'Upload Session for a staff retry',
+    hint: 'If activation failed, send the CDK and ChatGPT Session so staff can retry. It is kept on the order for 24 hours and is not shown again.',
+    cdkLabel: 'CDK code',
+    sessionLabel: 'ChatGPT Session',
+    placeholder: 'Paste the full Session JSON (must include sessionToken)',
+    submit: 'Send for a staff retry',
+    submitting: 'Sending…',
+    needCdk: 'Enter the CDK',
+    success: 'Received. Staff can retry activation with this Session for 24 hours.',
+    failure: 'Could not save it just now. Try again later or contact support.',
+    invalid: 'Paste the full Session JSON (it must include sessionToken). An access token alone is not enough.',
+    rateLimit: 'Too many attempts. Please wait and try again.',
+    unavailable: 'This action is not available right now.',
+  },
 
   dashboard: {
     title: 'Billing Tool',

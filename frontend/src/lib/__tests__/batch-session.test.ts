@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import {
+  activationSessionForRetry,
   checkSessionForCdk,
   extractCdkSession,
   parseSessionJsonLenient,
@@ -66,6 +67,13 @@ describe('格式化多行 Session JSON 容错', () => {
   it('彻底非法 JSON 返回 null / 空', () => {
     expect(parseSessionJsonLenient('{ not json at all ')).toBeNull()
     expect(extractCdkSession('{ nope')).toBe('')
+  })
+
+  it('客服重试拒绝纯 Access Token、Grok 和裸 X 凭据', () => {
+    expect(activationSessionForRetry(`{"sessionToken":"${JWE}"}`)).toContain(JWE)
+    expect(activationSessionForRetry('eyJ.fixture.payload')).toBe('')
+    expect(activationSessionForRetry('sso=' + 'a'.repeat(40))).toBe('')
+    expect(activationSessionForRetry('ab'.repeat(21))).toBe('')
   })
 })
 

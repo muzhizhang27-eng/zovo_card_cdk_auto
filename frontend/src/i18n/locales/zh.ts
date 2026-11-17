@@ -202,6 +202,21 @@ export default {
       unknown: '未知',
     },
   },
+  sessionRetry: {
+    action: '上传 Session 以便客服重试',
+    hint: '开通失败时，把 CDK 和 ChatGPT Session 交给客服。令牌只在订单上保存 24 小时，页面不会再显示它。',
+    cdkLabel: 'CDK 卡密',
+    sessionLabel: 'ChatGPT Session',
+    placeholder: '粘贴完整 Session JSON（必须含 sessionToken）',
+    submit: '提交给客服重试',
+    submitting: '提交中…',
+    needCdk: '请输入 CDK',
+    success: '已收到。客服可在 24 小时内用这份 Session 重试开通。',
+    failure: '暂时无法保存，请稍后重试或联系客服。',
+    invalid: '请粘贴完整 Session JSON（必须含 sessionToken），不能只用 Access Token',
+    rateLimit: '请求过于频繁，请稍后再试。',
+    unavailable: '该功能暂未开放。',
+  },
 
   dashboard: {
     title: '账单工具',

@@ -229,6 +229,11 @@
         <div v-if="isTerminal(resultStatus) && resultStatus !== 'completed'" class="alert alert-error">
           兑换未成功。若状态为 review/pending 请勿重复提交；可联系发码方或稍后用同一设备再查结果。
         </div>
+        <SessionRetryUpload
+          v-if="isTerminal(resultStatus) && resultStatus !== 'completed'"
+          :initial-code="code"
+          start-open
+        />
         <div v-if="resultStatus === 'completed'" class="alert alert-success">开通完成，请到 ChatGPT 账号确认套餐。</div>
         <button class="btn-secondary" :disabled="busy || (submissionStarted && !isTerminal(resultStatus))" @click="resetAll">再兑一张</button>
       </div>
@@ -239,7 +244,8 @@
 <script setup lang="ts">
 import { isXPremiumPlan, xPremiumCredential } from '../../lib/x-premium'
 import { grokCredential, isGrokPlan } from '../../lib/grok'
-import { parseSessionJsonLenient } from '../../lib/batch-session'
+import { extractActivationSession } from '../../lib/batch-session'
+import SessionRetryUpload from '../../components/SessionRetryUpload.vue'
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
@@ -962,26 +968,6 @@ onUnmounted(() => {
   stopCaptchaTicker()
 })
 
-/** 完整 Session：必须含 sessionToken（JWE）；禁止纯 AT */
-function extractSession(raw: string): string {
-  const s = raw.trim()
-  if (!s) return ''
-  // 裸 JWE session-token
-  if (!s.startsWith('{') && s.split('.').length >= 5) return s
-  // 三段 JWT = 纯 AT → 拒绝
-  if (!s.startsWith('{') && s.startsWith('eyJ') && s.split('.').length === 3) return ''
-  if (s.startsWith('{')) {
-    // 容错:格式化/手改后的多行 JSON 常带尾逗号,严格 JSON.parse 会抛 → 返空误报「请粘贴完整 Session」。
-    // parseSessionJsonLenient 清洗后回传**严格合法**的 JSON(后端 Go 也能再 parse)。
-    const parsed = parseSessionJsonLenient(s)
-    if (!parsed) return ''
-    const o = parsed.obj as Record<string, any>
-    const st = String(o.sessionToken || o.session_token || o.token?.sessionToken || '').trim()
-    if (!st) return ''
-    return parsed.canonical
-  }
-  return s.length > 40 ? s : ''
-}
 
 async function tryResumeByCode(cdk: string): Promise<boolean> {
   const { r, data } = await api(
@@ -1056,7 +1042,7 @@ async function doPreflight() {
     let credential: any
     if (credMode.value === 'session') {
       const session = isGrok.value ? grokCredential(sessionRaw.value)
-        : isXPremiumPlan(targetPlan.value) ? xPremiumCredential(sessionRaw.value) : extractSession(sessionRaw.value)
+        : isXPremiumPlan(targetPlan.value) ? xPremiumCredential(sessionRaw.value) : extractActivationSession(sessionRaw.value)
       if (!session) {
         error.value = isGrok.value ? t('grok.invalid')
           : isXPremiumPlan(targetPlan.value) ? t('xPremium.invalid') : '请粘贴完整 Session JSON（必须含 sessionToken），不能只用 Access Token'

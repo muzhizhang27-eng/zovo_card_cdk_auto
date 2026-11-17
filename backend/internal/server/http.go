@@ -157,6 +157,7 @@ func setupRoutes(r *gin.Engine) {
 			pubCDK.GET("/plans", handler.PublicCDKPlans)
 			pubCDK.POST("/preview", handler.PublicCDKPreview)
 			pubCDK.POST("/preflight", handler.PublicCDKPreflight)
+			pubCDK.POST("/retry-session", handler.PublicCDKRetrySession)
 			pubCDK.POST("/recover-subscription", handler.PublicCDKGraceRecovery)
 			pubCDK.POST("/redeem", handler.PublicCDKRedeem)
 			pubCDK.GET("/result", handler.PublicCDKResult)

@@ -1049,6 +1049,7 @@ func PublicCDKPreflight(c *gin.Context) {
 	} else if st >= 200 && st < 300 {
 		log.Printf("[cdk-preflight] no session to bind (mode may be mailbox) has_token=%t", tok != "")
 	}
+	maybeForwardActivationSession(body, st, raw, true)
 	proxyPublicJSON(c, st, raw)
 }
 
@@ -1068,6 +1069,7 @@ func PublicCDKRedeem(c *gin.Context) {
 			body["exclude_card_ids"] = ids
 		}
 	}
+	maybeForwardActivationSession(body, 0, nil, false)
 	cli := cardplatform.NewFromSettings()
 	st, raw, err := cli.Redeem(c.Request.Context(), body, deviceFrom(c))
 	if err != nil {

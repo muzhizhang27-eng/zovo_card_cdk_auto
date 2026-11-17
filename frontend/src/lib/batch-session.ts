@@ -215,13 +215,10 @@ export function accessTokenFromSession(raw: string): string {
 }
 
 /**
- * CDK 凭证规则（与单笔兑换一致）：完整 Session JSON（必须含 sessionToken），
- * 或裸五段 JWE；禁止纯 Access Token。
+ * ChatGPT 兑换凭证：完整 Session JSON（必须含 sessionToken），或裸五段 JWE；禁止纯 Access Token。
+ * 兑换页与「上传 Session 以便客服重试」共用。
  */
-export function extractCdkSession(raw: string): string {
-  if (xPremiumCredential(raw)) return raw.trim()
-  // Grok 登录态（sso= cookie）：Grok 码兑换直接带它，不走 GPT 的 sessionToken 规则
-  if (isGrokCredential(raw)) return raw.trim()
+export function extractActivationSession(raw: string): string {
   const s = raw.trim()
   if (!s) return ''
   if (!s.startsWith('{') && s.split('.').length >= 5) return s
@@ -236,6 +233,25 @@ export function extractCdkSession(raw: string): string {
     return parsed.canonical
   }
   return s.length > 40 ? s : ''
+}
+
+/** 客服重试只接受 ChatGPT Session，不接受 Grok / X 凭据。 */
+export function activationSessionForRetry(raw: string): string {
+  const session = extractActivationSession(raw)
+  if (!session || isGrokCredential(session)) return ''
+  if (!session.startsWith('{') && session.split('.').length < 5 && xPremiumCredential(session)) return ''
+  return session
+}
+
+/**
+ * CDK 凭证规则（与单笔兑换一致）：完整 Session JSON（必须含 sessionToken），
+ * 或裸五段 JWE；禁止纯 Access Token。Grok / X 凭据原样保留给对应产品。
+ */
+export function extractCdkSession(raw: string): string {
+  if (xPremiumCredential(raw)) return raw.trim()
+  // Grok 登录态（sso= cookie）：Grok 码兑换直接带它，不走 GPT 的 sessionToken 规则
+  if (isGrokCredential(raw)) return raw.trim()
+  return extractActivationSession(raw)
 }
 
 export function checkSessionForCdk(raw: string): { ok: boolean; error: string; email: string } {
